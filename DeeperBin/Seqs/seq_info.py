@@ -113,7 +113,7 @@ def prepare_sequences_coverage(
         writePickle(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl"), name2bpcover_nparray_list)
         mean_val = np.percentile(np.array(cov_val_list, dtype=np.float32), 99)
         var_val = np.percentile(np.array(var_val_list, dtype=np.float32), 99)
-        logger.info(f"--> The 95 percentil of coverage mean value is {mean_val}, the sqrt var is {var_val}.")
+        logger.info(f"--> The 99 percentil of coverage mean value is {mean_val}, the sqrt var is {var_val}.")
         writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (mean_val, var_val))
     
     logger.info("--> Start to Call 40 Marker Genes.")
