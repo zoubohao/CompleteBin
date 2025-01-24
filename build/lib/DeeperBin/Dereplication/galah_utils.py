@@ -3,6 +3,7 @@ from shutil import copy
 
 from DeeperBin.IO import readCheckm2Res, readGalahClusterTSV
 from DeeperBin.logger import get_logger
+
 from .checkm_utils import build_checkm2_quality_report_for_galah
 
 logger = get_logger()

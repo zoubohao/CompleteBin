@@ -4,8 +4,10 @@ import os
 from multiprocessing.pool import Pool
 from typing import Dict
 
-from DeeperBin.Cluster.sec_cluster_utils import re_cluster_procedure_for_one_method
-from DeeperBin.IO import readClusterResult, readMarkerSets, readPickle, writePickle
+from DeeperBin.Cluster.sec_cluster_utils import \
+    re_cluster_procedure_for_one_method
+from DeeperBin.IO import (readClusterResult, readMarkerSets, readPickle,
+                          writePickle)
 from DeeperBin.logger import get_logger
 
 logger = get_logger()

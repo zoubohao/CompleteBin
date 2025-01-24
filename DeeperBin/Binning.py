@@ -1,19 +1,19 @@
 
 import os
 from typing import List, Union
+
 import numpy as np
 import psutil
 
-from DeeperBin.CallGenes.hmm_utils import processHits
 from DeeperBin.CallGenes.gene_utils import callMarkerGenesByCheckm
+from DeeperBin.CallGenes.hmm_utils import processHits
 from DeeperBin.Cluster.cluster import combine_two_cluster_steps
 from DeeperBin.Cluster.split_utils import kmeans_split
 from DeeperBin.DataProcess.data_utils import build_training_seq_data
 from DeeperBin.Dereplication.galah_utils import process_galah
 from DeeperBin.IO import readFasta, readPickle
 from DeeperBin.logger import get_logger
-from DeeperBin.Seqs.seq_info import (calculateN50,
-                                       prepare_sequences_coverage)
+from DeeperBin.Seqs.seq_info import calculateN50, prepare_sequences_coverage
 from DeeperBin.Seqs.seq_utils import getGeneWithLargestCount
 from DeeperBin.Trainer.ssmt import SelfSupervisedMethodsTrainer
 
@@ -168,7 +168,7 @@ def binning_with_all_steps(
     if os.path.exists(model_save_folder) is False:
         os.mkdir(model_save_folder)
     contigname2seq = readPickle(contigname2seq_path)
-    max_cov_mean = readPickle(os.path.join(temp_file_folder_path, "max_cov_mean.pkl"))
+    max_cov_mean = readPickle(os.path.join(temp_file_folder_path, "mean_var.pkl"))
     ## epoch setting, base epoch
     if N50 >= 1536:
         epoch_base += 4

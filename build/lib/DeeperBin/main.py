@@ -1,10 +1,11 @@
 
-import os
 import argparse
+import os
 import sys
+
 from DeeperBin.Binning import binning_with_all_steps
 
-deeprebin_v = "v1.0.0"
+deeprebin_v = "v1.0.1"
 
 def main():
     print(f"DeeperBin version: *** {deeprebin_v} ***")

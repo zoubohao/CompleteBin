@@ -22,7 +22,7 @@ conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=
 After preparing the environment, the code of DeeperBin can be installed via pip simply. 
 ```
 conda activate DeeperBin
-pip install DeeperBin==1.0.0
+pip install DeeperBin==1.0.1
 ```
 This installation will run for around 10 minutes.
 

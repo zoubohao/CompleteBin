@@ -1,6 +1,5 @@
 
 import os
-
 from typing import List
 
 from torch.utils.data import Dataset
@@ -8,9 +7,8 @@ from torch.utils.data import Dataset
 from DeeperBin.DataProcess.data_utils import get_features_of_one_seq
 from DeeperBin.logger import get_logger
 from DeeperBin.Seqs.seq_utils import (generate_feature_mapping_reverse,
-                                        random_generate_view,
-                                        sampleSeqFromFasta,
-                                        sequence_data_augmentation)
+                                      random_generate_view, sampleSeqFromFasta,
+                                      sequence_data_augmentation)
 
 logger = get_logger()
 

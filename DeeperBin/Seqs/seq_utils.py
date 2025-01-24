@@ -13,7 +13,6 @@ from DeeperBin.logger import get_logger
 
 logger = get_logger()
 
-
 # def reject_outliers(data: np.ndarray, min_i = -100,  max_i = 100):
 #     """
 #     You can adjust your cut-off for outliers by adjusting argument m in function call. 

@@ -6,8 +6,8 @@ from collections import OrderedDict
 import numpy as np
 
 from DeeperBin.Cluster.first_cluster_utils import get_KNN_nodes, run_leiden
-from DeeperBin.Seqs.seq_utils import getGeneWithLongestLength
 from DeeperBin.logger import get_logger
+from DeeperBin.Seqs.seq_utils import getGeneWithLongestLength
 
 logger = get_logger()
 

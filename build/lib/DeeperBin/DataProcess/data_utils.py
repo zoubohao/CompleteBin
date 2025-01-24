@@ -10,7 +10,7 @@ from DeeperBin.CallGenes.gene_utils import splitListEqually
 from DeeperBin.IO import progressBar, readPickle, writePickle
 from DeeperBin.logger import get_logger
 from DeeperBin.Seqs.seq_utils import (generate_feature_mapping_reverse,
-                                        generate_feature_mapping_whole_tokens)
+                                      generate_feature_mapping_whole_tokens)
 
 logger = get_logger()
 

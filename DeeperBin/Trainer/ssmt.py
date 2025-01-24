@@ -8,12 +8,11 @@ from torch.utils.data import DataLoader
 from DeeperBin.CallGenes.gene_utils import splitListEqually
 from DeeperBin.IO import progressBar, readPickle
 from DeeperBin.logger import get_logger
-from DeeperBin.Trainer.dataset import TrainingDataset
 from DeeperBin.Model.model import DeepMetaBinModel
-from DeeperBin.Trainer.warmup import GradualWarmupScheduler
 from DeeperBin.Seqs.seq_utils import generate_feature_mapping_reverse
-                                        
+from DeeperBin.Trainer.dataset import TrainingDataset
 from DeeperBin.Trainer.trainer import Trainer
+from DeeperBin.Trainer.warmup import GradualWarmupScheduler
 
 logger = get_logger()
 

@@ -1,12 +1,14 @@
 
-import os
 import functools
+import os
+from typing import List
 
 import numpy as np
-from typing import List
 import scipy.sparse as sp
 from sklearn.cluster import KMeans
-from sklearn.cluster._kmeans import euclidean_distances, stable_cumsum, KMeans, check_random_state, row_norms
+from sklearn.cluster._kmeans import (KMeans, check_random_state,
+                                     euclidean_distances, row_norms,
+                                     stable_cumsum)
 
 from DeeperBin.CallGenes.gene_utils import splitListEqually
 from DeeperBin.DataProcess.data_utils import split_seq_equally

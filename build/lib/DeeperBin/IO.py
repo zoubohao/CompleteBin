@@ -3,9 +3,8 @@ import pickle
 import sys
 from typing import Dict, List, Tuple
 
-
 from DeeperBin.CallGenes.hmm_utils import (HmmerHitDOM, addHit,
-                                             identifyAdjacentMarkerGenes)
+                                           identifyAdjacentMarkerGenes)
 from DeeperBin.logger import get_logger
 
 logger = get_logger()

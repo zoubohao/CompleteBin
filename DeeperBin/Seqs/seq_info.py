@@ -1,15 +1,13 @@
 import multiprocessing
 import os
+from random import seed, shuffle
 from typing import List
 
+import numpy as np
 import psutil
 
-from random import shuffle, seed
-import numpy as np
-
 from DeeperBin.CallGenes.gene_utils import callMarkerGenes
-from DeeperBin.IO import (readHMMFileReturnDict,
-                            writeFasta, writePickle)
+from DeeperBin.IO import readHMMFileReturnDict, writeFasta, writePickle
 from DeeperBin.logger import get_logger
 from DeeperBin.Seqs.seq_utils import base_pair_coverage_calculate
 
@@ -96,6 +94,7 @@ def prepare_sequences_coverage(
         
         name2bpcover_nparray_list = {}
         cov_val_list = []
+        var_val_list = []
         logger.info(f"--> Start to collect the coverage information from {pro_num} bam files.")
         for name, cur_dna_seq in contigname2seq.items():
             cur_bp_array_list = []
@@ -105,6 +104,7 @@ def prepare_sequences_coverage(
                 else:
                     cur_bp_array_list.append(cur_name2bp_array[name])
                     cov_val_list.append(np.mean(cur_name2bp_array[name]))
+                    var_val_list.append(np.sqrt(np.var(cur_name2bp_array[name], dtype=np.float32)))
             name2bpcover_nparray_list[name] = cur_bp_array_list
         logger.info(f"--> Start to write coverage information")
         for name, bp_list in name2bpcover_nparray_list.items():
@@ -112,8 +112,9 @@ def prepare_sequences_coverage(
             assert n == pro_num, ValueError(f"There are number of {pro_num} bam files, but contig {name} only have {n} coverage info.")
         writePickle(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl"), name2bpcover_nparray_list)
         p95 = np.percentile(np.array(cov_val_list, dtype=np.float32), 95)
-        logger.info(f"--> The 90 percentil of coverage mean value is {p95}.")
-        writePickle(os.path.join(temp_file_folder_path, "max_cov_mean.pkl"), p95)
+        p95_var = np.percentile(np.array(var_val_list, dtype=np.float32), 95)
+        logger.info(f"--> The 95 percentil of coverage mean value is {p95}, the sqrt var is {p95_var}.")
+        writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (p95, p95_var))
     
     logger.info("--> Start to Call 40 Marker Genes.")
     call_genes_folder = os.path.join(temp_file_folder_path, "call_genes_random")

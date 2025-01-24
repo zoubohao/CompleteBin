@@ -1,11 +1,11 @@
 
 import os
 
+import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-import numpy as np
 
 from DeeperBin.IO import writePickle
 from DeeperBin.logger import get_logger
@@ -80,7 +80,7 @@ class Trainer(object):
                  model_save_folder: str,
                  n_views: int,
                  batch_size: int,
-                 max_cov_mean = 100.,
+                 max_cov_mean = (100., 100.),
                  temperature_simclr=0.123,
                  log_every_n_steps: int = 10
                  ):
@@ -93,7 +93,9 @@ class Trainer(object):
         self.log_every_n_steps = log_every_n_steps
         self.n_views = n_views
         self.batch_size = batch_size
-        self.max_cov_mean = max_cov_mean
+        self.max_cov_mean = max_cov_mean[0]
+        self.max_cov_var = max_cov_mean[1]
+        logger.info(f"--> The 95 percentil of coverage mean value is {self.max_cov_mean}, the sqrt var is {self.max_cov_var}.")
         self.temperature_simclr = temperature_simclr
         self.temperature_schedule = schedule_of_temperature(temperature_simclr, epochs)
         self.criterion = nn.CrossEntropyLoss().to(self.device)
@@ -108,7 +110,7 @@ class Trainer(object):
             var_n_views.append(cov_var_sqrt)
         seq_tokens_inputs = torch.cat(seq_tokens_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True)
         mean_inputs = torch.cat(mean_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / self.max_cov_mean
-        var_inputs = torch.cat(var_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / 100.
+        var_inputs = torch.cat(var_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / self.max_cov_var
         if len(mean_inputs.shape) == 1:
             mean_inputs.unsqueeze(1)
         if len(var_inputs.shape) == 1:

@@ -1,6 +1,6 @@
 
-import os
 import multiprocessing
+import os
 
 from DeeperBin.IO import progressBar, readDiamond, readFasta
 from DeeperBin.logger import get_logger

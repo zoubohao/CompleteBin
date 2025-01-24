@@ -1,16 +1,15 @@
 import os
 
 import torch
-
-from DeeperBin.Seqs.seq_utils import generate_feature_mapping_reverse
-from DeeperBin.Trainer.trainer import PretrainTrainer
-from DeeperBin.logger import get_logger
-from DeeperBin.Trainer.dataset import PretrainDataset
-from DeeperBin.Model.model import DeepMetaBinBaseModel
-from DeeperBin.Trainer.warmup import GradualWarmupScheduler
-
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
+
+from DeeperBin.logger import get_logger
+from DeeperBin.Model.model import DeepMetaBinBaseModel
+from DeeperBin.Seqs.seq_utils import generate_feature_mapping_reverse
+from DeeperBin.Trainer.dataset import PretrainDataset
+from DeeperBin.Trainer.trainer import PretrainTrainer
+from DeeperBin.Trainer.warmup import GradualWarmupScheduler
 
 logger = get_logger()
 
