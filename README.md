@@ -101,7 +101,7 @@ if __name__ == "__main__":
         bin_output_folder_path=bin_output_folder,
         db_folder_path="./DeepMetaBin-DB",
         training_device="cuda:0",
-        )
+    )
 ```
 
 ## Files in the output directory
