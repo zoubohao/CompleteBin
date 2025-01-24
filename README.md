@@ -118,7 +118,7 @@ This file contains the following columns:
 ## Minimum System Requirements for Running DeeperBin
 - System: Linux
 - CPU: No restriction.
-- RAM: >= 64 GB
+- RAM: >= 80 GB
 - GPU: The GPU memory must be equal to or greater than 6GB.
 
 ## Our System Config
