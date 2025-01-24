@@ -1,5 +1,6 @@
 
 
+import multiprocessing as mp
 import os
 from multiprocessing.pool import Pool
 from typing import Dict
@@ -89,6 +90,7 @@ def second_cluster(
     tname2markerset = readMarkerSets(ms_path)
     p_list = []
     filenameclu_res = []
+    mp.set_start_method("spawn", force=True) 
     with Pool(num_workers) as pool_h:
         for cur_i, c_file in enumerate(cluster_files):
             if "embMat0" in c_file:

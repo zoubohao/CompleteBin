@@ -1,5 +1,4 @@
 
-import multiprocessing as mp
 import os
 from typing import List, Union
 
@@ -80,7 +79,6 @@ def binning_with_all_steps(
         training_device (str, optional): The device for training model. You can set 'cpu' to use CPU. Defaults to "cuda:0".
         num_workers (int, optional): Number of cpus for clustering contigs. Defaults to None. We would set 1 / 2 of total cpus if it is None.
     """
-    mp.set_start_method("spawn") 
     if num_workers is None:
         num_workers = psutil.cpu_count() // 2 + 1
         logger.info(f"--> Total cpus: {psutil.cpu_count()}. Number of {num_workers} CPUs are applied.")

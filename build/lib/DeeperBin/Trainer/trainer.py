@@ -95,7 +95,7 @@ class Trainer(object):
         self.batch_size = batch_size
         self.max_cov_mean = max_cov_mean[0]
         self.max_cov_var = max_cov_mean[1]
-        logger.info(f"--> The 95 percentil of coverage mean value is {self.max_cov_mean}, the sqrt var is {self.max_cov_var}.")
+        logger.info(f"--> The 99 percentil of coverage mean value is {self.max_cov_mean}, the sqrt var is {self.max_cov_var}.")
         self.temperature_simclr = temperature_simclr
         self.temperature_schedule = schedule_of_temperature(temperature_simclr, epochs)
         self.criterion = nn.CrossEntropyLoss().to(self.device)

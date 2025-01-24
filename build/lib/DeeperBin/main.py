@@ -5,7 +5,7 @@ import sys
 
 from DeeperBin.Binning import binning_with_all_steps
 
-deeprebin_v = "v1.0.4"
+deeprebin_v = "v1.0.5"
 
 def main():
     print(f"DeeperBin version: *** {deeprebin_v} ***")
