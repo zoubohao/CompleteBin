@@ -69,7 +69,7 @@ optional arguments:
                         The folder to store temporay files.
   -db DB_FILES_PATH, --db_files_path DB_FILES_PATH
                         The folder contains temporay files. You can ignore it if you set the 'DeeperBin_DB' environmental variable.
-  --device DEVICE       The device for training. Default is cuda:0. We highly recommand to use GPU but not CPU. You can adjust 'batch size' parameter to fit your
+  --device DEVICE       The device for training. Default is cuda:0. We highly recommand to use GPU but not CPU. You can adjust 'batch_size' parameter to fit your
                         GPU's memory. We need 24GB GPU memory to run the default settings. You can use CPU if you set this parameter with 'cpu'.
   --n_views N_VIEWS     Number of views to generate for each contig during training. Defaults to 6.
   --min_contig_length MIN_CONTIG_LENGTH
