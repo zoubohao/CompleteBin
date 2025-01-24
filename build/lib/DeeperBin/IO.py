@@ -12,7 +12,7 @@ logger = get_logger()
 
 def readVocab(vocab_path):
     res = {}
-    with open(vocab_path, "r") as rh:
+    with open(vocab_path, "r", encoding="utf-8") as rh:
         for line in rh:
             info = line.strip("\n").split("\t")
             res[info[0]] = int(info[1])
@@ -38,7 +38,7 @@ def readFasta(path: str) -> Dict[str, str]:
     contig2Seq = {}
     curContig = ""
     curSeq = ""
-    with open(path, mode="r") as rh:
+    with open(path, mode="r", encoding="utf-8") as rh:
         for line in rh:
             curLine = line.strip("\n")
             if curLine[0] == ">":
@@ -56,7 +56,7 @@ def readFasta(path: str) -> Dict[str, str]:
 
 def readBinName2Annot(binName2LineagePath: str) -> Dict[str, str]:
     res = {}
-    with open(binName2LineagePath, "r") as rh:
+    with open(binName2LineagePath, "r", encoding="utf-8") as rh:
         for line in rh:
             info = line.strip("\n").split("\t")
             name, suffix = os.path.splitext(info[0])
@@ -69,7 +69,7 @@ def readCheckm2Res(file_path: str, bin_suffix):
     h = 0
     m = 0
     l = 0
-    with open(file_path, "r") as rh:
+    with open(file_path, "r", encoding="utf-8") as rh:
         for line in rh:
             if "Name" not in line:
                 info = line.strip("\n").split("\t")
@@ -102,7 +102,7 @@ def readHMMFile(file_path: str, hmmAcc2model, accs_set: set, phy_name=None) -> T
         raise ValueError("HMM file does not exist.")
 
     markerHits = {}
-    with open(file_path, "r") as rh:
+    with open(file_path, "r", encoding="utf-8") as rh:
         for line in rh:
             if line[0] != "#":
                 info = line.strip("\n").split(" ")
@@ -145,7 +145,7 @@ def readHMMFileReturnDict(
     file_path: str
 ):
     contigName2hits = {}
-    with open(file_path, "r") as rh:
+    with open(file_path, "r", encoding="utf-8") as rh:
         for line in rh:
             if line[0] != "#":
                 info = line.strip("\n").split(" ")
@@ -179,7 +179,7 @@ def readClusterResult(
 ):
     clu2contigs = {}
     clu2summed_val = {}
-    with open(clus_path, "r") as rh:
+    with open(clus_path, "r", encoding="utf-8") as rh:
         for line in rh:
             contigname, clu = line.strip("\n").split("\t")
             if clu not in clu2contigs:
@@ -199,7 +199,7 @@ def readMarkersetTSV(file_path: str):
     index = 0
     gene2contigNames = {}
     contigName2_gene2num = {}
-    with open(file_path, "r") as rh:
+    with open(file_path, "r", encoding="utf-8") as rh:
         for line in rh:
             if index == 0:
                 index += 1
@@ -228,7 +228,7 @@ def readMarkersetTSV(file_path: str):
 
 def readGalahClusterTSV(tsv_path: str):
     res = {}
-    with open(tsv_path, "r") as rh:
+    with open(tsv_path, "r", encoding="utf-8") as rh:
         for line in rh:
             info = line.strip("\n").split("\t")
             if info[0] in res:
@@ -241,7 +241,7 @@ def readGalahClusterTSV(tsv_path: str):
 def readMarkerSets(ms_file_path):
     """Construct bin marker set data from line."""
     taxon2markerset = {}
-    with open(ms_file_path, "r") as rh:
+    with open(ms_file_path, "r", encoding="utf-8") as rh:
         for line in rh:
             lineSplit = line.strip("\n").split("\t")
             markerSet = eval(lineSplit[-1])
@@ -254,7 +254,7 @@ def readMetaInfo(file_path: str, comp_i = 1, cont_i = 2, skip_first_line=False):
     h = 0
     m = 0
     l = 0
-    with open(file_path, "r") as rh:
+    with open(file_path, "r", encoding="utf-8") as rh:
         for i, line in enumerate(rh):
             if skip_first_line and i == 0:
                 continue
@@ -276,7 +276,7 @@ def readMetaInfo(file_path: str, comp_i = 1, cont_i = 2, skip_first_line=False):
 
 def readCSV(file_path):
     csv = []
-    with open(file_path, "r") as rh:
+    with open(file_path, "r", encoding="utf-8") as rh:
         for line in rh:
             oneline = line.strip("\n").split(",")
             csv.append(oneline)
@@ -285,7 +285,7 @@ def readCSV(file_path):
 
 def readTSV(file_path):
     csv = []
-    with open(file_path, "r") as rh:
+    with open(file_path, "r", encoding="utf-8") as rh:
         for line in rh:
             oneline = line.strip("\n").split("\t")
             csv.append(oneline)
@@ -293,7 +293,7 @@ def readTSV(file_path):
 
 
 def readDiamond(file_path: str, res):
-    with open(file_path, "r") as rh:
+    with open(file_path, "r", encoding="utf-8") as rh:
         for line in rh:
             thisline = line.strip("\n").split("\t")
             _, contig_name = thisline[0].split("Ω")
@@ -330,7 +330,7 @@ def write_result(
 
 
 def writeAnnot2BinNames(annot2binNames: Dict[str, List[str]], outputPath: str):
-    with open(outputPath, "w") as wh:
+    with open(outputPath, "w", encoding="utf-8") as wh:
         for annot, binList in annot2binNames.items():
             for binName in binList:
                 wh.write(binName + "\t" + annot + "\n")
@@ -338,7 +338,7 @@ def writeAnnot2BinNames(annot2binNames: Dict[str, List[str]], outputPath: str):
 
 def writeFasta(name2seq: Dict, writePath: str, change_name=False):
     index = 0
-    with open(writePath, "w") as wh:
+    with open(writePath, "w", encoding="utf-8") as wh:
         for key, val in name2seq.items():
             if change_name:
                 wh.write(f">Contig_{index}_{len(val)}\n")
@@ -353,7 +353,7 @@ def writeFasta(name2seq: Dict, writePath: str, change_name=False):
 
 
 def writeAnnotResult(outputPath: str, name2annotated: Dict, name2maxList: Dict):
-    with open(outputPath, "w") as wh:
+    with open(outputPath, "w", encoding="utf-8") as wh:
         for key, val in name2annotated.items():
             wh.write(key + "\t" + val + "\t")
             for prob in name2maxList[key]:
