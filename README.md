@@ -77,7 +77,7 @@ optional arguments:
   --batch_size BATCH_SIZE
                         The batch size. Defaults to 1024.
   --epoch_base EPOCH_BASE
-                        Number of basic training epoches. Defaults to 35.
+                        Number of basic training epoches. Defaults to 32.
   --num_workers NUM_WORKERS
                         Number of cpus for clustering contigs. Defaults to None. We would set 1/3 of total cpus if it is None.
 ```
