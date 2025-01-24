@@ -13,11 +13,11 @@ def getScore(
     qualityValues
 ) -> float:
     if qualityValues[-1] == "HighQuality":
-        score = qualityValues[0] - 1. * qualityValues[1]  + 100.
+        score = qualityValues[0] - 4. * qualityValues[1]  + 100.
     elif qualityValues[-1] == "MediumQuality":
-        score = qualityValues[0] - 1. * qualityValues[1] + 50.
+        score = qualityValues[0] - 4. * qualityValues[1] + 50.
     else:
-        score = qualityValues[0] - 1. * qualityValues[1]
+        score = qualityValues[0] - 4. * qualityValues[1]
     return score
 
 

@@ -54,8 +54,8 @@ def min_max_norm(input_tensor: torch.Tensor):
 
 
 def schedule_of_temperature(temp: float, epochs: int):
-    start_temp = temp - 0.005
-    end_temp = temp + 0.005
+    start_temp = temp - 0.0025
+    end_temp = temp + 0.0025
     step = 0.01 / epochs
     res = [0 for _ in range(epochs)]
     for i, cur_temp in enumerate(np.arange(start_temp, end_temp, step)):

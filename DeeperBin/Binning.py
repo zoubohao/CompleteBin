@@ -48,7 +48,7 @@ def binning_with_all_steps(
     lr_warmup_epoch=1,
     regu_lambda=1e-3,
     batch_size=1024,
-    epoch_base = 35,
+    epoch_base = 32,
     large_model = False,
     log_every_n_steps=10,
     training_device="cuda:0",
@@ -74,15 +74,15 @@ def binning_with_all_steps(
         lr_warmup_epoch (int, optional): Number of epoches to warm up the learning rate. Defaults to 1.
         regu_lambda (_type_, optional): L2 regularization. Defaults to 1e-3.
         batch_size (int, optional): The batch size. Defaults to 1024.
-        epoch_base (int, optional): Number of basic training epoches. Defaults to 35.
+        epoch_base (int, optional): Number of basic training epoches. Defaults to 32.
         large_model (bool, optional): If use large pretrained model. Defaults to False.
         log_every_n_steps (int, optional): Print log after n training step. Defaults to 10.
         training_device (str, optional): The device for training model. You can set 'cpu' to use CPU. Defaults to "cuda:0".
-        num_workers (int, optional): Number of cpus for clustering contigs. Defaults to None. We would set 1/3 of total cpus if it is None.
+        num_workers (int, optional): Number of cpus for clustering contigs. Defaults to None. We would set 1 / 2 of total cpus if it is None.
     """
     mp.set_start_method("spawn") 
     if num_workers is None:
-        num_workers = psutil.cpu_count() // 3 + 1
+        num_workers = psutil.cpu_count() // 2 + 1
         logger.info(f"--> Total cpus: {psutil.cpu_count()}. Number of {num_workers} CPUs are applied.")
     if os.path.exists(temp_file_folder_path) is False:
         os.mkdir(temp_file_folder_path)
@@ -172,7 +172,7 @@ def binning_with_all_steps(
     max_cov_mean = readPickle(os.path.join(temp_file_folder_path, "mean_var.pkl"))
     ## epoch setting, base epoch
     if N50 >= 1536:
-        epoch_base += 4
+        epoch_base += 2
     num_contigs = len(contigname2seq)
     if num_contigs >= large_data_size_thre: train_epoch = epoch_base
     else: train_epoch = large_data_size_thre * epoch_base // num_contigs 
@@ -224,7 +224,7 @@ def binning_with_all_steps(
     if os.path.exists(initial_fasta_path) is False:
         os.mkdir(initial_fasta_path)
     _, _, contignames_40mar = getGeneWithLargestCount(mar40_gene2contigNames, contigname2seq)
-    bin_number = int(len(contignames_40mar) * 1.6) + 1
+    bin_number = int(len(contignames_40mar) * 1.5) + 1
     if len(os.listdir(initial_fasta_path)) != bin_number:
         kmeans_split(
                 logger,

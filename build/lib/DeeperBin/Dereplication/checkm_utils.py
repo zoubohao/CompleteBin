@@ -63,8 +63,8 @@ def runCheckm2Single(
     os.system(cmd)
 
 
-def runCheckm2SingleResume(output_faa_folder, modified_checkm2_tmp_folder, cpu_num):
-    cmd = f"checkm2 predict -x faa --threads {cpu_num} --resume --genes -i {output_faa_folder} -o {modified_checkm2_tmp_folder}"
+def runCheckm2SingleResume(output_faa_folder, modified_checkm2_tmp_folder, cpu_num, db_path):
+    cmd = f"checkm2 predict -x faa --threads {cpu_num} --resume --genes -i {output_faa_folder} -o {modified_checkm2_tmp_folder} --database_path {db_path}"
     os.system(cmd)
 
 
@@ -79,7 +79,7 @@ def process_one_method(output_faa_folder: str,
     output_dimond_file = os.path.join(output_dimond_folder, f"DIAMOND_RESULTS_{cur_index}.tsv")
     modified_bin_names = os.listdir(cur_method_bins_folder)
 
-    wdh = open(output_dimond_file, "w")
+    wdh = open(output_dimond_file, "w", encoding="utf-8")
     N = len(modified_bin_names)
 
     for j, modified_bin_name in enumerate(modified_bin_names):
@@ -140,6 +140,7 @@ def buildCheckm2TmpFiles(
     pro_list = []
     if cpus > len(ensemble_list):
         cpus = len(ensemble_list)
+    logger.info(f"--> Use utf-8 to write.")
     with multiprocessing.Pool(cpus) as multiprocess:
         for i, item in enumerate(ensemble_list):
             cur_method_name = item[0]
@@ -190,7 +191,7 @@ def build_checkm2_quality_report_for_galah(
         output_faa_folder = os.path.join(selected_temp, "protein_files")
         
         logger.info("--> Start to Run CheckM2 Resume...")
-        runCheckm2SingleResume(output_faa_folder, selected_temp, cpu_num)
+        runCheckm2SingleResume(output_faa_folder, selected_temp, cpu_num, os.path.join(db_path, "checkm", "checkm2_db.dmnd"))
     return os.path.join(selected_temp, "quality_report.tsv")
 
 

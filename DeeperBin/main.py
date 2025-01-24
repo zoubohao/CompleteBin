@@ -5,7 +5,7 @@ import sys
 
 from DeeperBin.Binning import binning_with_all_steps
 
-deeprebin_v = "v1.0.3"
+deeprebin_v = "v1.0.4"
 
 def main():
     print(f"DeeperBin version: *** {deeprebin_v} ***")
@@ -73,13 +73,13 @@ def main():
     myparser.add_argument(
         "--epoch_base",
         type=int,
-        default=35,
-        help="Number of basic training epoches. Defaults to 35.")
+        default=32,
+        help="Number of basic training epoches. Defaults to 32.")
     myparser.add_argument(
         "--num_workers",
         type=int,
         default=None,
-        help="Number of cpus for clustering contigs. Defaults to None. We would set 1/3 of total cpus if it is None.")
+        help="Number of cpus for clustering contigs. Defaults to None. We would set 1 / 2 of total cpus if it is None.")
     
     args = myparser.parse_args()
     binning_with_all_steps(
