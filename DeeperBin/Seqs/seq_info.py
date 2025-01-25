@@ -111,9 +111,9 @@ def prepare_sequences_coverage(
             n = len(bp_list)
             assert n == pro_num, ValueError(f"There are number of {pro_num} bam files, but contig {name} only have {n} coverage info.")
         writePickle(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl"), name2bpcover_nparray_list)
-        mean_val = np.percentile(np.array(cov_val_list, dtype=np.float32), 99)
-        var_val = np.percentile(np.array(var_val_list, dtype=np.float32), 99)
-        logger.info(f"--> The 99 percentil of coverage mean value is {mean_val}, the sqrt var is {var_val}.")
+        mean_val = np.max(np.array(cov_val_list, dtype=np.float32)) + 10.
+        var_val = np.max(np.array(var_val_list, dtype=np.float32)) + 10.
+        logger.info(f"--> The max of coverage mean value is {mean_val}, the sqrt var is {var_val}.")
         writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (mean_val, var_val))
     
     logger.info("--> Start to Call 40 Marker Genes.")

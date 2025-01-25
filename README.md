@@ -22,7 +22,7 @@ conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=
 After preparing the environment, the code of DeeperBin can be installed via pip simply. 
 ```
 conda activate DeeperBin
-pip install DeeperBin==1.0.5
+pip install DeeperBin==1.0.6
 ```
 This installation will run for around 10 minutes.
 
@@ -77,7 +77,7 @@ optional arguments:
   --batch_size BATCH_SIZE
                         The batch size. Defaults to 1024.
   --epoch_base EPOCH_BASE
-                        Number of basic training epoches. Defaults to 32.
+                        Number of basic training epoches. Defaults to 37.
   --num_workers NUM_WORKERS
                         Number of cpus for clustering contigs. Defaults to None. We would set 1/3 of total cpus if it is None.
 ```

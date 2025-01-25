@@ -54,8 +54,8 @@ def min_max_norm(input_tensor: torch.Tensor):
 
 
 def schedule_of_temperature(temp: float, epochs: int):
-    start_temp = temp - 0.0025
-    end_temp = temp + 0.0025
+    start_temp = temp - 0.005
+    end_temp = temp + 0.005
     step = 0.01 / epochs
     res = [0 for _ in range(epochs)]
     for i, cur_temp in enumerate(np.arange(start_temp, end_temp, step)):
@@ -95,7 +95,7 @@ class Trainer(object):
         self.batch_size = batch_size
         self.max_cov_mean = max_cov_mean[0]
         self.max_cov_var = max_cov_mean[1]
-        logger.info(f"--> The 99 percentil of coverage mean value is {self.max_cov_mean}, the sqrt var is {self.max_cov_var}.")
+        logger.info(f"--> The max of coverage mean value is {self.max_cov_mean}, the sqrt var is {self.max_cov_var}.")
         self.temperature_simclr = temperature_simclr
         self.temperature_schedule = schedule_of_temperature(temperature_simclr, epochs)
         self.criterion = nn.CrossEntropyLoss().to(self.device)
