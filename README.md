@@ -53,9 +53,12 @@ source .bashrc
 **1.  You can run DeeperBin with 'clean' mode through the following command:**
 
 ```
-usage: deeperbin [-h] -c CONTIG_PATH -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...] -o OUTPUT_PATH -temp TEMP_FILE_PATH [-db DB_FILES_PATH]
-                        [--device DEVICE] [--n_views N_VIEWS] [--min_contig_length MIN_CONTIG_LENGTH] [--batch_size BATCH_SIZE] [--epoch_base EPOCH_BASE]
-                        [--num_workers NUM_WORKERS]
+deeperbin -h
+DeeperBin version: *** v1.0.7 ***
+usage: deeperbin [-h] -c CONTIG_PATH -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...] -o OUTPUT_PATH -temp TEMP_FILE_PATH [-db DB_FILES_PATH] [--device DEVICE]
+                 [--n_views N_VIEWS] [--min_contig_length MIN_CONTIG_LENGTH] [--batch_size BATCH_SIZE] [--epoch_base EPOCH_BASE] [--num_workers NUM_WORKERS]
+
+DeeperBin Is a Binner with Dynamic Contrastive Learning with Pretrained Deep Language Model.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -69,17 +72,17 @@ optional arguments:
                         The folder to store temporay files.
   -db DB_FILES_PATH, --db_files_path DB_FILES_PATH
                         The folder contains temporay files. You can ignore it if you set the 'DeeperBin_DB' environmental variable.
-  --device DEVICE       The device for training. Default is cuda:0. We highly recommand to use GPU but not CPU. You can adjust 'batch_size' parameter to fit your
-                        GPU's memory. We need 24GB GPU memory to run the default settings. You can use CPU if you set this parameter with 'cpu'.
+  --device DEVICE       The device for training. Default is cuda:0. We highly recommand to use GPU but not CPU. You can adjust 'batch_size' parameter to fit
+                        your GPU's memory. We need 24GB GPU memory to run the default settings. You can use CPU if you set this parameter with 'cpu'.
   --n_views N_VIEWS     Number of views to generate for each contig during training. Defaults to 6.
   --min_contig_length MIN_CONTIG_LENGTH
-                        The minimum length of contigs for binning. Defaults to 750.
+                        The minimum length of contigs for binning. Defaults to 768.
   --batch_size BATCH_SIZE
                         The batch size. Defaults to 1024.
   --epoch_base EPOCH_BASE
-                        Number of basic training epoches. Defaults to 37.
+                        Number of basic training epoches. Defaults to 36.
   --num_workers NUM_WORKERS
-                        Number of cpus for clustering contigs. Defaults to None. We would set 1/3 of total cpus if it is None.
+                        Number of cpus for clustering contigs. Defaults to None. We would set 1 / 2 of total cpus if it is None.
 ```
 
 
