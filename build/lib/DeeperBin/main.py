@@ -5,7 +5,7 @@ import sys
 
 from DeeperBin.Binning import binning_with_all_steps
 
-deeprebin_v = "v1.0.6"
+deeprebin_v = "v1.0.7"
 
 def main():
     print(f"DeeperBin version: *** {deeprebin_v} ***")
@@ -63,8 +63,8 @@ def main():
     myparser.add_argument(
         "--min_contig_length",
         type=int,
-        default=750,
-        help="The minimum length of contigs for binning. Defaults to 750.")
+        default=768,
+        help="The minimum length of contigs for binning. Defaults to 768.")
     myparser.add_argument(
         "--batch_size",
         type=int,
@@ -73,8 +73,8 @@ def main():
     myparser.add_argument(
         "--epoch_base",
         type=int,
-        default=37,
-        help="Number of basic training epoches. Defaults to 37.")
+        default=36,
+        help="Number of basic training epoches. Defaults to 36.")
     myparser.add_argument(
         "--num_workers",
         type=int,

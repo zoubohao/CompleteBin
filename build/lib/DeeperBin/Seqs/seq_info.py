@@ -103,16 +103,24 @@ def prepare_sequences_coverage(
                     cur_bp_array_list.append(np.zeros(shape=[len(cur_dna_seq)], dtype=np.int64))
                 else:
                     cur_bp_array_list.append(cur_name2bp_array[name])
-                    cov_val_list.append(np.mean(cur_name2bp_array[name]))
-                    var_val_list.append(np.sqrt(np.var(cur_name2bp_array[name], dtype=np.float32)))
+                    cov_val_list.append(
+                        np.sum(cur_name2bp_array[name]) / (len(cur_name2bp_array[name]) - 2. * 75.)
+                        )
+                    var_val_list.append(
+                        np.sqrt(np.var(cur_name2bp_array[name], dtype=np.float32) + 1e-5)
+                        )
             name2bpcover_nparray_list[name] = cur_bp_array_list
         logger.info(f"--> Start to write coverage information")
         for name, bp_list in name2bpcover_nparray_list.items():
             n = len(bp_list)
             assert n == pro_num, ValueError(f"There are number of {pro_num} bam files, but contig {name} only have {n} coverage info.")
         writePickle(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl"), name2bpcover_nparray_list)
-        mean_val = np.max(np.array(cov_val_list, dtype=np.float32)) + 10.
-        var_val = np.max(np.array(var_val_list, dtype=np.float32)) + 10.
+        mean_val = np.max(np.array(cov_val_list, dtype=np.float32)) + 1e-5
+        var_val = np.max(np.array(var_val_list, dtype=np.float32)) + 1e-5
+        if mean_val > 1000:
+            mean_val /= 2.
+        if var_val > 1000:
+            var_val /= 2.
         logger.info(f"--> The max of coverage mean value is {mean_val}, the sqrt var is {var_val}.")
         writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (mean_val, var_val))
     

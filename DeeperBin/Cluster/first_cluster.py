@@ -62,20 +62,26 @@ def first_cluster(
         if contig_name in contig2id:
             is_membership_fixed[contig2id[contig_name]] = True
     
+    other_max_edge = 80
     if len(contig_name_list) >= 1000000:
         n_iter = 25
     elif 950000 <= len(contig_name_list) < 1000000:
         n_iter = 30
     elif 900000 <= len(contig_name_list) < 950000:
         n_iter = 35
+        other_max_edge = 85
     elif 800000 <= len(contig_name_list) < 900000:
         n_iter = 40
-    elif 700000 <= len(contig_name_list) < 800000:
+        other_max_edge = 90
+    elif 650000 <= len(contig_name_list) < 800000:
         n_iter = 45
-    elif 600000 < len(contig_name_list) < 700000:
+        other_max_edge = 115
+    elif 500000 <= len(contig_name_list) < 650000:
         n_iter = 50
+        other_max_edge = 120
     else:
         n_iter = -1
+        other_max_edge = 125
     
     logger.info(f"--> The number of iterations for leiden is {n_iter}.")
     logger.info(f"--> Num_workers: {num_workers}.")
@@ -84,7 +90,7 @@ def first_cluster(
         parameter_list = [1., 2., 4., 6., 8., 10., 12.]
         bandwidth_list = [0.05, 0.1, 0.15, 0.2]
         partgraph_ratio_list = [50, 75, 100]
-        max_edges_list = [80, 100]
+        max_edges_list = [100, other_max_edge]
         max_edges_ann_list = []
         space = "l2"
         for max_edges in max_edges_list:
@@ -121,7 +127,7 @@ def first_cluster(
                                                             partgraph_ratio,
                                                             resolution,
                                                             is_membership_fixed,
-                                                            n_iter))
+                                                            n_iter,))
                                 pro_list.append(p)
                             cur_i += 1
             multiprocess.close()

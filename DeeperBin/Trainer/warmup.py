@@ -8,7 +8,7 @@ class GradualWarmupScheduler(_LRScheduler):
         self.warm_epoch = warm_epoch
         if restart_epoch is None:
             if after_warm_train_epoch % 2 != 0:
-                restart_epoch = after_warm_train_epoch // 2 + 1
+                restart_epoch = after_warm_train_epoch // 2 - 1
             else:
                 restart_epoch = after_warm_train_epoch // 2
         self.after_scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(

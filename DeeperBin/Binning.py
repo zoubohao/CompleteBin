@@ -20,6 +20,7 @@ from DeeperBin.Trainer.ssmt import SelfSupervisedMethodsTrainer
 logger = get_logger()
 
 
+
 def filterSpaceInFastaFile(input_fasta, output_fasta):
     with open(input_fasta, "r") as rh, open(output_fasta, "w") as wh:
         for line in rh:
@@ -37,7 +38,7 @@ def binning_with_all_steps(
     db_folder_path: str = None,
     n_views: int = 6,
     count_kmer: int = 4,
-    min_contig_length = 750,
+    min_contig_length = 768,
     large_data_size_thre = 153600,
     # model training config
     feature_dim=100,
@@ -47,7 +48,7 @@ def binning_with_all_steps(
     lr_warmup_epoch=1,
     regu_lambda=1e-3,
     batch_size=1024,
-    epoch_base=37,
+    epoch_base=36,
     large_model=False,
     log_every_n_steps=10,
     training_device="cuda:0",
@@ -64,7 +65,7 @@ def binning_with_all_steps(
         db_folder_path (str, optional): The path of database folder. Defaults to None. You can ignore it if you set the 'DeeperBin_DB' environmental variable.
         n_views (int, optional): Number of views to generate for each contig during training. Defaults to 6.
         count_kmer (int, optional): The k setting of k-mer. Defaults to 4.
-        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 750.
+        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 768.
         large_data_size_thre (int, optional): The threshold to judge if the sample (data) is a large data. Defaults to 153600.
         feature_dim (int, optional): The feature dim of final embeddings. Defaults to 100.
         drop_p (float, optional): The dropout probability setting. Defaults to 0.1.
@@ -73,7 +74,7 @@ def binning_with_all_steps(
         lr_warmup_epoch (int, optional): Number of epoches to warm up the learning rate. Defaults to 1.
         regu_lambda (_type_, optional): L2 regularization. Defaults to 1e-3.
         batch_size (int, optional): The batch size. Defaults to 1024.
-        epoch_base (int, optional): Number of basic training epoches. Defaults to 37.
+        epoch_base (int, optional): Number of basic training epoches. Defaults to 36.
         large_model (bool, optional): If use large pretrained model. Defaults to False.
         log_every_n_steps (int, optional): Print log after n training step. Defaults to 10.
         training_device (str, optional): The device for training model. You can set 'cpu' to use CPU. Defaults to "cuda:0".
@@ -122,9 +123,9 @@ def binning_with_all_steps(
     ## --> larger size, lower temp
     if N50 >= 10000:
         if count_contigs >= large_data_size_thre:
-            temp = 0.06
+            temp = 0.055
         else:
-            temp = 0.07
+            temp = 0.065
     elif N50 <= 5000:
         if count_contigs >= large_data_size_thre:
             temp = 0.135
@@ -135,6 +136,7 @@ def binning_with_all_steps(
         temp = float("%.3f" % temp)
         if count_contigs >= large_data_size_thre:
             temp -= 0.01
+    
     split_parts_list = [1, 16]
     logger.info(f"--> Original N50 is {N50}, seq split list: {split_parts_list}, temperature is {temp}, clu mode: leiden + flspp.")
     # Get the coverage information of contigs.
@@ -176,6 +178,7 @@ def binning_with_all_steps(
     if num_contigs >= large_data_size_thre: train_epoch = epoch_base
     else: train_epoch = large_data_size_thre * epoch_base // num_contigs 
     if train_epoch > 125: train_epoch = 125
+    
     trainer_obj = SelfSupervisedMethodsTrainer(
         feature_dim,
         n_views,

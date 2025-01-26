@@ -61,7 +61,7 @@ def schedule_of_temperature(temp: float, epochs: int):
     for i, cur_temp in enumerate(np.arange(start_temp, end_temp, step)):
         if i <= epochs - 1:
             res[i] = float("%.3f" % cur_temp)
-    res[-1] = end_temp
+    res[-1] = temp
     
     for i, ite in enumerate(res):
         if ite == 0:
