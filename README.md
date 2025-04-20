@@ -1,7 +1,7 @@
-# DeeperBin
+# CompleteBin
 **Paper --> Dynamic Contrastive Learning with Pretrained Deep Language Model Enhances Metagenome Binning for Contigs**
 
-DeeperBin is a binner to cluter the contigs with dynamic contrastive learning and pretrained deep language model.
+DeeperBin is a binner to cluster the contigs with dynamic contrastive learning and a pretrained deep language model.
 
 ## Installation (Have Verified):
 #### 1. FIRST STEP (Create Conda Environment for DeeperBin)
@@ -12,7 +12,7 @@ conda env create -n DeeperBin -f deeperbin-conda-env.yml
 
 **And**
 
-download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend to use GPUs). For example:
+Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend using GPUs). For example:
 ```
 conda activate DeeperBin
 conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=12.1 -c pytorch -c nvidia
@@ -31,7 +31,7 @@ Download the pretrained weight and other files (**DeeperBin-DB.zip**) for runnin
 
 
 #### 1. Set Environmental Variable
-- Unzip the downloaded file (**DeeperBin-DB.zip**) and set an **environmental variable** called "DeeperBin_DB" by adding the following line to the last line of .bashrc file (The path of the file: ~/.bashrc):
+- Unzip the downloaded file (**DeeperBin-DB.zip**) and set an **environmental variable** called "DeeperBin_DB" by adding the following line to the last line of the .bashrc file (The path of the file: ~/.bashrc):
 ```
 export DeeperBin_DB=/path/of/this/DeeperBin-DB/
 ```
