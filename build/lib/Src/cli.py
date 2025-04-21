@@ -5,7 +5,7 @@ import sys
 
 from Src.Binning_steps import binning_with_all_steps
 
-bin_v = "v1.0.0"
+bin_v = "v1.0.2"
 
 def main():
     print(f"CompleteBin version: *** {bin_v} ***")
