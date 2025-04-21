@@ -1,41 +1,41 @@
 # CompleteBin
 **Paper --> Dynamic Contrastive Learning with Pretrained Deep Language Model Enhances Metagenome Binning for Contigs**
 
-DeeperBin is a binner to cluster the contigs with dynamic contrastive learning and a pretrained deep language model.
+CompleteBin is a binner to cluter the contigs with dynamic contrastive learning and pretrained deep language model.
 
 ## Installation (Have Verified):
-#### 1. FIRST STEP (Create Conda Environment for DeeperBin)
-Create DeeperBin's conda environment by using this command:
+#### 1. FIRST STEP (Create Conda Environment for CompleteBin)
+Create CompleteBin's conda environment by using this command:
 ```
-conda env create -n DeeperBin -f deeperbin-conda-env.yml
+conda env create -n CompleteBin -f completebin-conda-env.yml
 ```
 
 **And**
 
-Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend using GPUs). For example:
+download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend to use GPUs). For example:
 ```
-conda activate DeeperBin
+conda activate CompleteBin
 conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=12.1 -c pytorch -c nvidia
 ```
 
-#### 2. SECOND STEP (Install Codes of DeeperBin)
-After preparing the environment, the code of DeeperBin can be installed via pip simply. 
+#### 2. SECOND STEP (Install Codes of CompleteBin)
+After preparing the environment, the code of CompleteBin can be installed via pip simply. 
 ```
-conda activate DeeperBin
-pip install DeeperBin==1.0.7
+conda activate CompleteBin
+pip install CompleteBin==1.0.0
 ```
 This installation will run for around 10 minutes.
 
 ## Download Pretrained Weight and Other Files for Running
-Download the pretrained weight and other files (**DeeperBin-DB.zip**) for running DeeperBin from this **[LINK](https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing)**.
+Download the pretrained weight and other files (**CompleteBin-DB.zip**) for running CompleteBin from this **[LINK](https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing)**.
 
 
 #### 1. Set Environmental Variable
-- Unzip the downloaded file (**DeeperBin-DB.zip**) and set an **environmental variable** called "DeeperBin_DB" by adding the following line to the last line of the .bashrc file (The path of the file: ~/.bashrc):
+- Unzip the downloaded file (**CompleteBin-DB.zip**) and set an **environmental variable** called "CompleteBin_DB" by adding the following line to the last line of .bashrc file (The path of the file: ~/.bashrc):
 ```
-export DeeperBin_DB=/path/of/this/DeeperBin-DB/
+export CompleteBin_DB=/path/of/this/CompleteBin-DB/
 ```
-For example: 'export DeeperBin_DB=/home/csbhzou/software/DeeperBin-DB/'.
+For example: 'export CompleteBin_DB=/home/csbhzou/software/CompleteBin-DB/'.
 
 - Save the .bashrc file, and then execute:
 ```
@@ -44,21 +44,21 @@ source .bashrc
 
 #### 2. Using the '-db' or '--db_files_path' flag in CLI
 
-- **You can set the '-db' flag in CLI to the path of the 'DeeperBin-DB' folder if you do not want to set the environmental variable.**
+- **You can set the '-db' flag in CLI to the path of the 'CompleteBin-DB' folder if you do not want to set the environmental variable.**
 
 
-## Running DeeperBin
+## Running CompleteBin
 
 
-**1.  You can run DeeperBin with 'clean' mode through the following command:**
+**1.  You can run CompleteBin with 'clean' mode through the following command:**
 
 ```
-deeperbin -h
-DeeperBin version: *** v1.0.7 ***
-usage: deeperbin [-h] -c CONTIG_PATH -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...] -o OUTPUT_PATH -temp TEMP_FILE_PATH [-db DB_FILES_PATH] [--device DEVICE]
-                 [--n_views N_VIEWS] [--min_contig_length MIN_CONTIG_LENGTH] [--batch_size BATCH_SIZE] [--epoch_base EPOCH_BASE] [--num_workers NUM_WORKERS]
+CompleteBin version: *** v1.0.0 ***
+usage: completebin [-h] -c CONTIG_PATH -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...] -o OUTPUT_PATH -temp TEMP_FILE_PATH [-db DB_FILES_PATH] [--device DEVICE]
+                   [--n_views N_VIEWS] [--min_contig_length MIN_CONTIG_LENGTH] [--batch_size BATCH_SIZE] [--base_epoch BASE_EPOCH] [--num_workers NUM_WORKERS]
+                   [--auto_min_length AUTO_MIN_LENGTH] [--step_num STEP_NUM]
 
-DeeperBin Is a Binner with Dynamic Contrastive Learning with Pretrained Deep Language Model.
+CompleteBin is a Binner with Dynamic Contrastive Learning with Pretrained Deep Language Model.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -71,25 +71,30 @@ optional arguments:
   -temp TEMP_FILE_PATH, --temp_file_path TEMP_FILE_PATH
                         The folder to store temporay files.
   -db DB_FILES_PATH, --db_files_path DB_FILES_PATH
-                        The folder contains temporay files. You can ignore it if you set the 'DeeperBin_DB' environmental variable.
-  --device DEVICE       The device for training. Default is cuda:0. We highly recommand to use GPU but not CPU. You can adjust 'batch_size' parameter to fit
-                        your GPU's memory. We need 24GB GPU memory to run the default settings. You can use CPU if you set this parameter with 'cpu'.
+                        The folder contains temporay files. You can ignore it if you set the 'CompleteBin_DB' environmental variable.
+  --device DEVICE       The device for training. Default is cpu We highly recommand to use GPU but not CPU. You can adjust 'batch_size' parameter to fit your
+                        GPU's memory. We need 24GB GPU memory to run the default settings. You can use CPU if you set this parameter with 'cpu'.
   --n_views N_VIEWS     Number of views to generate for each contig during training. Defaults to 6.
   --min_contig_length MIN_CONTIG_LENGTH
-                        The minimum length of contigs for binning. Defaults to 768.
+                        The minimum length of contigs for binning. Defaults to 900.
   --batch_size BATCH_SIZE
                         The batch size. Defaults to 1024.
-  --epoch_base EPOCH_BASE
-                        Number of basic training epoches. Defaults to 36.
+  --base_epoch BASE_EPOCH
+                        Number of basic training epoches. Defaults to 35.
   --num_workers NUM_WORKERS
-                        Number of cpus for clustering contigs. Defaults to None. We would set 1 / 2 of total cpus if it is None.
+                        Number of cpus for clustering contigs. Defaults to None. We would set 1 / 3 of total cpus if it is None.
+  --auto_min_length AUTO_MIN_LENGTH
+                        Auto determining the min length.
+  --step_num STEP_NUM   The whole binning procedure can be divided into 3 steps. The first step (step 1) is to process the training data. Focusing on using
+                        CPU.The second step (step 2) is training procedure. Focusing on using GPU.The third step (step 3) is clustering. Focusing on using
+                        CPU.This function would combine these 3 steps if this parameter is None. Defaults to None.
 ```
 
 
-**2.  You can run DeeperBin through the **binning_with_all_steps** function in Python.**
+**2.  You can run CompleteBin through the **binning_with_all_steps** function in Python.**
 
 ```
-from DeeperBin.Binning import binning_with_all_steps
+from Src.Binning_steps import binning_with_all_steps
 
 if __name__ == "__main__":
     contig_path = "contigs.fasta"
@@ -118,7 +123,7 @@ This file contains the following columns:
 3. contamination of MAG (third column), 
 4. MAG quality (fourth column),
 
-## Minimum System Requirements for Running DeeperBin
+## Minimum System Requirements for Running CompleteBin
 - System: Linux
 - CPU: No restriction.
 - RAM: >= 80 GB
@@ -131,8 +136,8 @@ This file contains the following columns:
 - GPU: 8 GPUs (A100-40GB)
 
 ## Repo Contents
-- [DeeperBin-DB](./DeeperBin-DB): The model weights and other necessary files for running DeeperBin.
-- [DeeperBin](./DeeperBin): The main codes (Python) of DeeperBin.
+- [CompleteBin-DB](./CompleteBin-DB): The model weights and other necessary files for running CompleteBin.
+- [CompleteBin](./CompleteBin): The main codes (Python) of CompleteBin.
 
 
 

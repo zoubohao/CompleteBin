@@ -1,7 +1,7 @@
 
 import os
-from DeeperBin.IO import readCheckm2Res
 
+from Src.IO import readCheckm2Res
 
 if __name__ == "__main__":
 
@@ -12,8 +12,6 @@ if __name__ == "__main__":
         d, h, m, l = readCheckm2Res(os.path.join(cur_checkm_output_folder, "quality_report.tsv"), "fasta")
         print(f"marine-sample-{i}-checkm2 --> high: {h}, medium: {m}")
         break
-    
-    
     
     
     

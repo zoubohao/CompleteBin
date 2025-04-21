@@ -1,3 +1,0 @@
-[console_scripts]
-deeperbin = DeeperBin.main:main
-
