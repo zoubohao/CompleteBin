@@ -27,15 +27,11 @@ pip install CompleteBin==1.0.0
 This installation will run for around 10 minutes.
 
 ## Download Pretrained Weight and Other Files for Running
-<<<<<<< HEAD
 Download the pretrained weight and other files (**CompleteBin-DB.zip**) for running CompleteBin from this **[LINK](https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing)**.
-=======
-Download the pretrained weight and other files (**CompleteBin-DB.zip**) for running DeeperBin from this **[LINK](https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing)**.
->>>>>>> 2b0ae978f629352da8ee2f67a735a464a7010c88
 
 
 #### 1. Set Environmental Variable
-- Unzip the downloaded file (**CompleteBin-DB.zip**) and set an **environmental variable** called "CompleteBin_DB" by adding the following line to the last line of .bashrc file (The path of the file: ~/.bashrc):
+- Unzip the downloaded file (**CompleteBin-DB.zip**) and set an **environmental variable** called "CompleteBin_DB" by adding the following line to the last line of the .bashrc file (The path of the file: ~/.bashrc):
 ```
 export CompleteBin_DB=/path/of/this/CompleteBin-DB/
 ```
