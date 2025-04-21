@@ -5,13 +5,14 @@ import sys
 
 from Src.Binning_steps import binning_with_all_steps
 
-bin_v = "v1.0.2"
+bin_v = "v1.0.3"
 
 def main():
     print(f"CompleteBin version: *** {bin_v} ***")
     
     myparser = argparse.ArgumentParser(
-        prog=os.path.basename(sys.argv[0]), description="CompleteBin is a Binner with Dynamic Contrastive Learning with Pretrained Deep Language Model."
+        prog=os.path.basename(sys.argv[0]), description=\
+            "CompleteBin is a Binner with Sequence Patch Embedding, Pretrained Deep Language Model, and Dynamic Contrastive Learning."
     )
 
     # Add parameters, required settings
@@ -38,14 +39,14 @@ def main():
         "-temp",
         "--temp_file_path",
         required=True,
-        help="The folder to store temporay files.")
+        help="The folder to store temporay files during binning processing.")
     ## optional settings
     myparser.add_argument(
         "-db",
         "--db_files_path",
         type=str,
         default=None,
-        help="The folder contains temporay files." + \
+        help="The folder contains database files." + \
             " You can ignore it if you set the 'CompleteBin_DB' environmental variable.")
     myparser.add_argument(
         "--device",
