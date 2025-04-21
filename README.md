@@ -137,7 +137,7 @@ This file contains the following columns:
 
 ## Repo Contents
 - [CompleteBin-DB](./CompleteBin-DB): The model weights and other necessary files for running CompleteBin.
-- [CompleteBin](./CompleteBin): The main codes (Python) of CompleteBin.
+- [Src](./CompleteBin): The main code (Python) of CompleteBin.
 
 
 
