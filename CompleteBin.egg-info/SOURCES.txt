@@ -4,6 +4,13 @@ setup.py
 Analysis/F1.py
 Analysis/__init__.py
 Analysis/align_gen_cover.py
+Analysis/analy_2500vs900.py
+Analysis/analy_compare.py
+Analysis/analy_gatherInfo.py
+Analysis/analy_getf1.py
+Analysis/analy_grid_search.py
+Analysis/checkm2_eval.py
+Analysis/code_test.py
 Analysis/utils.py
 Analysis/vamb_benchmark.py
 CompleteBin.egg-info/PKG-INFO

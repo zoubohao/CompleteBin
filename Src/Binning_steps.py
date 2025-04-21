@@ -141,7 +141,7 @@ def binning_with_all_steps(
         feature_dim (int, optional): The feature dim of final embeddings. Defaults to 100.
         drop_p (float, optional): The dropout probability setting. Defaults to 0.12.
         lr (float, optional): The learning rate setting. Defaults to 1e-5.
-        lr_multiple (int, optional): The multiple value for learning rate. Defaults to 8.
+        lr_multiple (int, optional): The multiple value for learning rate. Defaults to 10.
         lr_warmup_epoch (int, optional): Number of epoches to warm up the learning rate. Defaults to 1.
         weight_deay (float, optional): L2 regularization. Defaults to 1e-3.
         batch_size (int, optional): The batch size. Defaults to 1024.
@@ -158,7 +158,7 @@ def binning_with_all_steps(
         The third step (step 3) is clustering. Focusing on using CPU.
         This function would combine these 3 steps if this parameter is None.
         remove_temp_files (bool, optional): Remove the temp files if this is true.
-        filter_huge_gap (bool, optional): Filter the MAGs if the checkm2's completeness has a huge gap (> 50%) with the SCGs' completeness if it is true. 
+        filter_huge_gap (bool, optional): Filter the MAGs if the checkm2's completeness has a huge gap (> 40%) with the SCGs' completeness if it is true. 
         Try to fix the bug of checkm2.
     """
     
@@ -196,7 +196,7 @@ def binning_with_all_steps(
     
     if min_contig_length_auto_decision:
         min_contig_length = auto_decision(contigname2seq_ori, short_long_ratio)
-    if min_contig_length <= 768:
+    if min_contig_length < 768:
         min_contig_length = 768
         logger.info(f"--> Set min contig length as 768 since the constrains of pretrain model.")
     large_data_size_thre=153600

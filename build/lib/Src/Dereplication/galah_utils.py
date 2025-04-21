@@ -87,7 +87,7 @@ def process_galah_result(
             abs_val = abs(r[1][0] - r[-1][0])
             if abs_val > 40 and r[-1][0] < 10: 
                 continue ## this case means the checkm2's completeness has a huge gap with the SCGs' completeness
-        outName = f"DeepMetaBin_{i}.fasta"
+        outName = f"CompleteBin_{i}.fasta"
         wh.write(outName
                  + "\t"
                  + "Checkm2(Comp,Cont,Quality)" 
