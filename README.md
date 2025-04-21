@@ -58,7 +58,7 @@ usage: completebin [-h] -c CONTIG_PATH -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS .
                    [--n_views N_VIEWS] [--min_contig_length MIN_CONTIG_LENGTH] [--batch_size BATCH_SIZE] [--base_epoch BASE_EPOCH] [--num_workers NUM_WORKERS]
                    [--auto_min_length AUTO_MIN_LENGTH] [--step_num STEP_NUM]
 
-CompleteBin is a Binner with Dynamic Contrastive Learning with Pretrained Deep Language Model.
+CompleteBin is a Binner with Sequence Patch Embedding, Pretrained Deep Language Model, and Dynamic Contrastive Learning.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -69,9 +69,9 @@ optional arguments:
   -o OUTPUT_PATH, --output_path OUTPUT_PATH
                         The folder to store final MAGs.
   -temp TEMP_FILE_PATH, --temp_file_path TEMP_FILE_PATH
-                        The folder to store temporay files.
+                        The folder to store temporary files during binning processing.
   -db DB_FILES_PATH, --db_files_path DB_FILES_PATH
-                        The folder contains temporay files. You can ignore it if you set the 'CompleteBin_DB' environmental variable.
+                        The folder contains database files. You can ignore it if you set the 'CompleteBin_DB' environmental variable.
   --device DEVICE       The device for training. Default is cpu We highly recommand to use GPU but not CPU. You can adjust 'batch_size' parameter to fit your
                         GPU's memory. We need 24GB GPU memory to run the default settings. You can use CPU if you set this parameter with 'cpu'.
   --n_views N_VIEWS     Number of views to generate for each contig during training. Defaults to 6.
