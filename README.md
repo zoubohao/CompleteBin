@@ -1,7 +1,7 @@
 # CompleteBin
 **Paper --> Dynamic Contrastive Learning with Pretrained Deep Language Model Enhances Metagenome Binning for Contigs**
 
-CompleteBin is a binner to cluter the contigs with dynamic contrastive learning and pretrained deep language model.
+CompleteBin is a binner to cluster the contigs with dynamic contrastive learning and a pretrained deep language model.
 
 ## Installation (Have Verified):
 #### 1. FIRST STEP (Create Conda Environment for CompleteBin)
@@ -12,14 +12,14 @@ conda env create -n CompleteBin -f completebin-conda-env.yml
 
 **And**
 
-download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend to use GPUs). For example:
+Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend using GPUs). For example:
 ```
 conda activate CompleteBin
 conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=12.1 -c pytorch -c nvidia
 ```
 
 #### 2. SECOND STEP (Install Codes of CompleteBin)
-After preparing the environment, the code of CompleteBin can be installed via pip simply. 
+After preparing the environment, the code of CompleteBin can be installed via pip. 
 ```
 conda activate CompleteBin
 pip install CompleteBin==1.0.3
@@ -65,29 +65,29 @@ optional arguments:
   -c CONTIG_PATH, --contig_path CONTIG_PATH
                         Contig fasta file path.
   -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...], --sorted_bams_paths SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...]
-                        The sorted bam files path. You can set one bam file for single-sample binning and multiple bam files for multi-sample binning.
+                        The sorted BAM files path. You can set one BAM file for single-sample binning and multiple BAM files for multi-sample binning.
   -o OUTPUT_PATH, --output_path OUTPUT_PATH
-                        The folder to store final MAGs.
+                        The folder to store the final MAGs.
   -temp TEMP_FILE_PATH, --temp_file_path TEMP_FILE_PATH
                         The folder to store temporary files during binning processing.
   -db DB_FILES_PATH, --db_files_path DB_FILES_PATH
                         The folder contains database files. You can ignore it if you set the 'CompleteBin_DB' environmental variable.
-  --device DEVICE       The device for training. Default is cpu We highly recommand to use GPU but not CPU. You can adjust 'batch_size' parameter to fit your
-                        GPU's memory. We need 24GB GPU memory to run the default settings. You can use CPU if you set this parameter with 'cpu'.
+  --device DEVICE       The device for training. The default is CPU. We highly recommend using GPU, but not CPU. You can adjust the 'batch_size' parameter to fit your
+                        GPU's memory. We need 24GB of GPU memory to run the default settings. You can use CPU if you set this parameter to 'cpu'.
   --n_views N_VIEWS     Number of views to generate for each contig during training. Defaults to 6.
   --min_contig_length MIN_CONTIG_LENGTH
                         The minimum length of contigs for binning. Defaults to 900.
   --batch_size BATCH_SIZE
                         The batch size. Defaults to 1024.
   --base_epoch BASE_EPOCH
-                        Number of basic training epoches. Defaults to 35.
+                        Number of basic training epochs. Defaults to 35.
   --num_workers NUM_WORKERS
-                        Number of cpus for clustering contigs. Defaults to None. We would set 1 / 3 of total cpus if it is None.
+                        Number of CPUs for clustering contigs. Defaults to None. We would set 1 / 3 of the total CPUs if it is None.
   --auto_min_length AUTO_MIN_LENGTH
-                        Auto determining the min length.
-  --step_num STEP_NUM   The whole binning procedure can be divided into 3 steps. The first step (step 1) is to process the training data. Focusing on using
-                        CPU.The second step (step 2) is training procedure. Focusing on using GPU.The third step (step 3) is clustering. Focusing on using
-                        CPU.This function would combine these 3 steps if this parameter is None. Defaults to None.
+                        Auto-determining the min length.
+  --step_num STEP_NUM   The binning procedure can be divided into 3 steps. The first step (step 1) is to process the training data. Focusing on using
+                        CPU. The second step (step 2) is the training procedure. Focusing on using the GPU. The third step (step 3) is clustering. Focusing on using
+                        CPU. This function would combine these 3 steps if this parameter is None. Defaults to None.
 ```
 
 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         sorted_bam_file_list=bam_list,
         temp_file_folder_path=temp_path,
         bin_output_folder_path=bin_output_folder,
-        db_folder_path="./DeepMetaBin-DB",
+        db_folder_path="./CompleteBin-DB",
         training_device="cuda:0",
     )
 ```
@@ -120,14 +120,14 @@ This file contains the following columns:
 
 1. MAG name (first column), 
 2. completeness of MAG (third column), 
-3. contamination of MAG (fouth column), 
+3. contamination of MAG (fourth column), 
 4. MAG quality (fifth column),
 
 ## Minimum System Requirements for Running CompleteBin
 - System: Linux
 - CPU: No restriction.
 - RAM: >= 80 GB
-- GPU: The GPU memory must be equal to or greater than 6GB.
+- GPU: The GPU memory must be equal to or greater than 24GB.
 
 ## Our System Config
 - System: NVIDIA DGX Server Version 5.5.1 (GNU/Linux 5.4.0-131-generic x86_64)
