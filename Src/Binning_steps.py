@@ -262,8 +262,8 @@ def binning_with_all_steps(
             train_epoch = base_epoch
         else: 
             train_epoch = large_data_size_thre * base_epoch // num_contigs 
-        if train_epoch > 200: 
-            train_epoch = 200
+        if train_epoch > 250: 
+            train_epoch = 250
         
         trainer_obj = SelfSupervisedMethodsTrainer(
             feature_dim,

@@ -373,16 +373,16 @@ def re_cluster_procedure_for_one_method(
                         arc_contigName2_gene2num
                     )
                     for third_cluster_contigname2seq, _, _, comp, cont in third_cluster_bins_qualites:
-                        writeFasta(third_cluster_contigname2seq, os.path.join(output_folder, f"DeepMetaBin_{index}.fasta"))
+                        writeFasta(third_cluster_contigname2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
                         size = summedLengthCal(third_cluster_contigname2seq)
                         n50 = np.log(calculateN50(third_cluster_contigname2seq))
-                        quality_record[f"DeepMetaBin_{index}.fasta"] = (comp, cont, n50, size)
+                        quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
                         index += 1
                 else:
-                    writeFasta(secd_cluster_contigname2seq, os.path.join(output_folder, f"DeepMetaBin_{index}.fasta"))
+                    writeFasta(secd_cluster_contigname2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
                     size = summedLengthCal(secd_cluster_contigname2seq)
                     n50 = np.log(calculateN50(secd_cluster_contigname2seq))
-                    quality_record[f"DeepMetaBin_{index}.fasta"] = (comp, cont, n50, size)
+                    quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
                     index += 1
         elif cont > 5:
             secd_cluster_contigname2seq_list = cluster_split(
@@ -406,16 +406,16 @@ def re_cluster_procedure_for_one_method(
                     bac_contigName2_gene2num,
                     arc_contigName2_gene2num,
                     first_dom)
-                writeFasta(secd_cluster_contigname2seq, os.path.join(output_folder, f"DeepMetaBin_{index}.fasta"))
+                writeFasta(secd_cluster_contigname2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
                 size = summedLengthCal(secd_cluster_contigname2seq)
                 n50 = np.log(calculateN50(secd_cluster_contigname2seq))
-                quality_record[f"DeepMetaBin_{index}.fasta"] = (comp, cont, n50, size)
+                quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
                 index += 1
         else:
-            writeFasta(first_cluster_contigName2seq, os.path.join(output_folder, f"DeepMetaBin_{index}.fasta"))
+            writeFasta(first_cluster_contigName2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
             size = summedLengthCal(first_cluster_contigName2seq)
             n50 = np.log(calculateN50(first_cluster_contigName2seq))
-            quality_record[f"DeepMetaBin_{index}.fasta"] = (comp, cont, n50, size)
+            quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
             index += 1
     logger.info(f"--> End of second cluster with current method: {c_file}. {cur_i} / {tol_n}")
     writePickle(os.path.join(temp_bin_folder_path, f"{c_file}_quality_record.pkl"), quality_record)

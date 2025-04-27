@@ -5,14 +5,14 @@ import sys
 
 from Src.Binning_steps import binning_with_all_steps
 
-bin_v = "v1.0.3"
+bin_v = "v1.0.4"
 
 def main():
     print(f"CompleteBin version: *** {bin_v} ***")
     
     myparser = argparse.ArgumentParser(
         prog=os.path.basename(sys.argv[0]), description=\
-            "CompleteBin is a Binner with Sequence Patch Embedding, Pretrained Deep Language Model, and Dynamic Contrastive Learning."
+            "CompleteBin is a Binner to cluster the contigs with Sequence Patch Embedding, Pretrained Deep Language Model, and Dynamic Contrastive Learning."
     )
 
     # Add parameters, required settings
@@ -29,7 +29,7 @@ def main():
         type=str,
         nargs="+",
         help="The sorted bam files path. " + \
-            " You can set one bam file for single-sample binning and multiple bam files for multi-sample binning.")
+            " You can set a BAM file for single-sample binning and multiple BAM files for multi-sample binning.")
     myparser.add_argument(
         "-o",
         "--output_path",
@@ -39,7 +39,7 @@ def main():
         "-temp",
         "--temp_file_path",
         required=True,
-        help="The folder to store temporay files during binning processing.")
+        help="The folder to store temporary files during binning processing.")
     ## optional settings
     myparser.add_argument(
         "-db",
@@ -52,9 +52,9 @@ def main():
         "--device",
         default="cpu",
         type=str,
-        help="The device for training. Default is cpu " + \
-            "We highly recommand to use GPU but not CPU. " + \
-            "You can adjust 'batch_size' parameter to fit your GPU's memory. We need 24GB GPU memory to run the default settings. " + \
+        help="The device uses for training. The default is CPU. " + \
+            "We highly recommend using GPU, but not CPU. " + \
+            "We need 24GB of GPU memory to run the default settings. You can adjust the 'batch_size' parameter to fit your GPU's memory. " + \
             "You can use CPU if you set this parameter with 'cpu'.")
     myparser.add_argument(
         "--n_views",
@@ -80,12 +80,12 @@ def main():
         "--num_workers",
         type=int,
         default=None,
-        help="Number of cpus for clustering contigs. Defaults to None. We would set 1 / 3 of total cpus if it is None.")
+        help="Number of CPUs for clustering contigs. Defaults to None. We would set 1 / 3 of the total CPUs if it is None.")
     myparser.add_argument(
         "--auto_min_length",
         type=bool,
         default=False,
-        help="Auto determining the min length.")
+        help="Auto-determining the min length for this sample.")
     myparser.add_argument(
         "--step_num",
         type=int,

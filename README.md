@@ -65,15 +65,15 @@ optional arguments:
   -c CONTIG_PATH, --contig_path CONTIG_PATH
                         Contig fasta file path.
   -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...], --sorted_bams_paths SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...]
-                        The sorted BAM files path. You can set one BAM file for single-sample binning and multiple BAM files for multi-sample binning.
+                        The sorted BAM files path. You can set a BAM file for single-sample binning and multiple BAM files for multi-sample binning.
   -o OUTPUT_PATH, --output_path OUTPUT_PATH
                         The folder to store the final MAGs.
   -temp TEMP_FILE_PATH, --temp_file_path TEMP_FILE_PATH
                         The folder to store temporary files during binning processing.
   -db DB_FILES_PATH, --db_files_path DB_FILES_PATH
                         The folder contains database files. You can ignore it if you set the 'CompleteBin_DB' environmental variable.
-  --device DEVICE       The device for training. The default is CPU. We highly recommend using GPU, but not CPU. You can adjust the 'batch_size' parameter to fit your
-                        GPU's memory. We need 24GB of GPU memory to run the default settings. You can use CPU if you set this parameter to 'cpu'.
+  --device DEVICE       The device uses for training. The default is CPU. We highly recommend using GPU, but not CPU. We need 24GB of GPU memory to run the default settings. You can adjust the 'batch_size' parameter to fit your
+                        GPU's memory. You can use CPU if you set this parameter to 'cpu'.
   --n_views N_VIEWS     Number of views to generate for each contig during training. Defaults to 6.
   --min_contig_length MIN_CONTIG_LENGTH
                         The minimum length of contigs for binning. Defaults to 900.
@@ -84,7 +84,7 @@ optional arguments:
   --num_workers NUM_WORKERS
                         Number of CPUs for clustering contigs. Defaults to None. We would set 1 / 3 of the total CPUs if it is None.
   --auto_min_length AUTO_MIN_LENGTH
-                        Auto-determining the min length.
+                        Auto-determining the min length for this sample.
   --step_num STEP_NUM   The binning procedure can be divided into 3 steps. The first step (step 1) is to process the training data. Focusing on using
                         CPU. The second step (step 2) is the training procedure. Focusing on using the GPU. The third step (step 3) is clustering. Focusing on using
                         CPU. This function would combine these 3 steps if this parameter is None. Defaults to None.

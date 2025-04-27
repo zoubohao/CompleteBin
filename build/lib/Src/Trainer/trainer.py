@@ -189,19 +189,19 @@ class Trainer(object):
                     
                     if self.multi_contrast:
                         logger.info(f"-->Epoch:{epoch_counter}/{self.epochs}" +
-                                    f"|LossSimCLR:{loss_simclr.item():.2f}" +
-                                    f"|LossSimCLR_Seq:{loss_simclr_seq_dis:.2f}" +
-                                    f"|LossSimCSE:{loss_simcse.item():.2f}" + 
-                                    f"|All_Acc_1:{acc1.item():.2f}" +
-                                    f"|Seq_Acc_1:{acc1_seq:.2f}" +
+                                    f"|LossNViews:{loss_simclr.item():.2f}" +
+                                    f"|LossNViews_seq:{loss_simclr_seq_dis:.2f}" +
+                                    f"|LossMask:{loss_simcse.item():.2f}" + 
+                                    f"|NViews_Acc1:{acc1.item():.2f}" +
+                                    f"|Mask_Acc1:{acc1_seq:.2f}" +
                                     f"|LR:{self.optimizer.param_groups[0]['lr']:.8f}" + 
                                     f"|Temp:{self.temperature_schedule[epoch_counter - 1]}")
                     else:
-                        logger.info(f"--> Epoch: {epoch_counter}/{self.epochs}|LossSum:{loss.item():.3f}" +
-                                    f"|LossSimCLR:{loss_simclr.item():.3f}" +
-                                    f"|LossSimCSE:{loss_simcse:.3f}" + 
-                                    f"|SimCLR_Acc_1:{acc1.item():.2f}" +
-                                    f"|SimCSE_Acc_1:{acc1_cse.item():.2f}" +
+                        logger.info(f"-->Epoch:{epoch_counter}/{self.epochs}|LossSum:{loss.item():.3f}" +
+                                    f"|LossNViews:{loss_simclr.item():.3f}" +
+                                    f"|LossMask:{loss_simcse:.3f}" + 
+                                    f"|NViews_Acc1:{acc1.item():.2f}" +
+                                    f"|Mask_Acc1:{acc1_cse.item():.2f}" +
                                     f"|LR:{self.optimizer.param_groups[0]['lr']:.8f}" + 
                                     f"|Temp: {self.temperature_schedule[epoch_counter - 1]}")
                 n_iter += 1
