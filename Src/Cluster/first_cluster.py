@@ -81,7 +81,7 @@ def first_cluster(
     for e, embMat in enumerate([simclr_embMat]):
         parameter_list = [8., 2., 12., 4., 6., 1., 10.]
         bandwidth_list = [0.05, 0.2, 0.1, 0.15]
-        partgraph_ratio_list = [100, 50, 75]
+        partgraph_ratio_list = [99, 50, 75]
         max_edges_list = [100, 75]
         max_edges_ann_list = []
         space = "l2"

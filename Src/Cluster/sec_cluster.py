@@ -61,8 +61,8 @@ def change_name(
     for k, v in best_quality_record.items():
         cur_bin_path = os.path.join(cur_input_folder, k)
         if v[3] >= mag_length_threshold:
-            new_name = os.path.join(cur_input_folder, f"DeepMetaBin_{index}.fasta" )
-            qv_wh.write(f"DeepMetaBin_{index}.fasta" + "\t" + str(v[0]) + "\t" + str(v[1]) + "\t" + str(v[2]) + "\t" + str(v[3]) + "\n")
+            new_name = os.path.join(cur_input_folder, f"CompleteBin_selected_{index}.fasta" )
+            qv_wh.write(f"CompleteBin_selected_{index}.fasta" + "\t" + str(v[0]) + "\t" + str(v[1]) + "\t" + str(v[2]) + "\t" + str(v[3]) + "\n")
             index += 1
         else:
             new_name = os.path.join(cur_input_folder, f"del_{k}.NotInclude")

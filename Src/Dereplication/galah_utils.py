@@ -97,12 +97,6 @@ def process_galah_result(
                  + str(r[1][1])
                  + "\t"
                  + str(r[1][-1])
-                 + "\t"
-                 + "CalledSCGs(Comp,Cont)"
-                 + "\t"
-                 + str(r[-1][0])
-                 + "\t"
-                 + str(r[-1][1])
                  + "\n")
         copy(r[2], os.path.join(output_folder, outName))
     wh.close()

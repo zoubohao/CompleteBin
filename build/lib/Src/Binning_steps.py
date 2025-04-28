@@ -78,16 +78,16 @@ def temp_decision(
     temp = None
     if N50 >= 10000:
         if count_contigs >= large_data_size_thre:
-            temp = 0.055
+            temp = 0.07
         else:
-            temp = 0.065
+            temp = 0.08
     elif N50 <= 5000:
         if count_contigs >= large_data_size_thre:
             temp = 0.135
         else:
             temp = 0.145
     else:
-        temp = -0.000016 * N50 + 0.23
+        temp = -0.000013 * N50 + 0.2
         temp = float("%.3f" % temp)
         if count_contigs >= large_data_size_thre:
             temp -= 0.01
