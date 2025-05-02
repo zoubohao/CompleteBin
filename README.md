@@ -4,7 +4,7 @@
 CompleteBin is a binner to cluster the contigs with dynamic contrastive learning and a pretrained deep language model.
 
 ## Installation (Have Verified):
-#### 0. Please install Python 3.9.15.
+#### Tip. Please use Python 3.9.15 in the following conda environment.
 
 #### 1. FIRST STEP (Create Conda Environment for CompleteBin)
 Create CompleteBin's conda environment by using this command:
