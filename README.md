@@ -138,7 +138,7 @@ This file contains the following columns:
 - GPU: 8 GPUs (A100-40GB)
 
 ## Repo Contents
-- [CompleteBin-DB](./CompleteBin-DB): The model weights and other necessary files for running CompleteBin. (Model weights need to download from the above link.)
+- [CompleteBin-DB](./CompleteBin-DB): The model weights and other necessary files for running CompleteBin. (Model weights need to be downloaded from the above link.)
 - [Src](./CompleteBin): The main code (Python) of CompleteBin.
 
 
