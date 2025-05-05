@@ -65,15 +65,6 @@ def first_cluster(
         n_iter = 28
     elif 900000 <= len(contig_name_list) < 950000:
         n_iter = 30
-    #     other_max_edge = 80
-    # elif 800000 <= len(contig_name_list) < 900000:
-    #     other_max_edge = 90
-    # elif 650000 <= len(contig_name_list) < 800000:
-    #     other_max_edge = 115
-    # elif 500000 <= len(contig_name_list) < 650000:
-    #     other_max_edge = 120
-    # else:
-    #     other_max_edge = 125
     
     logger.info(f"--> The number of iterations for leiden is {n_iter}.")
     logger.info(f"--> Num_workers: {num_workers}.")
@@ -81,7 +72,7 @@ def first_cluster(
     for e, embMat in enumerate([simclr_embMat]):
         parameter_list = [8., 2., 12., 4., 6., 1., 10.]
         bandwidth_list = [0.05, 0.2, 0.1, 0.15]
-        partgraph_ratio_list = [99, 50, 75]
+        partgraph_ratio_list = [100, 50, 75]
         max_edges_list = [100, 75]
         max_edges_ann_list = []
         space = "l2"

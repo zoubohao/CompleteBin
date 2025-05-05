@@ -16,8 +16,9 @@ from Src.Dereplication.galah_utils import process_galah
 from Src.IO import readFasta, readPickle
 from Src.logger import get_logger
 from Src.Seqs.seq_info import calculateN50, prepare_sequences_coverage
-from Src.Seqs.seq_utils import getGeneWithLargestCount
+from Src.Seqs.seq_utils import callGenesForKmeans, getGeneWithLargestCount
 from Src.Trainer.ssmt_v2 import SelfSupervisedMethodsTrainer
+from Src.version import bin_v
 
 logger = get_logger()
 
@@ -78,16 +79,16 @@ def temp_decision(
     temp = None
     if N50 >= 10000:
         if count_contigs >= large_data_size_thre:
-            temp = 0.07
+            temp = 0.055
         else:
-            temp = 0.08
+            temp = 0.065
     elif N50 <= 5000:
         if count_contigs >= large_data_size_thre:
             temp = 0.135
         else:
             temp = 0.145
     else:
-        temp = -0.000013 * N50 + 0.2
+        temp = -0.000016 * N50 + 0.23
         temp = float("%.3f" % temp)
         if count_contigs >= large_data_size_thre:
             temp -= 0.01
@@ -161,7 +162,7 @@ def binning_with_all_steps(
         filter_huge_gap (bool, optional): Filter the MAGs if the checkm2's completeness has a huge gap (> 40%) with the SCGs' completeness if it is true. 
         Try to fix the bug of checkm2.
     """
-    
+    logger.info(f"--> CompleteBin version: *** {bin_v} ***")
     mp.set_start_method("fork", force=True) 
     
     if num_workers is None:
@@ -225,7 +226,6 @@ def binning_with_all_steps(
     max_cov_mean = readPickle(os.path.join(temp_file_folder_path, "mean_var.pkl"))
     contigname2seq_path = os.path.join(temp_file_folder_path, "contigname2seq_str.pkl")
     contigname2bp_nparray_list_path = os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl")
-    contigname2hits = readPickle(os.path.join(temp_file_folder_path, "contigname2hmmhits_list.pkl"))
     
     #########################################################
     ## build training data
@@ -318,10 +318,11 @@ def binning_with_all_steps(
         simclr_emb_list.append(simclr_contigname2emb_norm_array[contigname])
         length_list.append(length)
     
-    initial_fasta_path = os.path.join(temp_file_folder_path, "split_contigs")
+    initial_fasta_path = os.path.join(temp_file_folder_path, "split_contigs_initial_kmeans")
     if os.path.exists(initial_fasta_path) is False:
         os.mkdir(initial_fasta_path)
     
+    contigname2hits = readPickle(os.path.join(temp_file_folder_path, "contigname2hmmhits_list.pkl"))
     mar40_gene2contigNames, _ = processHits(contigname2hits)
     _, _, contignames_40mar = getGeneWithLargestCount(mar40_gene2contigNames, contigname2seq, None)
     bin_number = int(len(contignames_40mar) * 1.6) + 1
@@ -337,7 +338,30 @@ def binning_with_all_steps(
                 contignames_40mar,
                 min_contig_length
         )
-    logger.info(f"--> Start to Call SCGs.")
+        callGenesForKmeans(
+            temp_file_folder_path, 
+            initial_fasta_path, 
+            num_workers, 
+            os.path.join(db_folder_path, "HMM", "40_marker.hmm"))
+    refined_fasta_path = os.path.join(temp_file_folder_path, "split_contigs_refined_kmeans")
+    if os.path.exists(refined_fasta_path) is False:
+        os.mkdir(refined_fasta_path)
+    contigname2hits = readPickle(os.path.join(temp_file_folder_path, "contigname2hmmhits_list_initial_kmeans.pkl"))
+    mar40_gene2contigNames, _ = processHits(contigname2hits)
+    _, _, contignames_40mar = getGeneWithLargestCount(mar40_gene2contigNames, contigname2seq, None)
+    bin_number = int(len(contignames_40mar) * 1.6) + 1
+    if len(os.listdir(refined_fasta_path)) != bin_number:
+        kmeans_split(
+                logger,
+                refined_fasta_path,
+                contigname2seq,
+                sub_contigname_list,
+                np.stack(simclr_emb_list, axis=0),
+                np.array(length_list),
+                bin_number,
+                contignames_40mar,
+                min_contig_length
+        )
     bac_ms_path = os.path.join(db_folder_path, "checkm", "bacteria.ms")
     arc_ms_path = os.path.join(db_folder_path, "checkm", "archaea.ms")
     call_genes_folder = os.path.join(temp_file_folder_path, "call_genes")
@@ -346,7 +370,7 @@ def binning_with_all_steps(
         callMarkerGenesByCheckm(temp_file_folder_path,
                                 bac_ms_path,
                                 arc_ms_path,
-                                initial_fasta_path,
+                                refined_fasta_path,
                                 call_genes_folder,
                                 os.path.join(db_folder_path, "checkm", "checkm_db"),
                                 num_workers)
@@ -380,7 +404,7 @@ def binning_with_all_steps(
         temp_file_folder_path,
         temp_flspp_bin_output,
         ensemble_list,
-        initial_fasta_path,
+        refined_fasta_path,
         db_folder_path,
         bin_output_folder_path,
         ensemble_with_SCGs,
@@ -389,7 +413,7 @@ def binning_with_all_steps(
         cpus=num_workers,
     )
     if remove_temp_files:
-        rmtree(initial_fasta_path)
+        rmtree(refined_fasta_path)
         rmtree(call_genes_folder)
         rmtree(clustering_all_folder)
     return 0

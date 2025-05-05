@@ -7,7 +7,7 @@ from typing import List
 from torch.utils.data import Dataset
 
 from Src.DataProcess.data_utils import get_features_of_one_seq
-from Src.IO import progressBar
+# from Src.IO import progressBar
 from Src.logger import get_logger
 from Src.Seqs.seq_utils import (generate_feature_mapping_reverse,
                                 random_generate_view, sampleSeqFromFasta,
@@ -48,7 +48,7 @@ class TrainingDataset(Dataset):
             new_data = []
             N = len(self.data)
             for i, item in enumerate(self.data):
-                progressBar(i, N)
+                # progressBar(i, N)
                 ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt = item
                 new_data.append((ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt, self.data_name[i], len(ori_seq)))
             new_data = list(sorted(new_data, key= lambda x: x[-1], reverse=True))

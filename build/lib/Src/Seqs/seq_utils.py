@@ -1,5 +1,6 @@
 
 
+import os
 import random
 from itertools import product
 from typing import Dict
@@ -8,7 +9,8 @@ import numpy as np
 import pysam
 from numpy.random import choice, shuffle
 
-from Src.IO import readFasta, writePickle
+from Src.CallGenes.gene_utils import callMarkerGenes
+from Src.IO import readFasta, readHMMFileReturnDict, writePickle
 from Src.logger import get_logger
 
 logger = get_logger()
@@ -75,10 +77,13 @@ def base_pair_coverage_calculate(
             jump_out_count = 0
     name2numpyarray_new = {}
     for name, base_pair_arrary in name2numpyarray.items():
-        # base_pair_arrary = reject_outliers(base_pair_arrary)
+        ## try to remove some outliers
+        cutoff = np.percentile(base_pair_arrary, q = 97.5)
+        del_index = base_pair_arrary > cutoff
+        base_pair_arrary[del_index] = cutoff
         name2numpyarray_new[name] = base_pair_arrary
-    if write_pickle:
-        writePickle(output_path, name2numpyarray_new)
+    # if write_pickle:
+    writePickle(output_path, name2numpyarray_new)
     return name2numpyarray_new
 
 
@@ -295,4 +300,33 @@ def getGeneWithLargestCount(gene2contigNames: dict, contigname2seq: dict, inters
     gene_name = gene2count[0][0]
     count = gene2count[0][1]
     return gene_name, count, gene2contigNames[gene_name]
-    
+
+
+def callGenesForKmeans(
+    temp_file_folder_path,
+    input_bins_folder,
+    num_workers,
+    hmm_model_path,
+    ):
+    logger.info("--> Start to Call 40 Marker Genes.")
+    call_genes_folder = os.path.join(temp_file_folder_path, "call_genes_initial_kmeans")
+    if os.path.exists(call_genes_folder) is False:
+        os.mkdir(call_genes_folder)
+    callMarkerGenes(input_bins_folder,
+                    call_genes_folder,
+                    num_workers,
+                    hmm_model_path,
+                    "fasta")
+    ##
+    logger.info("--> Start to Collect 40 Marker Genes.")
+    contigname2hits = {}
+    # gene file build
+    for file in os.listdir(call_genes_folder):
+        _, suffix = os.path.splitext(file)
+        if suffix[1:] == "txt":
+            contigname2hits.update(
+                readHMMFileReturnDict(os.path.join(call_genes_folder, file))
+            )
+        elif suffix[1:] not in ["faa", "gff"]:
+            raise ValueError(f"ERROR in the output folder: {call_genes_folder}, the file is {file}, suffix is {suffix[1:]}")
+    writePickle(os.path.join(temp_file_folder_path, "contigname2hmmhits_list_initial_kmeans.pkl"), contigname2hits)

@@ -9,7 +9,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.mixture import GaussianMixture
 
 from Src.CallGenes.hmm_utils import process_subset
-from Src.IO import progressBar, writeFasta, writePickle
+from Src.IO import writeFasta, writePickle
 from Src.logger import get_logger
 from Src.Seqs.seq_info import calculateN50
 
@@ -325,7 +325,7 @@ def re_cluster_procedure_for_one_method(
     logger.info(f"--> Start current method: {c_file}. {cur_i} / {tol_n}.")
     n_cluster = len(clu2contignames)
     for i,  (_, first_cluster_contignames) in enumerate(clu2contignames.items()):
-        progressBar(i, n_cluster)
+        # progressBar(i, n_cluster)
         first_cluster_contigName2seq = {}
         for contigName in first_cluster_contignames:
             first_cluster_contigName2seq[contigName] = contigname2seq[contigName]

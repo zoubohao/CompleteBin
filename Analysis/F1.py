@@ -1,9 +1,10 @@
 
 
-import collections
 import os
-from shutil import rmtree
+import collections
 from typing import List
+
+from shutil import rmtree
 
 import numpy as np
 
@@ -245,4 +246,4 @@ class BinningF1:
             for thre_f1 in f1_list:
                 if f1 >= thre_f1:
                     res[thre_f1] += 1
-        return res, bin2f1
+        return res, nc_mag, r90p90_mag, medium_mag, bin2f1

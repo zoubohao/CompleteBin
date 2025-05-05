@@ -96,9 +96,10 @@ class Trainer(object):
         self.log_every_n_steps = log_every_n_steps
         self.n_views = n_views
         self.batch_size = batch_size
-        self.max_cov_mean = max_cov_mean[0]
-        self.max_cov_var = max_cov_mean[1]
-        logger.info(f"--> The max of coverage mean value is {self.max_cov_mean}, the sqrt var is {self.max_cov_var}.")
+        self.max_cov_mean = torch.tensor(max_cov_mean[0], dtype=torch.float32)[None, :].to(self.device)
+        self.max_cov_var = torch.tensor(max_cov_mean[1], dtype=torch.float32)[None, :].to(self.device)
+        logger.info(f"--> The max of coverage mean value is {self.max_cov_mean}.")
+        logger.info(f"--> The max of coverage std value is {self.max_cov_var}.")
         self.temperature_simclr = temperature_simclr
         self.temperature_schedule = schedule_of_temperature(temperature_simclr, epochs)
         self.criterion = nn.CrossEntropyLoss().to(self.device)

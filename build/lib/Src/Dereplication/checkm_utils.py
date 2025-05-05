@@ -2,7 +2,7 @@
 import multiprocessing
 import os
 
-from Src.IO import progressBar, readDiamond, readFasta
+from Src.IO import readDiamond, readFasta
 from Src.logger import get_logger
 
 logger = get_logger()
@@ -83,7 +83,7 @@ def process_one_method(output_faa_folder: str,
     N = len(modified_bin_names)
 
     for j, modified_bin_name in enumerate(modified_bin_names):
-        progressBar(j, N)
+        # progressBar(j, N)
         bin_name, suffix = os.path.splitext(modified_bin_name)
         if suffix[1:] != bin_suffix:
             continue

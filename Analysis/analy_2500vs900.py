@@ -96,6 +96,8 @@ if __name__ == "__main__":
     
     baseline_info_tsv_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/CAMI-Marine-DeeperBin2500-High.abundance.N50.tsv"
     upgrade_info_tsv_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/CAMI-Marine-DeeperBin2500-DeeperBin900.900upgrade-new.abundance.N50.tsv"
+    output_info_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/2500-High-vs-900-upgrade-vs-900-new.tsv"
+    wh = open(output_info_path, "w")
     
     baseline_n50 = []
     baseline_abu = []
@@ -111,6 +113,7 @@ if __name__ == "__main__":
             info = line.strip().split("\t")
             baseline_abu.append(float(info[8]))
             baseline_n50.append(float(info[9]))
+            wh.write(f"baseline\t{info[8]}\t{info[9]}\n")
     
     with open(upgrade_info_tsv_path, "r") as rh:
         for line in rh:
@@ -118,9 +121,11 @@ if __name__ == "__main__":
             if info[6] == "900" and info[7] == "upgrade":
                 upgrade_n50.append(float(info[8]))
                 upgrade_abu.append(float(info[9]))
+                wh.write(f"Upgrade\t{info[9]}\t{info[8]}\n")
             if info[6] == "900" and info[7] == "new":
                 new_n50.append(float(info[8]))
                 new_abu.append(float(info[9]))
+                wh.write(f"Unique\t{info[9]}\t{info[8]}\n")
     
     print(f"baseline mean N50: {sum(baseline_n50) / len(baseline_n50)}, mean abundance: {sum(baseline_abu) / len(baseline_abu)}")
     print(f"upgrade mean N50: {sum(upgrade_n50) / len(upgrade_n50)}, mean abundance: {sum(upgrade_abu) / len(upgrade_abu)}")
@@ -204,11 +209,17 @@ if __name__ == "__main__":
     # gap_vals = []
     # gap_900 = []
     # gap_2500 = []
+    # posi_num = 0
+    # neg_num = 0
     # for pair_index, values in gene_res.items():
     #     # print(pair_index)
     #     gene_num_2500 = float(values["2500"])
     #     gene_num_900 = float(values["900"])
     #     gap_val = gene_num_900 - gene_num_2500
+    #     if gap_val > 0:
+    #         posi_num += 1
+    #     else:
+    #         neg_num += 1
     #     if gene_num_2500 != 0:
     #         gap_ratio.append(gap_val / gene_num_2500 + 0.)
     #         gap_vals.append(gap_val)
@@ -217,10 +228,12 @@ if __name__ == "__main__":
     #     # else:
     #     #     gap_ratio.append(1. + 0.)
     
-    # print(gap_ratio)
+    # # print(gap_ratio)
+    # print(f"{posi_num} upgrade quality MAGs has higher genes' number.")
+    # print(f"{neg_num} upgrade quality MAGs has lower genes' number.")
     # print(f"The average increased gene percential is {sum(gap_ratio) / len(gap_ratio)}")
     # print(f"The average increased gene number is {sum(gap_vals) / len(gap_vals)}")
-    # print(f"The total gene number in 900 is  {sum(gap_900)}. The total gene number in 2500 is {sum(gap_2500)}. The ratio is {sum(gap_900)/sum(gap_2500)}")
+    # print(f"The total gene number in 900 is  {sum(gap_900)}. The total gene number in 2500 is {sum(gap_2500)}. The ratio of them is {sum(gap_900)/sum(gap_2500)}")
     
     
     
@@ -467,8 +480,8 @@ if __name__ == "__main__":
     #             if genome_name not in cur_deeperbin_long_sample_dict:
     #                 short_has_but_long_not += 1
     
-    # print(f"2500 low quality but 900 upgrade num: {long_low_but_short_upgrade}, 2500 not has the genome but 900 has num {short_has_but_long_not}")
-    # print(f"900 low quality but 2500 upgrade num: {short_low_but_long_upgrade}, 900 not has the genome but 2500 has num {long_has_but_short_not}")
+    # print(f"2500 low quality but 900 upgrade num: {long_low_but_short_upgrade}, 2500 not has the genome but 900 has: {short_has_but_long_not}")
+    # print(f"900 low quality but 2500 upgrade num: {short_low_but_long_upgrade}, 900 not has the genome but 2500 has: {long_has_but_short_not}")
     
     
     

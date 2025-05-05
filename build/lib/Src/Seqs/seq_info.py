@@ -8,7 +8,7 @@ import numpy as np
 import psutil
 
 from Src.CallGenes.gene_utils import callMarkerGenes
-from Src.IO import readHMMFileReturnDict, writeFasta, writePickle
+from Src.IO import readHMMFileReturnDict, readPickle, writeFasta, writePickle
 from Src.logger import get_logger
 from Src.Seqs.seq_utils import base_pair_coverage_calculate
 
@@ -52,7 +52,65 @@ def prepare_sequences_coverage(
     
     logger.info(f"--> The number of {len(contigname2seq_new)} contigs are longer than {min_contig_length}.")
     contigname2seq = contigname2seq_new
-    split_input_folder = os.path.join(temp_file_folder_path, "random_split_contigs")
+    ###
+    if num_workers is None: num_workers = psutil.cpu_count()
+    pro_num = len(sorted_bam_file_list)
+    logger.info(f"--> Start to calculate the base pair coverage for each contig from {pro_num} bam file.")
+    if os.path.exists(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl")) is False:
+        pro_list = []
+        with multiprocessing.Pool(pro_num) as multiprocess:
+            for i, sorted_bam_file in enumerate(sorted_bam_file_list):
+                p = multiprocess.apply_async(base_pair_coverage_calculate,
+                                            (contigname2seq,
+                                            sorted_bam_file,
+                                            os.path.join(temp_file_folder_path, f"contigname2bpcover_nparray_{i}.pkl"),
+                                            min_contig_length,
+                                            num_workers,
+                                            True,
+                                            ))
+                pro_list.append(p)
+            multiprocess.close()
+            for p in pro_list:
+                p.get()
+        
+        name2bparray_single_list = []
+        for i in range(pro_num):
+            name2bparray_single_list.append(readPickle(os.path.join(temp_file_folder_path, f"contigname2bpcover_nparray_{i}.pkl")))
+        
+        name2bpcover_nparray_list = {}
+        cov_val_list = [[] for _ in range(pro_num)]
+        var_val_list = [[] for _ in range(pro_num)]
+        logger.info(f"--> Start to collect the coverage information from {pro_num} bam files.")
+        for name, cur_dna_seq in contigname2seq.items():
+            cur_bp_array_list = []
+            for k, cur_name2bp_array in enumerate(name2bparray_single_list):
+                if name not in cur_name2bp_array:
+                    cur_bp_array_list.append(np.zeros(shape=[len(cur_dna_seq)], dtype=np.int64))
+                    cov_val_list[k].append(0.)
+                    var_val_list[k].append(0.)
+                else:
+                    cur_bp_array_list.append(cur_name2bp_array[name])
+                    ## cal max for different bam files
+                    cov_val_list[k].append(np.sum(cur_name2bp_array[name]) / (len(cur_name2bp_array[name]) - 2. * 75.))
+                    var_val_list[k].append(np.sqrt(np.var(cur_name2bp_array[name], dtype=np.float32) + 1e-5))
+            name2bpcover_nparray_list[name] = cur_bp_array_list
+        logger.info(f"--> Start to write coverage information")
+        for name, bp_list in name2bpcover_nparray_list.items():
+            n = len(bp_list)
+            assert n == pro_num, ValueError(f"There are number of {pro_num} bam files, but contig {name} only have {n} coverage info.")
+        writePickle(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl"), name2bpcover_nparray_list)
+        mean_val = np.max(np.array(cov_val_list, dtype=np.float32), axis=1, keepdims=False) + 1e-5
+        var_val = np.max(np.array(var_val_list, dtype=np.float32), axis=1, keepdims=False) + 1e-5
+        if max(mean_val) > 1000:
+            mean_val /= 2.
+        if max(var_val) > 1000:
+            var_val /= 2.
+        logger.info(f"--> The max of coverage mean value is {mean_val}.")
+        logger.info(f"--> The max of coverage std value is {var_val}.")
+        writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (mean_val, var_val))
+    
+    logger.info("--> Start to Call 40 Marker Genes.")
+    split_input_folder = os.path.join(temp_file_folder_path, "split_contigs_random")
     if os.path.exists(split_input_folder) is False:
         os.mkdir(split_input_folder)
     index = 0
@@ -71,61 +129,6 @@ def prepare_sequences_coverage(
         writeFasta(temp_contigs, os.path.join(split_input_folder, f"{index}.fasta"))
         index += 1
         temp_contigs = {}
-    ###
-    if num_workers is None: num_workers = psutil.cpu_count()
-    logger.info("--> Start to calculate the base pair coverage for each contig.")
-    if os.path.exists(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl")) is False:
-        pro_list = []
-        pro_num = len(sorted_bam_file_list)
-        name2bparray_single_list = []
-        with multiprocessing.Pool(pro_num) as multiprocess:
-            for i, sorted_bam_file in enumerate(sorted_bam_file_list):
-                p = multiprocess.apply_async(base_pair_coverage_calculate,
-                                            (contigname2seq,
-                                            sorted_bam_file,
-                                            os.path.join(temp_file_folder_path, f"contigname2bpcover_nparray_{i}.pkl"),
-                                            min_contig_length,
-                                            num_workers,
-                                            False,
-                                            ))
-                pro_list.append(p)
-            multiprocess.close()
-            for p in pro_list:
-                name2bparray_single_list.append(p.get())
-        
-        name2bpcover_nparray_list = {}
-        cov_val_list = []
-        var_val_list = []
-        logger.info(f"--> Start to collect the coverage information from {pro_num} bam files.")
-        for name, cur_dna_seq in contigname2seq.items():
-            cur_bp_array_list = []
-            for cur_name2bp_array in name2bparray_single_list:
-                if name not in cur_name2bp_array:
-                    cur_bp_array_list.append(np.zeros(shape=[len(cur_dna_seq)], dtype=np.int64))
-                else:
-                    cur_bp_array_list.append(cur_name2bp_array[name])
-                    cov_val_list.append(
-                        np.sum(cur_name2bp_array[name]) / (len(cur_name2bp_array[name]) - 2. * 75.)
-                        )
-                    var_val_list.append(
-                        np.sqrt(np.var(cur_name2bp_array[name], dtype=np.float32) + 1e-5)
-                        )
-            name2bpcover_nparray_list[name] = cur_bp_array_list
-        logger.info(f"--> Start to write coverage information")
-        for name, bp_list in name2bpcover_nparray_list.items():
-            n = len(bp_list)
-            assert n == pro_num, ValueError(f"There are number of {pro_num} bam files, but contig {name} only have {n} coverage info.")
-        writePickle(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl"), name2bpcover_nparray_list)
-        mean_val = np.max(np.array(cov_val_list, dtype=np.float32)) + 1e-5
-        var_val = np.max(np.array(var_val_list, dtype=np.float32)) + 1e-5
-        if mean_val > 1000:
-            mean_val /= 2.
-        if var_val > 1000:
-            var_val /= 2.
-        logger.info(f"--> The max of coverage mean value is {mean_val}, the sqrt var is {var_val}.")
-        writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (mean_val, var_val))
-    
-    logger.info("--> Start to Call 40 Marker Genes.")
     call_genes_folder = os.path.join(temp_file_folder_path, "call_genes_random")
     if os.path.exists(call_genes_folder) is False:
         os.mkdir(call_genes_folder)
@@ -135,7 +138,6 @@ def prepare_sequences_coverage(
                     hmm_model_path,
                     "fasta")
     ##
-    logger.info("--> Start to Collect 40 Marker Genes.")
     contigname2hits = {}
     # gene file build
     for file in os.listdir(call_genes_folder):
