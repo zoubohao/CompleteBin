@@ -24,7 +24,7 @@ conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=
 After preparing the environment, the code of CompleteBin can be installed via pip. 
 ```
 conda activate CompleteBin
-pip install CompleteBin==1.0.6
+pip install CompleteBin==1.0.7
 ```
 This installation will run for around 10 minutes.
 
@@ -56,7 +56,7 @@ source .bashrc
 **1.  You can run CompleteBin with 'clean' mode through the following command:**
 
 ```
-CompleteBin version: *** v1.0.6 ***
+CompleteBin version: *** v1.0.7 ***
 usage: completebin [-h] -c CONTIG_PATH -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...] -o OUTPUT_PATH -temp TEMP_FILE_PATH [-db DB_FILES_PATH] [--device DEVICE]
                    [--n_views N_VIEWS] [--min_contig_length MIN_CONTIG_LENGTH] [--batch_size BATCH_SIZE] [--base_epoch BASE_EPOCH] [--num_workers NUM_WORKERS]
                    [--auto_min_length AUTO_MIN_LENGTH] [--step_num STEP_NUM]
