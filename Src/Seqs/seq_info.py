@@ -91,8 +91,8 @@ def prepare_sequences_coverage(
                 else:
                     cur_bp_array_list.append(cur_name2bp_array[name])
                     ## cal max for different bam files
-                    cov_val_list[k].append(np.sum(cur_name2bp_array[name]) / (len(cur_name2bp_array[name]) - 2. * 75.))
-                    var_val_list[k].append(np.sqrt(np.var(cur_name2bp_array[name], dtype=np.float32) + 1e-5))
+                    cov_val_list[k].append(sum(cur_name2bp_array[name]) / len(cur_name2bp_array[name]))
+                    var_val_list[k].append(np.std(cur_name2bp_array[name] + 1e-5, dtype=np.float32))
             name2bpcover_nparray_list[name] = cur_bp_array_list
         logger.info(f"--> Start to write coverage information")
         for name, bp_list in name2bpcover_nparray_list.items():

@@ -204,7 +204,7 @@ class SelfSupervisedMethodsTrainer(object):
         min_epoch = 0
         min_loss = 100000000.
         for epoc, loss in self.loss_record.items():
-            if loss < min_loss:
+            if epoc > self.train_epoch // 2 and loss < min_loss:
                 min_epoch = epoc
                 min_loss = loss
         if min_epoch_set is None:

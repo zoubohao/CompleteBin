@@ -16,7 +16,7 @@ from Src.Dereplication.galah_utils import process_galah
 from Src.IO import readFasta, readPickle
 from Src.logger import get_logger
 from Src.Seqs.seq_info import calculateN50, prepare_sequences_coverage
-from Src.Seqs.seq_utils import callGenesForKmeans, getGeneWithLargestCount
+from Src.Seqs.seq_utils import getGeneWithLargestCount, callGenesForKmeans
 from Src.Trainer.ssmt_v2 import SelfSupervisedMethodsTrainer
 from Src.version import bin_v
 
@@ -162,7 +162,7 @@ def binning_with_all_steps(
         filter_huge_gap (bool, optional): Filter the MAGs if the checkm2's completeness has a huge gap (> 40%) with the SCGs' completeness if it is true. 
         Try to fix the bug of checkm2.
     """
-    logger.info(f"--> CompleteBin version: *** {bin_v} ***")
+    logger.info(f"CompleteBin version: *** {bin_v} ***")
     mp.set_start_method("fork", force=True) 
     
     if num_workers is None:
@@ -262,8 +262,8 @@ def binning_with_all_steps(
             train_epoch = base_epoch
         else: 
             train_epoch = large_data_size_thre * base_epoch // num_contigs 
-        if train_epoch > 250: 
-            train_epoch = 250
+        if train_epoch > 200: 
+            train_epoch = 200
         
         trainer_obj = SelfSupervisedMethodsTrainer(
             feature_dim,
@@ -297,7 +297,7 @@ def binning_with_all_steps(
         logger.info(f"--> Start to inference contig embeddings with model.")
         trainer_obj.inference(min_epoch_set=None)
         if remove_temp_files:
-            rmtree(model_save_folder)
+            rmtree(model_save_folder, ignore_errors=True)
     
     logger.info(f"--> Step 2 is over.")
     if step_num is not None and step_num == 2:
@@ -413,7 +413,5 @@ def binning_with_all_steps(
         cpus=num_workers,
     )
     if remove_temp_files:
-        rmtree(refined_fasta_path)
-        rmtree(call_genes_folder)
-        rmtree(clustering_all_folder)
+        rmtree(temp_file_folder_path, ignore_errors=True)
     return 0

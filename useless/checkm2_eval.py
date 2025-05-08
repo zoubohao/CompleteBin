@@ -5,9 +5,9 @@ from Src.IO import readCheckm2Res, readMetaInfo
 
 if __name__ == "__main__":
 
-    home_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-marine-multi-completebin-1.0.6"
+    home_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-other-datasets-v1.0.6"
     files = os.listdir(home_folder)
-    sample = ""
+    sample = "Uro"
     
     summed_h = 0
     for i in files:

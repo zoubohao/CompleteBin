@@ -107,8 +107,8 @@ def get_features_of_one_seq(seq: str,
         sqrt_var = []
         for bp_array in bp_nparray_list:
             # cur_mean, cur_sqrt_var = np.sum(bp_array) / (len(seq) - 2. * 75.), np.sqrt(np.var(bp_array, dtype=np.float32))
-            mean.append(np.sum(bp_array) / (len(seq) - 2. * 75.))
-            sqrt_var.append(np.sqrt(np.var(bp_array, dtype=np.float32)))
+            mean.append(sum(bp_array) / len(bp_array))
+            sqrt_var.append(np.std(bp_array + 1e-5, dtype=np.float32))
     else:
         mean, sqrt_var = None, None
     seq_tokens = []

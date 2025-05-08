@@ -145,7 +145,7 @@ def kmeans_split(logger,
     len_vals_list = np.array(len_vals_list)
     km = KMeans(n_clusters=bin_number, random_state=3407,
                 init=functools.partial(partial_seed_init, seed_idx=seed_idx),
-                n_init=1, n_jobs=64)
+                n_init=1)
     km.fit(X_mat, sample_weight=len_vals_list)
     idx = km.labels_
     res = {}

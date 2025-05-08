@@ -63,6 +63,7 @@ useless/checkm2_eval.py
 useless/code_test.py
 useless/model_imp.py
 useless/run_checkm2.py
+useless/run_com_other.py
 useless/run_comebin.py
 useless/run_concoct.py
 useless/run_deeperbin.py

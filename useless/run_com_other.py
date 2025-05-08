@@ -9,8 +9,8 @@ from Src.Binning_steps import binning_with_all_steps
 if __name__ == "__main__":
     home_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Data-CAMI2-others-datasets"
     out_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-other-datasets-v1.0.6"
-    cur_data_names = ["Skin"] # Urogenital_tract Oral Gastrointestinal_tract Skin Airways "Airways"
-    device = "cuda:5"
+    cur_data_names = ["Airways"] # Urogenital_tract Oral Gastrointestinal_tract Skin Airways "Airways"
+    device = "cuda:1"
 
     if os.path.exists(out_folder) is False:
         os.mkdir(out_folder)

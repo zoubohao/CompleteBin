@@ -56,7 +56,7 @@ class TrainingDataset(Dataset):
             gap_data_name = []
             for i in range(gaps):
                 if i < 10:
-                    logger.info(f"--> The top {i + 1} contig length for training is {new_data[i][-1]}.")
+                    logger.info(f"--> The top {i + 1} contig length for training is {new_data[i][-1]}. Its mean and std are {(new_data[i][3], new_data[i][4])}")
                 gap_data.append(tuple(new_data[i][0: 5]))
                 gap_data_name.append(new_data[i][5])
             logger.info(f"--> There are {len(gap_data)} contigs for training.")
