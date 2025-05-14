@@ -25,7 +25,7 @@ conda activate CompleteBin
 conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda -c pytorch -c nvidia
 ```
 
-#### 2. THIRD STEP (Install Codes of CompleteBin)
+#### 3. THIRD STEP (Install Codes of CompleteBin)
 After preparing the environment, the code of CompleteBin can be installed via pip. 
 ```
 pip install CompleteBin==1.0.8
