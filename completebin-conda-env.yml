@@ -77,7 +77,7 @@ dependencies:
   - libgfortran5=14.1.0=hc5f4f2c_1
   - libgomp=14.1.0=h77fa898_1
   - liblapack=3.9.0=20_linux64_openblas
-  - liblightgbm=4.5.0=cuda_h1f3617d_3
+  - liblightgbm=4.5.0
   - liblzma=5.6.3=hb9d3cd8_1
   - liblzma-devel=5.6.3=hb9d3cd8_1
   - libnghttp2=1.52.0=ha637b67_1
