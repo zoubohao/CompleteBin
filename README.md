@@ -10,10 +10,10 @@ CompleteBin is a binner to cluster the contigs with dynamic contrastive learning
 Create CompleteBin's conda environment by using this command:
 ```
 conda env create -n CompleteBin
-conda activate CompleteBin
 ```
 #### 2. SECOND STEP (Install Conda packages for CompleteBin)
 ```
+conda activate CompleteBin
 conda env update --file completebin-conda-env.yml
 ```
 
