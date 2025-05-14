@@ -22,7 +22,7 @@ conda env update --file completebin-conda-env.yml
 Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend using GPUs). For example (In our system with GPUs):
 ```
 conda activate CompleteBin
-conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda -c pytorch -c nvidia
+conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda==***(like 11.8 for 11.8 driver or 12.1 for 12.1 driver) -c pytorch -c nvidia
 ```
 
 #### 3. THIRD STEP (Install Codes of CompleteBin)
