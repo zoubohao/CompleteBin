@@ -9,22 +9,26 @@ CompleteBin is a binner to cluster the contigs with dynamic contrastive learning
 #### 1. FIRST STEP (Create Conda Environment for CompleteBin)
 Create CompleteBin's conda environment by using this command:
 ```
-conda env create -n CompleteBin -f completebin-conda-env.yml
+conda env create -n CompleteBin
+conda activate CompleteBin
+```
+#### 2. SECOND STEP (Install Conda packages for CompleteBin)
+```
+conda env update --file completebin-conda-env.yml
 ```
 
 **And**
 
-Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend using GPUs). For example:
+Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend using GPUs). For example (In our system with GPUs):
 ```
 conda activate CompleteBin
-conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=12.1 -c pytorch -c nvidia
+conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda -c pytorch -c nvidia
 ```
 
-#### 2. SECOND STEP (Install Codes of CompleteBin)
+#### 2. THIRD STEP (Install Codes of CompleteBin)
 After preparing the environment, the code of CompleteBin can be installed via pip. 
 ```
-conda activate CompleteBin
-pip install CompleteBin==1.0.7
+pip install CompleteBin==1.0.8
 ```
 This installation will run for around 10 minutes.
 
