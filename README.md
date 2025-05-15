@@ -5,6 +5,11 @@ CompleteBin is a binner to cluster the contigs with dynamic contrastive learning
 
 ## Installation (Have Verified):
 #### Tip. Please use Python 3.9.15 in the following conda environment.
+#### 0. Preprocessing (Install mamba in your base conda env. Much Much faster than conda !!!)
+```
+conda activate base
+conda install mamba -c conda-forge
+```
 
 #### 1. FIRST STEP (Create Conda Environment for CompleteBin)
 Create CompleteBin's conda environment by using this command:
@@ -14,7 +19,7 @@ conda env create -n CompleteBin
 #### 2. SECOND STEP (Install Conda packages for CompleteBin)
 ```
 conda activate CompleteBin
-conda env update --file completebin-conda-env.yml
+mamba env update --file completebin-conda-env.yml
 ```
 
 **And**
