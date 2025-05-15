@@ -7,6 +7,7 @@ import numpy as np
 from flspp.core import FLSpp
 from sklearn.metrics import silhouette_score
 from sklearn.mixture import GaussianMixture
+from .von_mises_fisher_mixture import VonMisesFisherMixture
 
 from Src.CallGenes.hmm_utils import process_subset
 from Src.IO import writeFasta, writePickle
@@ -155,35 +156,48 @@ def cluster_split(
             cur_bin_cluster_num = 2
         bin_cluster_num_set.add(cur_bin_cluster_num)
     bin_cluster_num_list = list(bin_cluster_num_set)
-    assert gmm_flspp in ["gmm", "flspp"], ValueError("gmm_flspp has other parameter.")
     model_list = []
     ss_score = True
     if len(X) >= 90000:
         ss_score = False
+    
+    run_von = False
+    if gmm_flspp == "mix":
+        if 150 <= len(X) <= 1850:
+            run_von = True
+    
+    not_flspp = True
+    if len(X) > 10000:
+        not_flspp = False
+    
     for i, cur_bin_cluster_num in enumerate(bin_cluster_num_list):
-        if gmm_flspp =="gmm":
-            cur_model = GaussianMixture(n_components=cur_bin_cluster_num,
-                                        covariance_type="full",
-                                        init_params="k-means++",
-                                        random_state=3407)
-            cur_model.fit(X)
-            model_list.append((cur_model, cur_model.bic(X)))
+        if (gmm_flspp == "mix" and run_von) or (gmm_flspp =="von" and not_flspp):
+            # print(f"VonMiss has been applied {len(X)}")
+            cur_model = VonMisesFisherMixture(n_clusters=cur_bin_cluster_num, 
+                                              n_jobs=1, 
+                                              tol=0.01,
+                                              max_iter=150,
+                                              init="k-means++", 
+                                              random_state=3407, 
+                                              n_init=1)
+            cur_model = cur_model.fit(X)
+            if ss_score:
+                model_list.append((cur_model.labels_, cur_model.cluster_centers_, silhouette_score(X, cur_model.labels_)))
+            else:
+                model_list.append((cur_model.labels_, cur_model.cluster_centers_, -cur_model.inertia_))
         else:
-            flspp = FLSpp(n_clusters=cur_bin_cluster_num, 
+            # print(f"FLSpp has been applied {len(X)}")
+            cur_model = FLSpp(n_clusters=cur_bin_cluster_num, 
                         max_iter=600, 
                         local_search_iterations=60, 
                         random_state=3407)
-            flspp = flspp.fit(X, sample_weight=length_weights)
+            cur_model = cur_model.fit(X, sample_weight=length_weights)
             if ss_score:
-                model_list.append((flspp.labels_, flspp.cluster_centers_, silhouette_score(X, flspp.labels_)))
+                model_list.append((cur_model.labels_, cur_model.cluster_centers_, silhouette_score(X, cur_model.labels_)))
             else:
-                model_list.append((flspp.labels_, flspp.cluster_centers_, -flspp.inertia_))
-    if gmm_flspp == "gmm":
-        sorted_model_list = list(sorted(model_list, key = lambda x: x[-1]))
-        labels_ = sorted_model_list[0][0].predict(X)
-    else:
-        sorted_model_list = list(sorted(model_list, key = lambda x: x[-1], reverse=True))
-        labels_ = sorted_model_list[0][0]
+                model_list.append((cur_model.labels_, cur_model.cluster_centers_, -cur_model.inertia_))
+    sorted_model_list = list(sorted(model_list, key = lambda x: x[-1], reverse=True))
+    labels_ = sorted_model_list[0][0]
     
     cluster_out = {}
     for i, label in enumerate(labels_):

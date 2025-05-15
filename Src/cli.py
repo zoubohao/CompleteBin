@@ -92,6 +92,20 @@ def main():
             "The second step (step 2) is training procedure. Focusing on using GPU." + \
             "The third step (step 3) is clustering. Focusing on using CPU." + \
             "This function would combine these 3 steps if this parameter is None. Defaults to None.")
+    myparser.add_argument(
+        "--sec_clu_algo",
+        type=str,
+        default="flspp",
+        help="The clustering algorithm for the second stage clustering. You can set  'flspp' (FLS++ algorithm)," + \
+        " 'von' (Estimator for Mixture of von Mises Fisher clustering on the unit sphere) or " + \
+        " 'mix' (Apply von when number of contigs bigger than 150 and smaller than 1850, otherwise apply flspp). " + \
+        " flspp has the fastest speed. We recommand to use flspp for large datasets and mix for small datasets. Defaults to flspp. ")
+    myparser.add_argument(
+        "--ensemble_with_SCGs",
+        type=bool,
+        default=False,
+        help="Apply the called SCGs to do quality evaluation and used them in ensembling the results if it is True. Defaults to False.")
+    
     
     args = myparser.parse_args()
     binning_with_all_steps(
@@ -108,6 +122,8 @@ def main():
         num_workers=args.num_workers,
         training_device=args.device,
         step_num=args.step_num,
+        von_flspp_mix=args.sec_clu_algo,
+        ensemble_with_SCGs=args.ensemble_with_SCGs,
     )
 
 

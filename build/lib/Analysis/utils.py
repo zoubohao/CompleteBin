@@ -48,4 +48,3 @@ def get_vamb_cluster_tsv(
                 for contigname, seq in name2seq.items():
                     wh.write(f"{prefix}\t{contigname[1:]}\n")
 
-

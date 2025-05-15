@@ -5,18 +5,25 @@ from Src.IO import readCheckm2Res, readMetaInfo
 
 if __name__ == "__main__":
 
-    home_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-other-datasets-v1.0.6"
+    home_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/COMEBin/CAMI2-strain-madness"
     files = os.listdir(home_folder)
-    sample = "Uro"
+    metainfo = False
+    special_str = "checkm2"
+    sample = ""
     
     summed_h = 0
+    summed_med = 0
     for i in files:
-        if sample in i and "final-output-bins" in i:
+        if sample in i and special_str in i:
             cur_checkm_output_folder = os.path.join(home_folder, i)
-            d, h, m, l = readMetaInfo(os.path.join(cur_checkm_output_folder, "MetaInfo.tsv"), 2, 3)
+            if metainfo:
+                d, h, m, l = readMetaInfo(os.path.join(cur_checkm_output_folder, "MetaInfo.tsv"), 2, 3)
+            else:
+                d, h, m, l = readCheckm2Res(os.path.join(cur_checkm_output_folder, "quality_report.tsv"), "fa")
             print(f"{i}-checkm2 --> high: {h}, medium: {m}")
             summed_h += h
-    print(summed_h)
+            summed_med += m
+    print(summed_h, summed_med)
     
     # home_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/COMEBin/CAMI2-strain-madness"
     # summed_val = 0

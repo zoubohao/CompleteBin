@@ -119,6 +119,7 @@ def binning_with_all_steps(
     log_every_n_steps=10,
     training_device="cuda:0",
     num_workers: int=None,
+    von_flspp_mix = "flspp",
     ensemble_with_SCGs=False,
     multi_seq_contrast=False,
     step_num = None,
@@ -151,6 +152,10 @@ def binning_with_all_steps(
         log_every_n_steps (int, optional): Print log after n training step. Defaults to 10.
         training_device (str, optional): The device for training model. You can set 'cpu' to use CPU. Defaults to "cuda:0".
         num_workers (int, optional): Number of cpus for clustering contigs. Defaults to None. We would set 1 / 3 of total cpus if it is None.
+        von_flspp_mix (str, optional): The clustering algorithm for the second stage clustering. You can set  'flspp (FLS++ algorithm)', 
+        'von (Estimator for Mixture of von Mises Fisher clustering on the unit sphere)' or 
+        'mix (Apply von when number of contigs bigger than 150 and smaller than 1850, otherwise apply flspp)'. 
+        'flspp' has the fastest speed. We recommand to use flspp for large datasets and mix for small datasets. Defaults to "flspp". 
         ensemble_with_SCGs (bool, optional): Apply the called SCGs to do quality evaluation and used them in ensembling the results if it is True. 
         multi_seq_contrast (bool, optional): Add sequence embedding for contrastive learning if it is True.
         step_num (int, optional): The whole binning procedure can be divided into 3 steps. 
@@ -204,7 +209,7 @@ def binning_with_all_steps(
     temp = temp_decision(contigname2seq_ori, min_contig_length, N50, large_data_size_thre)
     
     split_parts_list = [1, 16]
-    logger.info(f"--> N50 is {N50}, seq split list: {split_parts_list}, temperature is {temp}, cluster mode: leiden + flspp.")
+    logger.info(f"--> N50 is {N50}, seq split list: {split_parts_list}, temperature is {temp}, cluster mode: leiden + {von_flspp_mix}.")
     logger.info(f"--> Dropout Probability: {drop_p}, n-views: {n_views}, min contigs length: {min_contig_length}.")
     
     ########################################################
@@ -379,8 +384,7 @@ def binning_with_all_steps(
     if os.path.exists(bin_output_folder_path) is False:
         os.mkdir(bin_output_folder_path)
     clustering_all_folder = os.path.join(temp_file_folder_path, "clustering_res")
-    gmm_flspp = "flspp"
-    if os.path.exists(os.path.join(clustering_all_folder, "ensemble_methods_list.pkl")) is False:
+    if os.path.exists(os.path.join(clustering_all_folder, f"ensemble_methods_list_{von_flspp_mix}.pkl")) is False:
         phy2accs = readPickle(phy2accs_path)
         ensemble_list = combine_two_cluster_steps(
             contigname2seq,
@@ -394,12 +398,12 @@ def binning_with_all_steps(
             arc_gene2contigNames = arc_gene2contigNames,
             bac_contigName2_gene2num=bac_contigName2_gene2num,
             arc_contigName2_gene2num=arc_contigName2_gene2num,
-            gmm_flspp=gmm_flspp
+            gmm_flspp=von_flspp_mix
         )
     # ensemble the grouped results by galah.
-    ensemble_list = readPickle(os.path.join(clustering_all_folder, "ensemble_methods_list.pkl"))
-    temp_flspp_bin_output = os.path.join(clustering_all_folder, f"temp_binning_results_{gmm_flspp}")
-    scg_quality_report_path = os.path.join(clustering_all_folder, f"quality_record_{gmm_flspp}.tsv")
+    ensemble_list = readPickle(os.path.join(clustering_all_folder, f"ensemble_methods_list_{von_flspp_mix}.pkl"))
+    temp_flspp_bin_output = os.path.join(clustering_all_folder, f"temp_binning_results_{von_flspp_mix}")
+    scg_quality_report_path = os.path.join(clustering_all_folder, f"quality_record_{von_flspp_mix}.tsv")
     process_galah(
         temp_file_folder_path,
         temp_flspp_bin_output,
@@ -410,6 +414,7 @@ def binning_with_all_steps(
         ensemble_with_SCGs,
         scg_quality_report_path,
         filter_huge_gap,
+        von_flspp_mix,
         cpus=num_workers,
     )
     if remove_temp_files:

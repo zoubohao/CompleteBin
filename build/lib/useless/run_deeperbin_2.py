@@ -9,39 +9,27 @@ if __name__ == "__main__":
     # cur_data_names = ["Airways"] # Urogenital_tract Oral Gastrointestinal_tract Skin Airways
     
     home_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/CAMI-Marine-contigs-bam"
-    out_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-marine-1.0.7"
+    out_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-marine-Second-search"
     if os.path.exists(out_folder) is False:
         os.mkdir(out_folder)
     
-    # datanames = set()
-    # for file in os.listdir(home_path):
-    #     name = file.split(".")[0:-2]
-    #     datanames.add(".".join(name))
-    
-    for i in range(5, 10):
-    # for id_name in datanames:
-        # i = 2
-        id_name = f"marine-sample-{i}"
-        # signal = True
-        # for cur_name in cur_data_names:
-        #     # print(cur_name, id_name, cur_name not in id_name)
-        #     if cur_name in id_name:
-        #         signal = False
-        # if signal: continue
+    for i in ["mix"]:
+        id_name = f"marine-sample-{6}"
         print(id_name)
         contig_path = os.path.join(home_path, f"{id_name}.contigs.fasta")
         bam_path = os.path.join(home_path, f"{id_name}.sorted.bam")
-        temp_path = os.path.join(out_folder, f"{id_name}-temp-folder-2500")
-        output_path = os.path.join(out_folder, f"{id_name}-final-output-bins-2500")
+        temp_path = os.path.join(out_folder, f"{id_name}-temp-folder")
+        output_path = os.path.join(out_folder, f"{id_name}-final-output-bins-{i}")
         if os.path.exists(os.path.join(output_path, "MetaInfo.tsv")) is False:
             binning_with_all_steps(
                 contig_path,
                 [bam_path],
                 temp_path,
                 output_path,
-                min_contig_length=2500,
-                db_folder_path = "./DeeperBin-DB",
-                training_device="cuda:3",
+                db_folder_path = "../DeeperBin-v1.0.8/DeeperBin-DB",
+                training_device="cuda:0",
+                gmm_flspp=i,
+                step_num=None
             ) 
             # break
 

@@ -38,6 +38,7 @@ Src/Cluster/first_cluster_utils.py
 Src/Cluster/sec_cluster.py
 Src/Cluster/sec_cluster_utils.py
 Src/Cluster/split_utils.py
+Src/Cluster/von_mises_fisher_mixture.py
 Src/DataProcess/__init__.py
 Src/DataProcess/data_utils.py
 Src/Dereplication/__init__.py
@@ -71,6 +72,7 @@ useless/run_deeperbin_2.py
 useless/run_deeperbin_grid_search.py
 useless/run_deeperbin_multi.py
 useless/run_metabat.py
+useless/run_nonpa.py
 useless/run_semibin.py
 useless/run_train.py
 useless/ssmt.py

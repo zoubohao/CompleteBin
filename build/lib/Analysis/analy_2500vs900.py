@@ -94,42 +94,42 @@ def calculateN50(seqLens):
 if __name__ == "__main__":
     
     
-    baseline_info_tsv_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/CAMI-Marine-DeeperBin2500-High.abundance.N50.tsv"
-    upgrade_info_tsv_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/CAMI-Marine-DeeperBin2500-DeeperBin900.900upgrade-new.abundance.N50.tsv"
-    output_info_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/2500-High-vs-900-upgrade-vs-900-new.tsv"
-    wh = open(output_info_path, "w")
+    # baseline_info_tsv_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/CAMI-Marine-DeeperBin2500-High.abundance.N50.tsv"
+    # upgrade_info_tsv_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/CAMI-Marine-DeeperBin2500-DeeperBin900.900upgrade-new.abundance.N50.tsv"
+    # output_info_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/2500-High-vs-900-upgrade-vs-900-new.tsv"
+    # wh = open(output_info_path, "w")
     
-    baseline_n50 = []
-    baseline_abu = []
+    # baseline_n50 = []
+    # baseline_abu = []
     
-    upgrade_n50 = []
-    upgrade_abu = []
+    # upgrade_n50 = []
+    # upgrade_abu = []
     
-    new_n50 = []
-    new_abu = []
+    # new_n50 = []
+    # new_abu = []
     
-    with open(baseline_info_tsv_path, "r") as rh:
-        for line in rh:
-            info = line.strip().split("\t")
-            baseline_abu.append(float(info[8]))
-            baseline_n50.append(float(info[9]))
-            wh.write(f"baseline\t{info[8]}\t{info[9]}\n")
+    # with open(baseline_info_tsv_path, "r") as rh:
+    #     for line in rh:
+    #         info = line.strip().split("\t")
+    #         baseline_abu.append(float(info[8]))
+    #         baseline_n50.append(float(info[9]))
+    #         wh.write(f"baseline\t{info[8]}\t{info[9]}\n")
     
-    with open(upgrade_info_tsv_path, "r") as rh:
-        for line in rh:
-            info = line.strip().split("\t")
-            if info[6] == "900" and info[7] == "upgrade":
-                upgrade_n50.append(float(info[8]))
-                upgrade_abu.append(float(info[9]))
-                wh.write(f"Upgrade\t{info[9]}\t{info[8]}\n")
-            if info[6] == "900" and info[7] == "new":
-                new_n50.append(float(info[8]))
-                new_abu.append(float(info[9]))
-                wh.write(f"Unique\t{info[9]}\t{info[8]}\n")
+    # with open(upgrade_info_tsv_path, "r") as rh:
+    #     for line in rh:
+    #         info = line.strip().split("\t")
+    #         if info[6] == "900" and info[7] == "upgrade":
+    #             upgrade_n50.append(float(info[8]))
+    #             upgrade_abu.append(float(info[9]))
+    #             wh.write(f"Upgrade\t{info[9]}\t{info[8]}\n")
+    #         if info[6] == "900" and info[7] == "new":
+    #             new_n50.append(float(info[8]))
+    #             new_abu.append(float(info[9]))
+    #             wh.write(f"Unique\t{info[9]}\t{info[8]}\n")
     
-    print(f"baseline mean N50: {sum(baseline_n50) / len(baseline_n50)}, mean abundance: {sum(baseline_abu) / len(baseline_abu)}")
-    print(f"upgrade mean N50: {sum(upgrade_n50) / len(upgrade_n50)}, mean abundance: {sum(upgrade_abu) / len(upgrade_abu)}")
-    print(f"new mean N50: {sum(new_n50) / len(new_n50)}, mean abundance: {sum(new_abu) / len(new_abu)}")
+    # print(f"baseline mean N50: {sum(baseline_n50) / len(baseline_n50)}, mean abundance: {sum(baseline_abu) / len(baseline_abu)}")
+    # print(f"upgrade mean N50: {sum(upgrade_n50) / len(upgrade_n50)}, mean abundance: {sum(upgrade_abu) / len(upgrade_abu)}")
+    # print(f"new mean N50: {sum(new_n50) / len(new_n50)}, mean abundance: {sum(new_abu) / len(new_abu)}")
     
     
     
@@ -189,51 +189,56 @@ if __name__ == "__main__":
         
     
     
-    # # calculate the number of genes
-    # input_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/marine-2500-vs-900-upgrade-new-pair-fasta-checkm2/diamond_output/DIAMOND_RESULTS.tsv"
-    # gene_res = {}
-    # with open(input_path, "r") as rh:
-    #     for line in rh:
-    #         info = line.strip("\n").split("\t")
-    #         pair_info, contig_name = info[0].split("Ω")
-    #         pair_index = "_".join(pair_info.split("_")[0:2])
-    #         pair_cat = pair_info.split("_")[2]
-    #         if pair_index not in gene_res:
-    #             gene_res[pair_index] = {"2500": 0, "900": 0}
-    #         if pair_cat == "2500":
-    #             gene_res[pair_index]["2500"] += 1
-    #         else:
-    #             gene_res[pair_index]["900"] += 1
+    # calculate the number of genes
+    input_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/marine-2500-vs-900-upgrade-new-pair-fasta-checkm2/protein_files"
+    gene_res = {}
+    for file_name in os.listdir(input_path):
+        pre_fix, bin_suffix = os.path.splitext(file_name)
+        if bin_suffix == ".faa":
+            genename2seq = readFasta(os.path.join(input_path, file_name))
+            c_gene_num = 0
+            for genename, _ in genename2seq.items():
+                if "partial=00" in genename:
+                    c_gene_num += 1
+            pair_index = "_".join(pre_fix.split("_")[0:2])
+            pair_cat = pre_fix.split("_")[2]
+            print(c_gene_num, pair_index, pair_cat)
+            if pair_index not in gene_res:
+                gene_res[pair_index] = {"2500": 0, "900": 0}
+            if pair_cat == "2500":
+                gene_res[pair_index]["2500"] += c_gene_num
+            else:
+                gene_res[pair_index]["900"] += c_gene_num
     
-    # gap_ratio = []
-    # gap_vals = []
-    # gap_900 = []
-    # gap_2500 = []
-    # posi_num = 0
-    # neg_num = 0
-    # for pair_index, values in gene_res.items():
-    #     # print(pair_index)
-    #     gene_num_2500 = float(values["2500"])
-    #     gene_num_900 = float(values["900"])
-    #     gap_val = gene_num_900 - gene_num_2500
-    #     if gap_val > 0:
-    #         posi_num += 1
-    #     else:
-    #         neg_num += 1
-    #     if gene_num_2500 != 0:
-    #         gap_ratio.append(gap_val / gene_num_2500 + 0.)
-    #         gap_vals.append(gap_val)
-    #         gap_900.append(gene_num_900)
-    #         gap_2500.append(gene_num_2500)
-    #     # else:
-    #     #     gap_ratio.append(1. + 0.)
+    gap_ratio = []
+    gap_vals = []
+    gap_900 = []
+    gap_2500 = []
+    posi_num = 0
+    neg_num = 0
+    for pair_index, values in gene_res.items():
+        # print(pair_index)
+        gene_num_2500 = float(values["2500"])
+        gene_num_900 = float(values["900"])
+        gap_val = gene_num_900 - gene_num_2500
+        if gap_val > 0:
+            posi_num += 1
+        else:
+            neg_num += 1
+        if gene_num_2500 != 0:
+            gap_ratio.append(gap_val / gene_num_2500 + 0.)
+            gap_vals.append(gap_val)
+            gap_900.append(gene_num_900)
+            gap_2500.append(gene_num_2500)
+        # else:
+        #     gap_ratio.append(1. + 0.)
     
-    # # print(gap_ratio)
-    # print(f"{posi_num} upgrade quality MAGs has higher genes' number.")
-    # print(f"{neg_num} upgrade quality MAGs has lower genes' number.")
-    # print(f"The average increased gene percential is {sum(gap_ratio) / len(gap_ratio)}")
-    # print(f"The average increased gene number is {sum(gap_vals) / len(gap_vals)}")
-    # print(f"The total gene number in 900 is  {sum(gap_900)}. The total gene number in 2500 is {sum(gap_2500)}. The ratio of them is {sum(gap_900)/sum(gap_2500)}")
+    # print(gap_ratio)
+    print(f"{posi_num} upgrade quality MAGs has higher genes' number.")
+    print(f"{neg_num} upgrade quality MAGs has lower genes' number.")
+    print(f"The average increased gene percential across all paris is {sum(gap_ratio) / len(gap_ratio)}")
+    print(f"The average increased gene number across all paris is {sum(gap_vals) / len(gap_vals)}")
+    print(f"The total gene number in 900 is  {sum(gap_900)}. The total gene number in 2500 is {sum(gap_2500)}. The ratio of them is {sum(gap_900)/sum(gap_2500)}")
     
     
     

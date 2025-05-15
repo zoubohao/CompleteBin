@@ -151,7 +151,7 @@ def second_cluster(
             ensemble_list.append(cur_best_905)
             ensemble_list.append(cur_best_all)
     
-    writePickle(os.path.join(clustering_all_folder, "ensemble_methods_list.pkl"), ensemble_list)
+    writePickle(os.path.join(clustering_all_folder, f"ensemble_methods_list_{gmm_flspp}.pkl"), ensemble_list)
     ## change name
     index = 0
     qv_wh = open(os.path.join(clustering_all_folder, f"quality_record_{gmm_flspp}.tsv"), "w")

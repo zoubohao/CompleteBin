@@ -112,6 +112,7 @@ def process_galah(
     ensemble_with_SCGs,
     scg_quality_report_path,
     filter_huge_gap,
+    gmm_flspp,
     cpus=64
 ):
     logger.info("--> Start to Use Galah to Ensemble the Results.")
@@ -121,12 +122,13 @@ def process_galah(
         ensemble_list,
         split_input_folder,
         db_path,
+        gmm_flspp,
         cpus,
         "fasta"
     )
-    checkm_quality_path = os.path.join(temp_file_folder_path, "selected_bins_checkm2", "quality_report.tsv")
+    checkm_quality_path = os.path.join(temp_file_folder_path, f"selected_bins_checkm2_{gmm_flspp}", "quality_report.tsv")
     ########
-    galah_out = os.path.join(temp_file_folder_path, "galah_out_info")
+    galah_out = os.path.join(temp_file_folder_path, f"galah_out_info_{gmm_flspp}")
     if os.path.exists(galah_out) is False:
         os.mkdir(galah_out)
     # # Drep gather and filter results

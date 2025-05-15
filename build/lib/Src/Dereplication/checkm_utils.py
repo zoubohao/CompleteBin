@@ -167,6 +167,7 @@ def build_checkm2_quality_report_for_galah(
     ensemble_list,
     split_input_folder: str,
     db_path,
+    gmm_flspp,
     cpu_num:int,
     bin_suffix: str = "fasta"
 ):
@@ -179,7 +180,7 @@ def build_checkm2_quality_report_for_galah(
         runCheckm2Single(split_input_folder, split_input_checkm2_temp_folder, bin_suffix, 
                          os.path.join(db_path, "checkm", "checkm2_db.dmnd"), cpu_num)
     
-    selected_temp = os.path.join(temp_file_folder_path, "selected_bins_checkm2")
+    selected_temp = os.path.join(temp_file_folder_path, f"selected_bins_checkm2_{gmm_flspp}")
     logger.info(f"--> Start to Reuse the CheckM2's Tmp Files.")
     if os.path.exists(os.path.join(selected_temp, "quality_report.tsv")) is False:
         output_faa_folder = buildCheckm2TmpFiles(split_input_checkm2_temp_folder, 

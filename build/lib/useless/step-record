@@ -1,0 +1,11 @@
+conda 24.1.2
+
+1. conda create -n compbintest2
+
+2. conda activate compbintest2
+
+4. conda env update --file test-env.yml 
+
+5. conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=11.8 -c pytorch -c nvidia
+
+6. pip install CompleteBin==1.0.8
