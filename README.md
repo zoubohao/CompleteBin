@@ -5,7 +5,7 @@ CompleteBin is a binner to cluster the contigs with dynamic contrastive learning
 
 ## Installation (Have Verified):
 #### Tip. Please use Python 3.9.15 in the following conda environment.
-#### 0. Preprocessing (Install mamba in your base conda env. Much Much faster than conda !!!)
+#### 0. Preprocessing (Install mamba in your base conda env. Much, much faster than conda !!!)
 ```
 conda activate base
 conda install mamba -c conda-forge
@@ -27,7 +27,7 @@ mamba env update --file completebin-conda-env.yml
 Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend using GPUs). For example (In our system with GPUs):
 ```
 conda activate CompleteBin
-conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda==***(like 11.8 for 11.8 driver or 12.1 for 12.1 driver) -c pytorch -c nvidia
+mamba install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda==***(like 11.8 for 11.8 driver or 12.1 for 12.1 driver) -c pytorch -c nvidia
 ```
 
 #### 3. THIRD STEP (Install Codes of CompleteBin)
