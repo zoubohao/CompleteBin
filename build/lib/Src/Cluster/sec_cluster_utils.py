@@ -7,12 +7,13 @@ import numpy as np
 from flspp.core import FLSpp
 from sklearn.metrics import silhouette_score
 from sklearn.mixture import GaussianMixture
-from .von_mises_fisher_mixture import VonMisesFisherMixture
 
 from Src.CallGenes.hmm_utils import process_subset
 from Src.IO import writeFasta, writePickle
 from Src.logger import get_logger
 from Src.Seqs.seq_info import calculateN50
+
+from .von_mises_fisher_mixture import VonMisesFisherMixture
 
 logger = get_logger()
 
@@ -175,8 +176,6 @@ def cluster_split(
             # print(f"VonMiss has been applied {len(X)}")
             cur_model = VonMisesFisherMixture(n_clusters=cur_bin_cluster_num, 
                                               n_jobs=1, 
-                                              tol=0.01,
-                                              max_iter=150,
                                               init="k-means++", 
                                               random_state=3407, 
                                               n_init=1)

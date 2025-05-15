@@ -33,7 +33,7 @@ pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https
 #### 3. THIRD STEP (Install Codes of CompleteBin)
 After preparing the environment, the code of CompleteBin can be installed via pip. 
 ```
-pip install CompleteBin==1.0.9.1
+pip install CompleteBin==1.0.9.2
 ```
 This installation will run for around 10 minutes.
 
