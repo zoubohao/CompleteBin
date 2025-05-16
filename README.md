@@ -1,7 +1,7 @@
 # CompleteBin
 **Paper --> Dynamic Contrastive Learning with Pretrained Deep Language Model Enhances Metagenome Binning for Contigs**
 
-CompleteBin is a binner to cluster the contigs with dynamic contrastive learning and a pretrained deep language model.
+CompleteBin is a binner to cluster the contigs with sequence patch embedding, a pretrained deep language model, and dynamic contrastive learning.
 
 ## Installation (Have Verified):
 #### Tip. Please use Python 3.9.15 in the following conda environment.
