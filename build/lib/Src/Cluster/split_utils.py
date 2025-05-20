@@ -24,7 +24,7 @@ def gen_seed_idx(seed_list, contig_id_list: List[str]) -> List[int]:
     :return: List[int]
     """
     name_map = dict(zip(contig_id_list, range(len(contig_id_list))))
-    seed_idx = [name_map[seed_name] for seed_name in seed_list]
+    seed_idx = [name_map[seed_name] for seed_name in seed_list if seed_name in name_map]
     return seed_idx
 
 

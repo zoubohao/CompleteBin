@@ -16,7 +16,7 @@ from Src.Dereplication.galah_utils import process_galah
 from Src.IO import readFasta, readPickle
 from Src.logger import get_logger
 from Src.Seqs.seq_info import calculateN50, prepare_sequences_coverage
-from Src.Seqs.seq_utils import getGeneWithLargestCount, callGenesForKmeans
+from Src.Seqs.seq_utils import callGenesForKmeans, getGeneWithLargestCount
 from Src.Trainer.ssmt_v2 import SelfSupervisedMethodsTrainer
 from Src.version import bin_v
 
@@ -214,6 +214,7 @@ def binning_with_all_steps(
     
     ########################################################
     # STEP1: Get the coverage information of contigs.
+    min_contig_length -= 20
     contigname2seq_path = os.path.join(temp_file_folder_path, "contigname2seq_str.pkl")
     if os.path.exists(contigname2seq_path) is False:
         prepare_sequences_coverage(
@@ -310,6 +311,7 @@ def binning_with_all_steps(
     
     #############################################################
     ## STEP3: Start Clustring
+    min_contig_length += 20
     contigname2seq = readPickle(contigname2seq_path)
     simclr_contigname2emb_norm_array = readPickle(os.path.join(temp_file_folder_path, f"SimCLR_contigname2emb_norm_ndarray.pkl"))
     simclr_emb_list = []
@@ -318,10 +320,11 @@ def binning_with_all_steps(
     for contigname, seq in contigname2seq.items():
         length = len(seq)
         if length < min_contig_length:
-            raise ValueError(f"The length of {contigname} is {length}, which is smaller than {min_contig_length}")
+            continue
         sub_contigname_list.append(contigname)
         simclr_emb_list.append(simclr_contigname2emb_norm_array[contigname])
         length_list.append(length)
+    logger.info(f"--> There are {len(contigname2seq)} contigs for training and {len(simclr_emb_list)} for clustering.")
     
     initial_fasta_path = os.path.join(temp_file_folder_path, "split_contigs_initial_kmeans")
     if os.path.exists(initial_fasta_path) is False:
