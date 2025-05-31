@@ -1,7 +1,7 @@
 
 import os
 
-from Src.IO import readCheckm2Res, readMetaInfo
+from CompleteBin.IO import readCheckm2Res, readMetaInfo
 
 
 def runCheckm2Single(

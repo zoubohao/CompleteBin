@@ -6,16 +6,16 @@ from typing import List, Union
 import numpy as np
 import psutil
 
-from Src.CallGenes.gene_utils import callMarkerGenesByCheckm
-from Src.CallGenes.hmm_utils import processHits
-from Src.Cluster.cluster import combine_two_cluster_steps
-from Src.Cluster.split_utils import kmeans_split
-from Src.DataProcess.data_utils import build_training_seq_data
-from Src.Dereplication.galah_utils import process_galah
-from Src.IO import readFasta, readPickle
-from Src.logger import get_logger
-from Src.Seqs.seq_info import calculateN50, prepare_sequences_coverage
-from Src.Seqs.seq_utils import getGeneWithLargestCount
+from CompleteBin.CallGenes.gene_utils import callMarkerGenesByCheckm
+from CompleteBin.CallGenes.hmm_utils import processHits
+from CompleteBin.Cluster.cluster import combine_two_cluster_steps
+from CompleteBin.Cluster.split_utils import kmeans_split
+from CompleteBin.DataProcess.data_utils import build_training_seq_data
+from CompleteBin.Dereplication.galah_utils import process_galah
+from CompleteBin.IO import readFasta, readPickle
+from CompleteBin.logger import get_logger
+from CompleteBin.Seqs.seq_info import calculateN50, prepare_sequences_coverage
+from CompleteBin.Seqs.seq_utils import getGeneWithLargestCount
 from useless.ssmt import SelfSupervisedMethodsTrainer
 
 logger = get_logger()

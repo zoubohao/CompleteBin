@@ -6,15 +6,15 @@ import torch
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 
-from Src.CallGenes.gene_utils import splitListEqually
-from Src.IO import progressBar, readPickle
-from Src.logger import get_logger
-from Src.Model.model import DeeperBinModel
-from Src.Seqs.seq_utils import generate_feature_mapping_reverse
-from Src.Trainer.dataset import TrainingDataset
-from Src.Trainer.optimizer import get_optimizer
-from Src.Trainer.trainer import Trainer
-from Src.Trainer.warmup import GradualWarmupScheduler
+from CompleteBin.CallGenes.gene_utils import splitListEqually
+from CompleteBin.IO import progressBar, readPickle
+from CompleteBin.logger import get_logger
+from CompleteBin.Model.model import DeeperBinModel
+from CompleteBin.Seqs.seq_utils import generate_feature_mapping_reverse
+from CompleteBin.Trainer.dataset import TrainingDataset
+from CompleteBin.Trainer.optimizer import get_optimizer
+from CompleteBin.Trainer.trainer import Trainer
+from CompleteBin.Trainer.warmup import GradualWarmupScheduler
 
 logger = get_logger()
 

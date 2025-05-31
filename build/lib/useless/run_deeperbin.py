@@ -1,7 +1,7 @@
 
 import os
 
-from Src.Binning_steps import binning_with_all_steps
+from CompleteBin.Binning_steps import binning_with_all_steps
 
 if __name__ == "__main__":
     home_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/HD-marine-final-results"

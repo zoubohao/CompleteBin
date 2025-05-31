@@ -7,8 +7,8 @@ import sys
 
 import numpy as np
 
-from Src.CallGenes.gene_utils import splitListEqually
-from Src.IO import (progressBar, readCheckm2Res, readFasta, readMetaInfo,
+from CompleteBin.CallGenes.gene_utils import splitListEqually
+from CompleteBin.IO import (progressBar, readCheckm2Res, readFasta, readMetaInfo,
                     readPickle)
 
 # import torch

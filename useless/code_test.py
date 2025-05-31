@@ -2,7 +2,7 @@
 import torch
 import numpy as np
 
-from Src.IO import readPickle
+from CompleteBin.IO import readPickle
 
 if __name__ == "__main__":
     path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/COMEBin/Comebin-marine/comebin-marine-sample-0-outputs/data_augmentation/aug0_datacoverage_mean.tsv"

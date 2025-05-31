@@ -1,6 +1,6 @@
 
 import os
-from Src.IO import readCheckm2Res, readMetaInfo
+from CompleteBin.IO import readCheckm2Res, readMetaInfo
 
 
 if __name__ == "__main__":

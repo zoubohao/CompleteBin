@@ -2,7 +2,7 @@
 import os
 from sys import prefix
 
-from Src.IO import readFasta
+from CompleteBin.IO import readFasta
 
 
 def convert_paf2vamb(

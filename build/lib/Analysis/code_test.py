@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from Src.IO import readPickle
+from CompleteBin.IO import readPickle
 
 if __name__ == "__main__":
     training_data_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-marine-auto-and-contrast/marine-sample-5-temp-folder/training_data/training_data.npy"

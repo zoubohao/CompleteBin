@@ -1,7 +1,7 @@
 
 import os
 
-from Src.IO import readCheckm2Res
+from CompleteBin.IO import readCheckm2Res
 
 if __name__ == "__main__":
 

@@ -2,7 +2,7 @@
 
 import os
 
-from Src.IO import readFasta
+from CompleteBin.IO import readFasta
 
 
 def readAllInfo(file_path):

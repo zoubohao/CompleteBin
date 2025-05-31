@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from Src.logger import get_logger
+from CompleteBin.logger import get_logger
 
 logger = get_logger()
 

@@ -3,7 +3,7 @@
 import os
 from shutil import copy
 
-from Src.IO import readFasta
+from CompleteBin.IO import readFasta
 
 
 def readAllInfo(file_path):

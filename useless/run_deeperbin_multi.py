@@ -1,6 +1,6 @@
 
 import os
-from Src.Binning_steps import binning_with_all_steps
+from CompleteBin.Binning_steps import binning_with_all_steps
 
 
 

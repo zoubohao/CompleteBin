@@ -6,7 +6,7 @@ requires_list = [i.strip() for i in requires_list]
 
 setup(
     name=name,
-    version='1.0.9.4',
+    version='1.0.9.5',
     author="Bohao Zou",
     author_email='csbhzou@comp.hkbu.edu.hk',
     description="The binner to cluster contigs.",
@@ -15,6 +15,6 @@ setup(
     package_data={"": ["*"]},
     include_package_data=True,
     zip_safe=False,
-    entry_points={"console_scripts": ["completebin=Src.cli:main"]},
+    entry_points={"console_scripts": ["completebin=CompleteBin.cli:main"]},
     install_requires=requires_list
 )

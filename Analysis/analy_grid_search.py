@@ -2,7 +2,7 @@
 
 import os
 
-from Src.IO import readMetaInfo
+from CompleteBin.IO import readMetaInfo
 
 
 def getScore(
