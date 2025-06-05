@@ -4,6 +4,7 @@ import random
 from copy import deepcopy
 from typing import List
 
+import numpy as np
 from torch.utils.data import Dataset
 
 from CompleteBin.DataProcess.data_utils import get_features_of_one_seq
@@ -88,6 +89,8 @@ class TrainingDataset(Dataset):
         # (deepurify_nparray, seq_kmer_freq, cov_kmer_freq, mean_val, var_val)]
         ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt = self.data[index]
         ori_view_tuple = (seq_tokens, cov_mean, cov_var_sqrt)
+        l, dim_size = seq_tokens.shape
+        cov_shape = cov_mean.shape
         
         ### for differnet cases
         if self.train_valid_test.lower() == "train":
@@ -95,7 +98,25 @@ class TrainingDataset(Dataset):
             n_view_list = []
             for _ in range(self.n_view - 1):
                 n_view_list.append(self.generate_view(ori_seq, cov_bp_array_list, None))
-            con_list = [ori_view_tuple] + n_view_list + [ori_view_tuple]
+            aug_seq, noisy = sequence_data_augmentation(ori_seq)
+            aug_seq_tokens, _, _ = get_features_of_one_seq(aug_seq,
+                                                    None,
+                                                    self.count_kmer,
+                                                    self.count_kmer_dict_rev,
+                                                    self.count_nr_feature_rev,
+                                                    self.split_parts_list)
+            if noisy == 0:
+                aug_seq_tokens += np.random.randn(l, dim_size) * 0.002
+            aug_mean = np.random.randn(*cov_shape) + cov_mean
+            aug_var = np.random.randn(*cov_shape) + cov_var_sqrt
+            last_ori_view = deepcopy(ori_view_tuple)
+            if random.random() < 0.5:
+                mask = np.random.random(size=[l, 1])
+                mask = np.array(mask > 0.2, dtype=np.float32)
+                last_ori_view = (last_ori_view[0] * mask, 
+                                 np.random.randn(*cov_shape) + cov_mean, 
+                                 np.random.randn(*cov_shape) + cov_var_sqrt)
+            con_list = [ori_view_tuple] + n_view_list + [(aug_seq_tokens, aug_mean, aug_var), last_ori_view]
             return con_list
         elif self.train_valid_test.lower() == "valid":
             return [ori_view_tuple] + [self.generate_view(ori_seq, cov_bp_array_list, index)] + [ori_view_tuple], self.data_name[index]

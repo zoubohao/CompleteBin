@@ -1,6 +1,7 @@
 
 import multiprocessing
 import os
+from shutil import rmtree
 
 from CompleteBin.IO import readDiamond, readFasta
 from CompleteBin.logger import get_logger
@@ -177,6 +178,8 @@ def build_checkm2_quality_report_for_galah(
     if os.path.exists(split_input_checkm2_temp_folder) is False:
         os.mkdir(split_input_checkm2_temp_folder)
     if os.path.exists(split_input_quality_path) is False:
+        if os.path.exists(split_input_checkm2_temp_folder):
+            rmtree(split_input_checkm2_temp_folder, ignore_errors=True)
         runCheckm2Single(split_input_folder, split_input_checkm2_temp_folder, bin_suffix, 
                          os.path.join(db_path, "checkm", "checkm2_db.dmnd"), cpu_num)
     

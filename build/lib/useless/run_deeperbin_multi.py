@@ -7,7 +7,7 @@ from CompleteBin.Binning_steps import binning_with_all_steps
 if __name__ == "__main__":
     
     home_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Data-CAMI2-Marine-multi-samples"
-    out_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-marine-multi-completebin-1.0.6"
+    out_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-marine-multi-completebin-1.0.9.6"
     if os.path.exists(out_folder) is False:
         os.mkdir(out_folder)
     
@@ -28,9 +28,9 @@ if __name__ == "__main__":
                 temp_path,
                 output_path,
                 db_folder_path = "../DeeperBin-v1.0.8/DeeperBin-DB",
-                training_device="cuda:0",
+                training_device="cuda:1",
             ) 
-            # break
+            break
 
 
 

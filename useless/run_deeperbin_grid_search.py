@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # out_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-other-datasets"
     
     home_path = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Data-CAMI2-Marine-contigs-bam"
-    out_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin--marine-v1.0.9.5"
+    out_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin--marine-v1.0.9.6"
     device = "cuda:0"
     
     if os.path.exists(out_folder) is False:
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     #     datanames.add(".".join(name))
     
     for i in range(10):
-        id_name = f"marine-sample-{8}"
+        id_name = f"marine-sample-{9}"
         # id_name = data
         print(id_name)
         contig_path = os.path.join(home_path, f"{id_name}.contigs.fasta")

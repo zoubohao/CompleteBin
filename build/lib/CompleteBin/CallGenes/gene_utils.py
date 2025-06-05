@@ -304,11 +304,20 @@ def runHMMsearchFolder(faa_folder_path: str, output_folder_path: str, hmm_model_
         p.join()
 
 
-def callMarkerGenes(bin_folder_path: str, temp_folder_path: str, num_cpu: int, hmm_model_path: str, bin_suffix: str) -> None:
+def callMarkerGenes(
+    bin_folder_path: str, 
+    temp_folder_path: str, 
+    num_cpu: int, 
+    hmm_model_path: str, 
+    bin_suffix: str,
+    faa_method: str = "prodigal") -> None:
     if os.path.exists(temp_folder_path) is False:
         os.mkdir(temp_folder_path)
-    logger.info("--> Running Prodigal...")
-    runProgidalFolder(bin_folder_path, temp_folder_path, num_cpu, bin_suffix)
+    if faa_method == "prodigal":
+        logger.info("--> Running Prodigal...")
+        runProgidalFolder(bin_folder_path, temp_folder_path, num_cpu, bin_suffix)
+    else:
+        pass
     logger.info("--> Running Hmm-Search...")
     runHMMsearchFolder(temp_folder_path, temp_folder_path, hmm_model_path, num_cpu, "faa")
 

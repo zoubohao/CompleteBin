@@ -111,13 +111,7 @@ class Trainer(object):
         seq_tokens_n_views = []
         mean_n_views = []
         var_n_views = []
-        last_index = len(n_views_tuple_list) - 1
         for i, (seq_tokens, cov_mean, cov_var_sqrt) in enumerate(n_views_tuple_list):
-            b, l, _ = seq_tokens.shape
-            if i == last_index and random.random() < 0.5:
-                mask = torch.ones(size=[b, l, 1]).bernoulli_(p=1. - self.dropout)
-                seq_tokens *= mask
-                # print(mask, seq_tokens, seq_tokens.shape)
             seq_tokens_n_views.append(seq_tokens)
             mean_n_views.append(cov_mean)
             var_n_views.append(cov_var_sqrt)
@@ -144,20 +138,20 @@ class Trainer(object):
             self.model.train()
             for n_views_tuple_list in tqdm(train_loader):
                 n_views = len(n_views_tuple_list)
-                assert n_views == self.n_views + 1, ValueError("Views number is not equal with each other.")
+                assert n_views == self.n_views + 2, ValueError("Views number is not equal with each other.")
                 seq_tokens_inputs, mean_inputs, var_inputs = self.get_model_inputs(n_views_tuple_list)
                 # ============ multi-res forward passes ... ============
                 self.optimizer.zero_grad()
                 simclr_emb_contrast, seq_emb, _= self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs)
                 ### SimCLR loss ## changed here
-                loss_simclr, logits, labels = info_nce_loss_for_loop(simclr_emb_contrast[0: -self.batch_size], 
+                loss_simclr, logits, labels = info_nce_loss_for_loop(simclr_emb_contrast[0: -self.batch_size * 2], 
                                                             self.batch_size, 
                                                             self.n_views,
                                                             self.temperature_schedule[epoch_counter - 1], 
                                                             self.device, 
                                                             self.criterion)
                 if self.multi_contrast:
-                    loss_simclr_seq, logits_seq, labels_seq = info_nce_loss(seq_emb[0: -self.batch_size], 
+                    loss_simclr_seq, logits_seq, labels_seq = info_nce_loss(seq_emb[0: -self.batch_size * 2], 
                                                             self.batch_size, 
                                                             self.n_views,
                                                             self.temperature_schedule[epoch_counter - 1], 
@@ -169,10 +163,11 @@ class Trainer(object):
                 
                 ### SimCSE loss
                 cat_two_view = torch.cat([simclr_emb_contrast[0: self.batch_size], 
-                                          simclr_emb_contrast[-self.batch_size: ]], dim=0)
+                                          simclr_emb_contrast[-self.batch_size * 2: -self.batch_size],
+                                          simclr_emb_contrast[-self.batch_size:]], dim=0)
                 loss_simcse, logits_simces, labels_simces = info_nce_loss(cat_two_view, 
                                                             self.batch_size, 
-                                                            2,
+                                                            3,
                                                             self.temperature_schedule[epoch_counter - 1], 
                                                             self.device, 
                                                             self.criterion)

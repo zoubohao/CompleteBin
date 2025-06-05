@@ -224,20 +224,22 @@ def seqDeletion(seq: str, dRatio=0.05, scatter=False) -> str:
     return "".join(newSeq)
 
 
-def sequence_data_augmentation(seq: str, dRatio = 0.005, vRatio = 0.005, iRatio = 0.005):
+def sequence_data_augmentation(seq: str, dRatio = 0.01, vRatio = 0.01, iRatio = 0.01):
     rand_v = random.random()
-    if rand_v <= 0.333:
-        return seqSimulateSNV(seq, vRatio)
-    elif 0.333 < rand_v <= 0.666:
+    if rand_v <= 0.25:
+        return seqSimulateSNV(seq, vRatio), 1
+    elif 0.25 < rand_v <= 0.5:
         if random.random() <= 0.5:
-            return seqDeletion(seq, dRatio, scatter=True)
+            return seqDeletion(seq, dRatio, scatter=True), 1
         else:
-            return seqDeletion(seq, dRatio, scatter=False)
+            return seqDeletion(seq, dRatio, scatter=False), 1
+    elif 0.5 < rand_v <= 0.75:
+        if random.random() <= 0.5:
+            return seqInsertion(seq, iRatio, scatter=True), 1
+        else:
+            return seqInsertion(seq, iRatio, scatter=False), 1
     else:
-        if random.random() <= 0.5:
-            return seqInsertion(seq, iRatio, scatter=True)
-        else:
-            return seqInsertion(seq, iRatio, scatter=False)
+        return seq, 0
 
 
 
