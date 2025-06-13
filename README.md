@@ -39,7 +39,7 @@ pip install CompleteBin==1.0.9.7
 ```
 This installation will run for around 10 minutes.
 
-## Download Pretrained Weight and Other Files for Running
+## Installation (Download Pretrained Weight and Other Files for Running)
 Download the pretrained weight and other files (**CompleteBin-DB.zip**) for running CompleteBin from this **[LINK](https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing)**.
 https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing
 
