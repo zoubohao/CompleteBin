@@ -94,7 +94,7 @@ optional arguments:
                         parameter to 'cpu'.
   --n_views N_VIEWS     Number of views to generate for each contig during training. Defaults to 6.
   --min_contig_length MIN_CONTIG_LENGTH
-                        The minimum length of contigs for binning. We support 768 bps. Defaults to 900.
+                        The minimum length of contigs for binning. We support 768 bps. Defaults to 800.
   --batch_size BATCH_SIZE
                         The batch size. Defaults to 1024.
   --base_epoch BASE_EPOCH
