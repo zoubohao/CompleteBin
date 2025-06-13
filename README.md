@@ -30,7 +30,7 @@ conda activate CompleteBin
 pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
 ```
 
-**Note**: Please use "conda create -n deepurify --solver=classic" if you meet "CondaValueError: You have chosen a non-default solver backend (libmamba) but it was not recognized. Choose one of: classic" this error when you are creating the environment.
+**Note**: Please use "conda create -n completebin --solver=classic" if you meet "CondaValueError: You have chosen a non-default solver backend (libmamba) but it was not recognized. Choose one of: classic" this error when you are creating the environment.
 
 #### 3. THIRD STEP (Install Codes of CompleteBin)
 After preparing the environment, the code of CompleteBin can be installed via pip. 
@@ -65,9 +65,9 @@ source .bashrc
 
 ## Running CompleteBin
 
-** Note **. The minimum contig length we support is 768 bps. Our default setting is 900 bps.
+** Note **. The minimum contig length we support is 768 bps. Our default setting is 800 bps.
 
-**1.  You can run CompleteBin with 'clean' mode through the following command:**
+**1.  You can run CompleteBin through the following command:**
 
 
 ```
