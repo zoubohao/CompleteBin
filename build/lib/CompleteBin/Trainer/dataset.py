@@ -11,8 +11,7 @@ from CompleteBin.DataProcess.data_utils import get_features_of_one_seq
 # from Src.IO import progressBar
 from CompleteBin.logger import get_logger
 from CompleteBin.Seqs.seq_utils import (generate_feature_mapping_reverse,
-                                random_generate_view, sampleSeqFromFasta,
-                                sequence_data_augmentation)
+                                random_generate_view, sampleSeqFromFasta)
 
 logger = get_logger()
 
@@ -28,7 +27,8 @@ class TrainingDataset(Dataset):
                  split_parts_list,
                  N50,
                  batch_size,
-                 train_valid_test: str = None) -> None:
+                 train_valid_test: str = None,
+                 dropout_p = 0.2) -> None:
         super().__init__()
         self.n_view = n_views
         self.N50 = N50
@@ -41,6 +41,7 @@ class TrainingDataset(Dataset):
         self.split_parts_list = split_parts_list
         self.data = data
         self.data_name = data_name
+        self.dropout_p = dropout_p
         
         ## ensure 
         if train_valid_test.lower() == "train" and len(data) % batch_size != 0:
@@ -98,25 +99,13 @@ class TrainingDataset(Dataset):
             n_view_list = []
             for _ in range(self.n_view - 1):
                 n_view_list.append(self.generate_view(ori_seq, cov_bp_array_list, None))
-            aug_seq, noisy = sequence_data_augmentation(ori_seq)
-            aug_seq_tokens, _, _ = get_features_of_one_seq(aug_seq,
-                                                    None,
-                                                    self.count_kmer,
-                                                    self.count_kmer_dict_rev,
-                                                    self.count_nr_feature_rev,
-                                                    self.split_parts_list)
-            if noisy == 0:
-                aug_seq_tokens += np.random.randn(l, dim_size) * 0.002
-            aug_mean = np.random.randn(*cov_shape) + cov_mean
-            aug_var = np.random.randn(*cov_shape) + cov_var_sqrt
             last_ori_view = deepcopy(ori_view_tuple)
-            if random.random() < 0.5:
-                mask = np.random.random(size=[l, 1])
-                mask = np.array(mask > 0.2, dtype=np.float32)
-                last_ori_view = (last_ori_view[0] * mask, 
-                                 np.random.randn(*cov_shape) + cov_mean, 
-                                 np.random.randn(*cov_shape) + cov_var_sqrt)
-            con_list = [ori_view_tuple] + n_view_list + [(aug_seq_tokens, aug_mean, aug_var), last_ori_view]
+            mask = np.random.random(size=[l, 1])
+            mask = np.array(mask > self.dropout_p, dtype=np.float32)
+            last_mask_view = (seq_tokens * mask, 
+                            np.random.randn(*cov_shape) * 0.01 + cov_mean, 
+                            np.random.randn(*cov_shape) * 0.01 + cov_var_sqrt)
+            con_list = [ori_view_tuple] + n_view_list + [last_mask_view, last_ori_view]
             return con_list
         elif self.train_valid_test.lower() == "valid":
             return [ori_view_tuple] + [self.generate_view(ori_seq, cov_bp_array_list, index)] + [ori_view_tuple], self.data_name[index]

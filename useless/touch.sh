@@ -13,5 +13,11 @@ touch /home/comp/21481598/anaconda3/envs/deepmetabin2/lib/python3.9/site-package
 touch /home/comp/21481598/anaconda3/envs/deepmetabin2/lib/python3.9/site-packages/checkm2/../tensorflow/python/ops
 touch /home/comp/21481598/anaconda3/envs/deepmetabin/lib/python3.9/site-packages/matplotlib
 touch /home/comp/21481598/anaconda3/envs/deepmetabin2/lib/python3.9/site-packages/matplotlib
+
+touch /home/comp/21481598/anaconda3/envs/completebin/lib/python3.9
+touch /home/comp/21481598/anaconda3/envs/completebin/lib/python3.9/site-packages
+touch /home/comp/21481598/anaconda3/envs/completebin/lib/python3.9/site-packages/PIL
+touch /home/comp/21481598/anaconda3/envs/completebin/lib/python3.9/site-packages/matplotlib
+touch /home/comp/21481598/anaconda3/envs/completebin/lib/python3.9/site-packages/checkm2/../tensorflow/python/ops
 sleep 60;
 done

@@ -136,7 +136,8 @@ class SelfSupervisedMethodsTrainer(object):
                                             split_parts_list,
                                             N50,
                                             batch_size,
-                                            train_valid_test = "train")
+                                            train_valid_test = "train",
+                                            dropout_p=drop_p)
         self.training_loader = DataLoader(self.training_set,
                                           batch_size,
                                           num_workers=16,

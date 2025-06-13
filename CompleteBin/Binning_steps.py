@@ -126,12 +126,12 @@ def binning_with_all_steps(
     db_folder_path: str=None,
     n_views: int=6,
     count_kmer: int=4,
-    min_contig_length=900,
+    min_contig_length=800,
     min_contig_length_auto_decision=False,
     short_long_ratio=0.333,
     # model training config
     feature_dim=100,
-    drop_p=0.12,
+    drop_p=0.125,
     lr=1e-5,
     lr_multiple=10,
     lr_warmup_epoch=1,
@@ -161,11 +161,11 @@ def binning_with_all_steps(
         db_folder_path (str, optional): The path of database folder. Defaults to None. You can ignore it if you set the 'DeeperBin_DB' environmental variable.
         n_views (int, optional): Number of views to generate for each contig during training. Defaults to 6.
         count_kmer (int, optional): The k setting of k-mer. Defaults to 4.
-        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 900.
+        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 800.
         min_contig_length_auto_decision  (bool, optional): Auto determining the length of min contig if it is True. 
         short_long_ratio (float, optional): The min contig length would be shorter if this parameter larger under the auto determing is True.
         feature_dim (int, optional): The feature dim of final embeddings. Defaults to 100.
-        drop_p (float, optional): The dropout probability setting. Defaults to 0.12.
+        drop_p (float, optional): The dropout probability setting. Defaults to 0.125.
         lr (float, optional): The learning rate setting. Defaults to 1e-5.
         lr_multiple (int, optional): The multiple value for learning rate. Defaults to 10.
         lr_warmup_epoch (int, optional): Number of epoches to warm up the learning rate. Defaults to 1.

@@ -61,8 +61,8 @@ def main():
     myparser.add_argument(
         "--min_contig_length",
         type=int,
-        default=900,
-        help="The minimum length of contigs for binning. Defaults to 900.")
+        default=800,
+        help="The minimum length of contigs for binning. Defaults to 800.")
     myparser.add_argument(
         "--batch_size",
         type=int,

@@ -27,9 +27,9 @@ class MLP(nn.Module):
     def forward(self, x):
         x = self.w1(x)
         x = self.bn(x)
-        x = self.dropout(x)
-        x = self.w2(x)
         x = F.relu(x)
+        x = self.w2(x)
+        x = self.dropout(x)
         return x
 
 
@@ -99,9 +99,11 @@ class DeeperBinBaseModel(nn.Module):
                  split_parts_list: List,
                  dropout: float,
                  hidden_dim: int = 2048,
-                 layers = 4) -> None:
+                 layers = 4,
+                 output_embedding = False) -> None:
         super(DeeperBinBaseModel, self).__init__()
         self.layers = layers
+        self.output_embedding = output_embedding
         self.pos_embedding = nn.Parameter(
             torch.zeros(1, sum(split_parts_list) + 100, hidden_dim, requires_grad=True), 
             requires_grad = True)
@@ -128,9 +130,9 @@ class DeeperBinBaseModel(nn.Module):
 
     def forward(self, seq_tokens_inputs):
         seq_fea_enc = encode_seq2vec(self.get_feature_of_tokens(self.get_token_proj(seq_tokens_inputs)))
-        if self.out_linear is not None:
-            return self.out_linear(seq_fea_enc)
-        return seq_fea_enc
+        if self.output_embedding or self.out_linear is None:
+            return seq_fea_enc
+        return self.out_linear(seq_fea_enc)
 
 
 class DeeperBinModel(nn.Module):
@@ -169,7 +171,7 @@ class DeeperBinModel(nn.Module):
         for _, v in self.pretrain_model.named_parameters():
             v.requires_grad = False
             i += 1
-        logger.info(f"--> Number of {i} parameters have been fixed.")
+        logger.info(f"--> Number of {i} parameters have been fixed. Ori")
 
     def load_weight_for_model(self, pretrain_model_weight_path: str):
         self.pretrain_model.load_state_dict(torch.load(pretrain_model_weight_path, map_location=self.device), strict=False)
