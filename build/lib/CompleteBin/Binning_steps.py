@@ -11,13 +11,15 @@ from CompleteBin.CallGenes.gene_utils import callMarkerGenesByCheckm
 from CompleteBin.CallGenes.hmm_utils import processHits
 from CompleteBin.Cluster.cluster import combine_two_cluster_steps
 from CompleteBin.Cluster.split_utils import kmeans_split
-from CompleteBin.DataProcess.data_utils import build_training_seq_data_numpy_save
+from CompleteBin.DataProcess.data_utils import \
+    build_training_seq_data_numpy_save
 from CompleteBin.Dereplication.galah_utils import process_galah
 from CompleteBin.IO import readFasta, readPickle
-from CompleteBin.Trainer.sampler import DeeperBinSampler
 from CompleteBin.logger import get_logger
 from CompleteBin.Seqs.seq_info import calculateN50, prepare_sequences_coverage
-from CompleteBin.Seqs.seq_utils import callGenesForKmeans, getGeneWithLargestCount
+from CompleteBin.Seqs.seq_utils import (callGenesForKmeans,
+                                        getGeneWithLargestCount)
+from CompleteBin.Trainer.sampler import DeeperBinSampler
 from CompleteBin.Trainer.ssmt_v2 import SelfSupervisedMethodsTrainer
 from CompleteBin.version import bin_v
 
@@ -126,7 +128,7 @@ def binning_with_all_steps(
     db_folder_path: str=None,
     n_views: int=6,
     count_kmer: int=4,
-    min_contig_length=800,
+    min_contig_length=900,
     min_contig_length_auto_decision=False,
     short_long_ratio=0.333,
     # model training config
@@ -161,7 +163,7 @@ def binning_with_all_steps(
         db_folder_path (str, optional): The path of database folder. Defaults to None. You can ignore it if you set the 'DeeperBin_DB' environmental variable.
         n_views (int, optional): Number of views to generate for each contig during training. Defaults to 6.
         count_kmer (int, optional): The k setting of k-mer. Defaults to 4.
-        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 800.
+        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 900.
         min_contig_length_auto_decision  (bool, optional): Auto determining the length of min contig if it is True. 
         short_long_ratio (float, optional): The min contig length would be shorter if this parameter larger under the auto determing is True.
         feature_dim (int, optional): The feature dim of final embeddings. Defaults to 100.

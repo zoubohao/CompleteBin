@@ -5,6 +5,7 @@ import sys
 
 from CompleteBin.Binning_steps import binning_with_all_steps
 
+
 def main():
     
     myparser = argparse.ArgumentParser(
@@ -61,8 +62,8 @@ def main():
     myparser.add_argument(
         "--min_contig_length",
         type=int,
-        default=800,
-        help="The minimum length of contigs for binning. Defaults to 800.")
+        default=900,
+        help="The minimum length of contigs for binning. Defaults to 900.")
     myparser.add_argument(
         "--batch_size",
         type=int,
