@@ -22,29 +22,30 @@ conda activate CompleteBin
 mamba env update --file completebin-conda-env.yml
 ```
 
-**And**
+#### 3. THIRD STEP (Install Pytorch for CompleteBin)
 
-Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)** if you want to use GPUs (We highly recommend using GPUs). For example (In our system with GPUs, download another version for your CUDA version.):
+Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)**. 
+We highly recommend installing PyTorch with a supporting GPU version.
+For example (In our system with GPUs, download another version for your CUDA version.):
 ```
 conda activate CompleteBin
-pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
+pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 ```
 
 **Note**: Please use "conda create -n completebin --solver=classic" if you meet "CondaValueError: You have chosen a non-default solver backend (libmamba) but it was not recognized. Choose one of: classic" this error when you are creating the environment.
 
-#### 3. THIRD STEP (Install Codes of CompleteBin)
+#### 4. FOURTH STEP (Install Codes of CompleteBin)
 After preparing the environment, the code of CompleteBin can be installed via pip. 
 ```
 pip install CompleteBin==1.0.9.11
 ```
 This installation will run for around 10 minutes.
 
-## Installation (Download Pretrained Weight and Other Files for Running)
+#### 5. FIFTH STEP (Download Pretrain Weights for CompleteBin)
 Download the pretrained weight and other files (**CompleteBin-DB.zip**) for running CompleteBin from this **[LINK](https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing)**.
 https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing
 
 You have two ways to use these files.
-
 
 #### 1. Set Environmental Variable
 - Unzip the downloaded file (**CompleteBin-DB.zip**) and set an **environmental variable** called "CompleteBin_DB" by adding the following line to the last line of the .bashrc file (The path of the file: ~/.bashrc):
