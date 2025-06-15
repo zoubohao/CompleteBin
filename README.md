@@ -14,7 +14,7 @@ conda install mamba -c conda-forge
 #### 1. FIRST STEP (Create Conda Environment for CompleteBin)
 Create CompleteBin's conda environment by using this command:
 ```
-conda env create -n CompleteBin
+conda create -n CompleteBin
 ```
 #### 2. SECOND STEP (Install Conda packages for CompleteBin)
 ```
