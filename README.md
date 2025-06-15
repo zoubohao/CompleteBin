@@ -25,8 +25,10 @@ mamba env update --file completebin-conda-env.yml
 #### 3. THIRD STEP (Install Pytorch for CompleteBin)
 
 Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)**. 
+
 We highly recommend installing PyTorch with a supporting GPU version.
-For example (In our system with GPUs, download another version for your CUDA version.):
+
+For example (In our system with CUDA 11.8 version. You can download another PyTorch version to fit your CUDA):
 ```
 conda activate CompleteBin
 pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
