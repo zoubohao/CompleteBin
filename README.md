@@ -45,9 +45,9 @@ This installation will run for around 10 minutes.
 Download the pretrained weight and other files (**CompleteBin-DB.zip**) for running CompleteBin from this **[LINK](https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing)**.
 https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing
 
-You have two ways to use these files.
+##### You have two ways to use these files.
 
-#### 1. Set Environmental Variable
+##### 1. Set Environmental Variable
 - Unzip the downloaded file (**CompleteBin-DB.zip**) and set an **environmental variable** called "CompleteBin_DB" by adding the following line to the last line of the .bashrc file (The path of the file: ~/.bashrc):
 ```
 export CompleteBin_DB=/path/of/this/CompleteBin-DB/
@@ -59,7 +59,7 @@ For example: 'export CompleteBin_DB=/home/csbhzou/software/CompleteBin-DB/'.
 source .bashrc
 ```
 
-#### 2. Using the '-db' or '--db_files_path' flag in CLI
+##### 2. Using the '-db' or '--db_files_path' flag in CLI
 
 - **You can set the '-db' flag in CLI to the path of the 'CompleteBin-DB' folder if you do not want to set the environmental variable.**
 
@@ -163,7 +163,7 @@ This file contains the following columns:
 
 ## Repo Contents
 - [CompleteBin-DB](./CompleteBin-DB): The model weights and other necessary files for running CompleteBin. (Model weights need to be downloaded from the above link.)
-- [Src](./CompleteBin): The main code (Python) of CompleteBin.
+- [CompleteBin](./CompleteBin): The main code (Python) of CompleteBin.
 
 
 
