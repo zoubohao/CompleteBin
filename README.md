@@ -72,7 +72,7 @@ source .bashrc
 
 **1.  You can run CompleteBin through the following command:**
 
-For example, we run completebin with cuda 1 device
+For example, we run completebin with cuda 0 device
 ```
 completebin -c xxx.fasta -b xxx.bam  -o ./output -db ./DeeperBin-DB/ -temp ./temp --device cuda:0 
 
