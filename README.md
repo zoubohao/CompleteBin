@@ -22,7 +22,7 @@ conda activate CompleteBin
 mamba env update --file completebin-conda-env.yml
 ```
 
-#### 3. THIRD STEP (Install Pytorch for CompleteBin)
+#### 3. THIRD STEP (Install PyTorch for CompleteBin)
 
 Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)**. 
 
