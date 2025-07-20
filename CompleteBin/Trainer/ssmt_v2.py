@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from CompleteBin.IO import progressBar, readPickle
 from CompleteBin.logger import get_logger
 from CompleteBin.Model.model import DeeperBinModel
-from CompleteBin.Seqs.seq_utils import generate_feature_mapping_reverse
+from CompleteBin.Seqs.seq_utils import generate_feature_mapping_reverse, generate_feature_mapping_whole_tokens
 from CompleteBin.Trainer.dataset import TrainingDataset
 # from CompleteBin.Trainer.optimizer import get_optimizer
 from CompleteBin.Trainer.trainer import Trainer
@@ -54,11 +54,11 @@ class SelfSupervisedMethodsTrainer(object):
         model_save_folder: str,
         emb_output_folder: str,
         count_kmer: int,
-        split_parts_list,
-        N50,
-        large_model,
-        num_bam_files,
-        max_cov_mean,
+        split_parts_list: list,
+        N50: int,
+        large_model: bool,
+        num_bam_files: int,
+        std_val: np.ndarray,
         pretrain_model_weight_path: str,
         log_every_n_steps: int = 10,
         multi_contrast = False
@@ -82,6 +82,7 @@ class SelfSupervisedMethodsTrainer(object):
     
         model = DeeperBinModel(
             kmer_dim=self.count_nr_feature_rev,
+            whole_kmer_dim=self.count_nr_feature_rev,
             feature_dim=feature_dim,
             num_bam_files = num_bam_files,
             split_parts_list = split_parts_list,
@@ -124,10 +125,17 @@ class SelfSupervisedMethodsTrainer(object):
         data = []
         data_name = []
         save_array = np.load(training_data_path, allow_pickle=True)
+        max_val_list = [[] for _ in range(num_bam_files)]
         for cur_contigname, cur_tuples in save_array:
             data.append(cur_tuples)
             data_name.append(cur_contigname)
-
+            cur_whole_bp_cov_tnf_array = cur_tuples[-1]
+            # assert whole_bp_cov_tnf_array.shape[0] == len(bp_nparray_list) and \
+            #     whole_bp_cov_tnf_array.shape[1] == len(count_kmer_dict)
+            for j in range(num_bam_files):
+                max_val_list[j].append(np.max(cur_whole_bp_cov_tnf_array[j]))
+        max_val_list = np.array(max_val_list)
+        max_val = np.max(np.array(max_val_list, dtype=np.float32), axis=1, keepdims=False) / 2.
         self.training_set = TrainingDataset(data,
                                             data_name, 
                                             n_views, 
@@ -140,9 +148,11 @@ class SelfSupervisedMethodsTrainer(object):
                                             dropout_p=drop_p)
         self.training_loader = DataLoader(self.training_set,
                                           batch_size,
-                                          num_workers=16,
+                                          num_workers=64,
                                           pin_memory=True,
                                           sampler=sampler,
+                                          prefetch_factor=2,
+                                          persistent_workers=True,
                                           drop_last=False)
         self.valid_set = TrainingDataset(data,
                                         data_name, 
@@ -156,7 +166,7 @@ class SelfSupervisedMethodsTrainer(object):
         self.valid_loader = DataLoader(self.valid_set,
                                        batch_size,
                                        shuffle=False,
-                                       num_workers=16,
+                                       num_workers=32,
                                        pin_memory=True,
                                        drop_last=True)
         ########### testing dataloader #############
@@ -172,7 +182,7 @@ class SelfSupervisedMethodsTrainer(object):
         self.infer_loader = DataLoader(self.testing_set,
                                        batch_size,
                                        shuffle=False,
-                                       num_workers=16,
+                                       num_workers=32,
                                        pin_memory=True,
                                        drop_last=False)
         # trainer class
@@ -186,7 +196,7 @@ class SelfSupervisedMethodsTrainer(object):
             n_views,
             batch_size,
             drop_p,
-            max_cov_mean,
+            (max_val, std_val),
             temperature_simclr=temperature_simclr,
             log_every_n_steps=log_every_n_steps,
             multi_contrast = multi_contrast

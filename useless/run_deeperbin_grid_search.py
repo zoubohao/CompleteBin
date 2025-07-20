@@ -42,7 +42,7 @@ if __name__ == "__main__":
         name = file.split(".")[0:-2]
         datanames.add(".".join(name))
     
-    drop_p_list = [0.11, 0.115, 0.12, 0.125, 0.13, 0.135, 0.14, 0.145, 0.15]
+    drop_p_list = [0.125]
     for drop_p in drop_p_list:
         id_name = f"marine-sample-0"
         # id_name = data

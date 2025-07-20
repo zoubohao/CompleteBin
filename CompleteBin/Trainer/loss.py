@@ -72,6 +72,33 @@ def info_nce_loss(features, batch_size, n_views, temperature, device, criterion)
     return criterion(logits, labels), logits, labels
 
 
+def disp_info_nce_loss(features, batch_size, n_views, temperature, device):
+    """_summary_
+
+    Args:
+        features (_type_): [view_11, ..., view_1b, view_21, ..., view_2b, ..., view_n1, ..., view_nb]
+        batch_size (_type_): _description_
+        n_views (_type_): _description_
+        temperature (_type_): _description_
+        device (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    labels = torch.cat([torch.arange(batch_size) for i in range(n_views)], dim=0)
+    labels = (labels.unsqueeze(0) == labels.unsqueeze(1)).float()
+    labels = labels.to(device)
+    features = F.normalize(features, dim=-1)
+    similarity_matrix = torch.matmul(features, features.T)
+    # discard the main diagonal from both: labels and similarities matrix
+    mask = torch.eye(labels.shape[0], dtype=torch.bool).to(device)
+    labels = labels[~mask].view(labels.shape[0], -1)
+    similarity_matrix = similarity_matrix[~mask].view(similarity_matrix.shape[0], -1)
+    negatives = similarity_matrix[~labels.bool()].view(similarity_matrix.shape[0], -1)
+    negatives = negatives[:, None].expand(-1, n_views - 1, -1).flatten(0, 1) / temperature
+    return torch.log(torch.mean(torch.exp(negatives)))
+
+
 def info_nce_loss_for_loop(features, batch_size, n_views, temperature, device, criterion):
     n_views_emb = torch.chunk(features, chunks=n_views, dim=0)
     logits_list = []

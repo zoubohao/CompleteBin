@@ -42,7 +42,7 @@ def runGalah(galah_out_folder,
                 if suffix[1:] != bin_suffix:
                     continue
                 wh.write(os.path.join(cur_method_bin_folder, file_name) + "\n")
-    cmd = f"galah cluster --ani 99 --precluster-ani 90 --genome-fasta-list {cur_out_files_txt}  " + \
+    cmd = f"galah cluster --ani 99 --precluster-ani 95 --genome-fasta-list {cur_out_files_txt}  " + \
         f"  --output-cluster-definition {os.path.join(galah_out_folder, 'clusters.tsv')}  -t {cpu_num}"
     os.system(cmd)
 

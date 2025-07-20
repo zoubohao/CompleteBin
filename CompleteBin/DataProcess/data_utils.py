@@ -1,4 +1,5 @@
 
+from collections import defaultdict, OrderedDict
 import multiprocessing
 import os
 import random
@@ -60,16 +61,36 @@ def get_global_kmer_feature_vector_whole_tokens(
     return composition_v / np.sum(composition_v)
 
 
+BASE_COMPLEMENT = {"A": "T", "T": "A", "G": "C", "C": "G"}
+def get_tuple_kmer(kmer: str):
+    rev_kmer = "".join([BASE_COMPLEMENT[x] for x in reversed(kmer)])
+    return tuple(sorted([kmer, rev_kmer]))
+
+
 def get_normlized_count_vec_of_seq(
         seq: str,
-        kmer_dict,
-        nr_features,
-        kmer_len):
+        kmer_dict: dict,
+        nr_features: int,
+        kmer_len: int,
+        bparray_list: list,
+        cal_bp_tnf = False
+    ):
     seq = seq.upper()
+    kmer2cov_list = OrderedDict()
+    if cal_bp_tnf:
+        assert len(seq) == len(bparray_list[0]), ValueError(f"The len of seq is: {len(seq)}, but its bparray's length is {len(bparray_list[0])}")
+        for kmer, _ in kmer_dict.items():
+            kmer2cov_list[get_tuple_kmer(kmer)] = [[] for _ in range(len(bparray_list))]
     kmers = []
     N = len(seq)
     for i in range(N):
         cur_mer = seq[i: i + kmer_len]
+        if cal_bp_tnf:
+            for j, cur_bp_array in enumerate(bparray_list):
+                if cur_mer in kmer_dict:
+                    bp_mer = get_tuple_kmer(cur_mer)
+                    cur_bp_cov = cur_bp_array[i: i + kmer_len]
+                    kmer2cov_list[bp_mer][j].append(sum(cur_bp_cov) / kmer_len + 0.)
         if cur_mer in kmer_dict:
             kmers.append(kmer_dict[cur_mer])
     kmers.append(nr_features-1)
@@ -77,7 +98,19 @@ def get_normlized_count_vec_of_seq(
     composition_v[-1] -= 1
     assert np.sum(composition_v) != 0, ValueError(f"the ori seq is {seq}")
     composition_v = np.array(composition_v, dtype=np.float32) / np.sum(composition_v)
-    return composition_v
+    ### return bp-tnf-array-list
+    bp_cov_tnf_array = None
+    if cal_bp_tnf:
+        bp_cov_tnf_array_list = [[] for _ in range(len(bparray_list))]
+        for _, values_list in kmer2cov_list.items():
+            for j, cur_cov_list in enumerate(values_list):
+                if len(cur_cov_list) != 0:
+                    bp_cov_tnf_array_list[j].append(sum(cur_cov_list) / N + 0.)
+                else:
+                    bp_cov_tnf_array_list[j].append(0.)
+        bp_cov_tnf_array = np.array(bp_cov_tnf_array_list, dtype=np.float32)
+        # print("bp_cov_tnf_array shape: ", bp_cov_tnf_array.shape, bp_cov_tnf_array, bparray_list[0], len(bparray_list[0]))
+    return composition_v, bp_cov_tnf_array ### L, C
 
 
 def split_seq_equally(seq: str, num_parts: int, count_kmer: int):
@@ -106,20 +139,31 @@ def get_features_of_one_seq(seq: str,
         mean = []
         sqrt_var = []
         for bp_array in bp_nparray_list:
-            # cur_mean, cur_sqrt_var = np.sum(bp_array) / (len(seq) - 2. * 75.), np.sqrt(np.var(bp_array, dtype=np.float32))
             mean.append(sum(bp_array) / len(bp_array))
-            sqrt_var.append(np.std(bp_array + 1e-5, dtype=np.float32))
+            sqrt_var.append(np.std(bp_array, dtype=np.float32))
     else:
         mean, sqrt_var = None, None
     seq_tokens = []
     seq = seq.upper().replace("N", "A")
+    cal_tnf_cov = False
+    whole_bp_cov_tnf_array = None
     for sub_parts in subparts_list:
+        if sub_parts == 1 and bp_nparray_list is not None:
+            cal_tnf_cov = True
+        else:
+            cal_tnf_cov = False
         sub_seqs_list = split_seq_equally(seq, sub_parts, count_kmer)
         assert len(sub_seqs_list) == sub_parts, ValueError(f"The seq is {seq}")
         for sub_seq in sub_seqs_list:
-            sub_composition_v = get_normlized_count_vec_of_seq(sub_seq, count_kmer_dict, count_nr_features, count_kmer)
+            sub_composition_v, cur_bp_cov_tnf_array = get_normlized_count_vec_of_seq(sub_seq, count_kmer_dict, count_nr_features, count_kmer, 
+                                                               bp_nparray_list, cal_tnf_cov)
             seq_tokens.append(sub_composition_v)
+            if sub_parts == 1 and bp_nparray_list is not None:
+                whole_bp_cov_tnf_array = cur_bp_cov_tnf_array
     assert len(seq_tokens) == sum(subparts_list), ValueError(f"seq: {seq}, len seq tokens: {len(seq_tokens)}")
+    # assert whole_bp_cov_tnf_array.shape[0] == len(bp_nparray_list) and \
+    #     whole_bp_cov_tnf_array.shape[1] == len(count_kmer_dict)
+    
     seq_tokens = np.stack(seq_tokens, axis=0) # L, C
     if mean is not None and sqrt_var is not None:
         mean = np.array(mean, dtype=np.float32)
@@ -127,7 +171,126 @@ def get_features_of_one_seq(seq: str,
     else:
         mean = None
         sqrt_var = None
-    return seq_tokens, mean, sqrt_var
+    return seq_tokens, mean, sqrt_var, whole_bp_cov_tnf_array
+
+
+def process_data_one_thread_return_list(
+    contigname2seq,
+    contigname2bp_nparray_list,
+    count_kmer,
+    split_parts_list,
+):
+    j = 0
+    n = len(contigname2seq)
+    output_list = []
+    count_kmer_dict, count_nr_features = generate_feature_mapping_reverse(count_kmer)
+    for contigname, seq in contigname2seq.items():
+        # progressBar(j, n)
+        cur_tuple = (seq,
+                    contigname2bp_nparray_list[contigname],
+                    *get_features_of_one_seq(seq, 
+                                            contigname2bp_nparray_list[contigname],
+                                            count_kmer, 
+                                            count_kmer_dict, 
+                                            count_nr_features,
+                                            split_parts_list)
+        )
+        ###
+        output_list.append((contigname[1:], cur_tuple))
+        j += 1
+    return output_list
+
+
+def build_training_seq_data_numpy_save(
+    contigname2seq_path: str,
+    contigname2bp_nparray_list_path: str,
+    data_output_path: str,
+    count_kmer,
+    split_parts_list,
+    num_workers: int = None
+):
+    contigname2seq = readPickle(contigname2seq_path)
+    contigname2bp_array_list = readPickle(contigname2bp_nparray_list_path)
+    if os.path.exists(data_output_path) is False:
+        os.mkdir(data_output_path)
+    if num_workers is None:
+        num_workers = psutil.cpu_count()
+    contignames = list(contigname2seq.keys())
+    random.shuffle(contignames)
+    contignames_list = splitListEqually(contignames, num_workers)
+    split_list = []
+    for names in contignames_list:
+        c2s = {}
+        c2b = {}
+        for one_name in names:
+            c2s[one_name] = contigname2seq[one_name]
+            c2b[one_name] = contigname2bp_array_list[one_name]
+        split_list.append((c2s, c2b))
+    pro_list = []
+    res = []
+    logger.info("--> Start to generate data for training.") # len(split_list)
+    with multiprocessing.Pool(len(split_list)) as multiprocess:
+        for i, item in enumerate(split_list):
+            p = multiprocess.apply_async(process_data_one_thread_return_list,
+                                         (item[0],
+                                          item[1],
+                                          count_kmer,
+                                          split_parts_list,
+                                          ))
+            pro_list.append(p)
+        multiprocess.close()
+        for p in pro_list:
+            res.append(p.get())
+    
+    save_list = []
+    for cur_thread_list in res:
+        for item in cur_thread_list:
+            save_list.append(item)
+    np.save(os.path.join(data_output_path, "training_data.npy"), np.array(save_list, dtype=object), allow_pickle=True)
+
+
+
+### useless codes
+
+# def aug_contigs(
+#     contigname2seq: dict,
+#     contigname2bp_array_list: dict,
+#     min_contig_len: int,
+#     default_aug_contig_num = 35000
+# ):
+#     gap_num = default_aug_contig_num - len(contigname2seq)
+#     if gap_num <= 0:
+#         return contigname2seq, contigname2bp_array_list
+#     new_contigname2seq = {}
+#     new_contigname2bp_array_list = {}
+#     N = 0
+#     tmp_store_list = []
+#     judge_aug = True
+#     aug_times = 0
+#     for contigname, seq in contigname2seq.items():
+#         N += len(seq)
+#         tmp_store_list.append((contigname, seq, len(seq)))
+#     tmp_store_list = list(sorted(tmp_store_list, key=lambda x: x[-1], reverse=True))
+#     for contigname, seq, seq_len in tmp_store_list:
+#         cur_aug_num = int((seq_len * 1.0 / N + 0.0) * gap_num) + 1
+#         new_contigname2seq[contigname] = seq
+#         new_contigname2bp_array_list[contigname] = contigname2bp_array_list[contigname]
+#         for j in range(cur_aug_num):
+#             if judge_aug:
+#                 cur_contigname = contigname + f"_augcontig_{j}"
+#                 aug_seq, aug_start, aug_end = random_generate_view(seq, min_contig_len)
+#                 new_contigname2seq[cur_contigname] = aug_seq
+#                 ## bp array aug
+#                 cur_new_bp_array_list = []
+#                 for cur_bp_array in contigname2bp_array_list[contigname]:
+#                     cur_new_bp_array_list.append(cur_bp_array[aug_start: aug_end])
+#                 new_contigname2bp_array_list[cur_contigname] = cur_new_bp_array_list
+#             else:
+#                 break
+#         aug_times += cur_aug_num
+#         if aug_times > gap_num:
+#             judge_aug = False
+#     return new_contigname2seq, new_contigname2bp_array_list
 
 
 # def get_features_one_seq_iter_once_time(
@@ -170,187 +333,70 @@ def get_features_of_one_seq(seq: str,
 #     return seq_tokens, mean, sqrt_var
 
 
-def process_data_one_thread(
-    contigname2seq,
-    contigname2bp_nparray_list,
-    count_kmer,
-    data_output_path,
-    split_parts_list,
-):
-    j = 0
-    n = len(contigname2seq)
-    count_kmer_dict, count_nr_features = generate_feature_mapping_reverse(count_kmer)
-    for contigname, seq in contigname2seq.items():
-        # progressBar(j, n)
-        if os.path.exists(os.path.join(data_output_path, f"{contigname[1:]}.pkl")) is False:
-            cur_tuple = (seq,
-                        contigname2bp_nparray_list[contigname],
-                        *get_features_of_one_seq(seq, 
-                                                contigname2bp_nparray_list[contigname],
-                                                count_kmer, 
-                                                count_kmer_dict, 
-                                                count_nr_features,
-                                                split_parts_list)
-            )
-            ###
-            writePickle(os.path.join(data_output_path, f"{contigname[1:]}.pkl"), cur_tuple)
-        j += 1
+# def process_data_one_thread(
+#     contigname2seq,
+#     contigname2bp_nparray_list,
+#     count_kmer,
+#     data_output_path,
+#     split_parts_list,
+# ):
+#     j = 0
+#     n = len(contigname2seq)
+#     count_kmer_dict, count_nr_features = generate_feature_mapping_reverse(count_kmer)
+#     for contigname, seq in contigname2seq.items():
+#         # progressBar(j, n)
+#         if os.path.exists(os.path.join(data_output_path, f"{contigname[1:]}.pkl")) is False:
+#             cur_tuple = (seq,
+#                         contigname2bp_nparray_list[contigname],
+#                         *get_features_of_one_seq(seq, 
+#                                                 contigname2bp_nparray_list[contigname],
+#                                                 count_kmer, 
+#                                                 count_kmer_dict, 
+#                                                 count_nr_features,
+#                                                 split_parts_list)
+#             )
+#             ###
+#             writePickle(os.path.join(data_output_path, f"{contigname[1:]}.pkl"), cur_tuple)
+#         j += 1
 
 
-def build_training_seq_data(
-    contigname2seq_path: str,
-    contigname2bp_nparray_list_path: str,
-    data_output_path: str,
-    count_kmer,
-    split_parts_list,
-    num_workers: int = None
-):
-    contigname2seq = readPickle(contigname2seq_path)
-    contigname2bp_array_list = readPickle(contigname2bp_nparray_list_path)
-    if os.path.exists(data_output_path) is False:
-        os.mkdir(data_output_path)
-    if num_workers is None:
-        num_workers = psutil.cpu_count()
-    contignames = list(contigname2seq.keys())
-    random.shuffle(contignames)
-    contignames_list = splitListEqually(contignames, num_workers)
-    split_list = []
-    for names in contignames_list:
-        c2s = {}
-        c2b = {}
-        for one_name in names:
-            c2s[one_name] = contigname2seq[one_name]
-            c2b[one_name] = contigname2bp_array_list[one_name]
-        split_list.append((c2s, c2b))
-    pro_list = []
-    logger.info("--> Start to generate data for training.")
-    with multiprocessing.Pool(len(split_list)) as multiprocess:
-        for i, item in enumerate(split_list):
-            p = multiprocess.apply_async(process_data_one_thread,
-                                         (item[0],
-                                          item[1],
-                                          count_kmer,
-                                          data_output_path,
-                                          split_parts_list,
-                                          ))
-            pro_list.append(p)
-        multiprocess.close()
-        for p in pro_list:
-            p.get()
-
-
-def process_data_one_thread_return_list(
-    contigname2seq,
-    contigname2bp_nparray_list,
-    count_kmer,
-    split_parts_list,
-):
-    j = 0
-    n = len(contigname2seq)
-    output_list = []
-    count_kmer_dict, count_nr_features = generate_feature_mapping_reverse(count_kmer)
-    for contigname, seq in contigname2seq.items():
-        # progressBar(j, n)
-        cur_tuple = (seq,
-                    contigname2bp_nparray_list[contigname],
-                    *get_features_of_one_seq(seq, 
-                                            contigname2bp_nparray_list[contigname],
-                                            count_kmer, 
-                                            count_kmer_dict, 
-                                            count_nr_features,
-                                            split_parts_list)
-        )
-        ###
-        output_list.append((contigname[1:], cur_tuple))
-        j += 1
-    return output_list
-
-
-def aug_contigs(
-    contigname2seq: dict,
-    contigname2bp_array_list: dict,
-    min_contig_len: int,
-    default_aug_contig_num = 35000
-):
-    gap_num = default_aug_contig_num - len(contigname2seq)
-    if gap_num <= 0:
-        return contigname2seq, contigname2bp_array_list
-    new_contigname2seq = {}
-    new_contigname2bp_array_list = {}
-    N = 0
-    tmp_store_list = []
-    judge_aug = True
-    aug_times = 0
-    for contigname, seq in contigname2seq.items():
-        N += len(seq)
-        tmp_store_list.append((contigname, seq, len(seq)))
-    tmp_store_list = list(sorted(tmp_store_list, key=lambda x: x[-1], reverse=True))
-    for contigname, seq, seq_len in tmp_store_list:
-        cur_aug_num = int((seq_len * 1.0 / N + 0.0) * gap_num) + 1
-        new_contigname2seq[contigname] = seq
-        new_contigname2bp_array_list[contigname] = contigname2bp_array_list[contigname]
-        for j in range(cur_aug_num):
-            if judge_aug:
-                cur_contigname = contigname + f"_augcontig_{j}"
-                aug_seq, aug_start, aug_end = random_generate_view(seq, min_contig_len)
-                new_contigname2seq[cur_contigname] = aug_seq
-                ## bp array aug
-                cur_new_bp_array_list = []
-                for cur_bp_array in contigname2bp_array_list[contigname]:
-                    cur_new_bp_array_list.append(cur_bp_array[aug_start: aug_end])
-                new_contigname2bp_array_list[cur_contigname] = cur_new_bp_array_list
-            else:
-                break
-        aug_times += cur_aug_num
-        if aug_times > gap_num:
-            judge_aug = False
-    return new_contigname2seq, new_contigname2bp_array_list
-
-
-def build_training_seq_data_numpy_save(
-    contigname2seq_path: str,
-    contigname2bp_nparray_list_path: str,
-    data_output_path: str,
-    count_kmer,
-    split_parts_list,
-    num_workers: int = None
-):
-    contigname2seq = readPickle(contigname2seq_path)
-    contigname2bp_array_list = readPickle(contigname2bp_nparray_list_path)
-    if os.path.exists(data_output_path) is False:
-        os.mkdir(data_output_path)
-    if num_workers is None:
-        num_workers = psutil.cpu_count()
-    contignames = list(contigname2seq.keys())
-    random.shuffle(contignames)
-    contignames_list = splitListEqually(contignames, num_workers)
-    split_list = []
-    for names in contignames_list:
-        c2s = {}
-        c2b = {}
-        for one_name in names:
-            c2s[one_name] = contigname2seq[one_name]
-            c2b[one_name] = contigname2bp_array_list[one_name]
-        split_list.append((c2s, c2b))
-    pro_list = []
-    res = []
-    logger.info("--> Start to generate data for training.")
-    with multiprocessing.Pool(len(split_list)) as multiprocess:
-        for i, item in enumerate(split_list):
-            p = multiprocess.apply_async(process_data_one_thread_return_list,
-                                         (item[0],
-                                          item[1],
-                                          count_kmer,
-                                          split_parts_list,
-                                          ))
-            pro_list.append(p)
-        multiprocess.close()
-        for p in pro_list:
-            res.append(p.get())
-    
-    save_list = []
-    for cur_thread_list in res:
-        for item in cur_thread_list:
-            save_list.append(item)
-    np.save(os.path.join(data_output_path, "training_data.npy"), np.array(save_list, dtype=object), allow_pickle=True)
-
+# def build_training_seq_data(
+#     contigname2seq_path: str,
+#     contigname2bp_nparray_list_path: str,
+#     data_output_path: str,
+#     count_kmer,
+#     split_parts_list,
+#     num_workers: int = None
+# ):
+#     contigname2seq = readPickle(contigname2seq_path)
+#     contigname2bp_array_list = readPickle(contigname2bp_nparray_list_path)
+#     if os.path.exists(data_output_path) is False:
+#         os.mkdir(data_output_path)
+#     if num_workers is None:
+#         num_workers = psutil.cpu_count()
+#     contignames = list(contigname2seq.keys())
+#     random.shuffle(contignames)
+#     contignames_list = splitListEqually(contignames, num_workers)
+#     split_list = []
+#     for names in contignames_list:
+#         c2s = {}
+#         c2b = {}
+#         for one_name in names:
+#             c2s[one_name] = contigname2seq[one_name]
+#             c2b[one_name] = contigname2bp_array_list[one_name]
+#         split_list.append((c2s, c2b))
+#     pro_list = []
+#     logger.info("--> Start to generate data for training.")
+#     with multiprocessing.Pool(len(split_list)) as multiprocess:
+#         for i, item in enumerate(split_list):
+#             p = multiprocess.apply_async(process_data_one_thread,
+#                                          (item[0],
+#                                           item[1],
+#                                           count_kmer,
+#                                           data_output_path,
+#                                           split_parts_list,
+#                                           ))
+#             pro_list.append(p)
+#         multiprocess.close()
+#         for p in pro_list:
+#             p.get()

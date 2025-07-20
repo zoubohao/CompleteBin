@@ -41,7 +41,7 @@ class TrainingDataset(Dataset):
         self.split_parts_list = split_parts_list
         self.data = data
         self.data_name = data_name
-        self.dropout_p = dropout_p
+        self.dropout_p = dropout_p # 0.15
         
         ## ensure 
         if train_valid_test.lower() == "train" and len(data) % batch_size != 0:
@@ -51,16 +51,16 @@ class TrainingDataset(Dataset):
             N = len(self.data)
             for i, item in enumerate(self.data):
                 # progressBar(i, N)
-                ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt = item
-                new_data.append((ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt, self.data_name[i], len(ori_seq)))
+                ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt, whole_bp_cov_tnf_array = item
+                new_data.append((ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt, whole_bp_cov_tnf_array, self.data_name[i], len(ori_seq)))
             new_data = list(sorted(new_data, key= lambda x: x[-1], reverse=True))
             gap_data = []
             gap_data_name = []
             for i in range(gaps):
-                if i < 10:
+                if i < 3:
                     logger.info(f"--> The top {i + 1} contig length for training is {new_data[i][-1]}. Its mean and std are {(new_data[i][3], new_data[i][4])}")
-                gap_data.append(tuple(new_data[i][0: 5]))
-                gap_data_name.append(new_data[i][5])
+                gap_data.append(tuple(new_data[i][0: 6]))
+                gap_data_name.append(new_data[i][6])
             logger.info(f"--> There are {len(gap_data)} contigs for training.")
             self.data = gap_data
             self.data_name = gap_data_name
@@ -77,19 +77,19 @@ class TrainingDataset(Dataset):
         cur_bp_array_list = []
         for cov_bp_array in cov_bp_array_list:
             cur_bp_array_list.append(cov_bp_array[start_i: end_i])
-        cur_seq_tokens, cur_cov_mean, cur_cov_var_sqrt = get_features_of_one_seq(cur_view_seq,
-                                                                                cur_bp_array_list,
-                                                                                self.count_kmer,
-                                                                                self.count_kmer_dict_rev,
-                                                                                self.count_nr_feature_rev,
-                                                                                self.split_parts_list)
-        return cur_seq_tokens, cur_cov_mean, cur_cov_var_sqrt
+        cur_seq_tokens, cur_cov_mean, cur_cov_var_sqrt, cur_whole_bp_cov_tnf_array = get_features_of_one_seq(cur_view_seq,
+                                                                                        cur_bp_array_list,
+                                                                                        self.count_kmer,
+                                                                                        self.count_kmer_dict_rev,
+                                                                                        self.count_nr_feature_rev,
+                                                                                        self.split_parts_list)
+        return cur_seq_tokens, cur_cov_mean, cur_cov_var_sqrt, cur_whole_bp_cov_tnf_array
 
     def __getitem__(self, index):
         # [(deepurify_nparray, seq_kmer_freq, cov_kmer_freq, mean_val, var_val), ...,
         # (deepurify_nparray, seq_kmer_freq, cov_kmer_freq, mean_val, var_val)]
-        ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt = self.data[index]
-        ori_view_tuple = (seq_tokens, cov_mean, cov_var_sqrt)
+        ori_seq, cov_bp_array_list, seq_tokens, cov_mean, cov_var_sqrt, whole_bp_cov_tnf_array = self.data[index]
+        ori_view_tuple = (seq_tokens, cov_mean, cov_var_sqrt, whole_bp_cov_tnf_array)
         l, dim_size = seq_tokens.shape
         cov_shape = cov_mean.shape
         
@@ -99,13 +99,12 @@ class TrainingDataset(Dataset):
             n_view_list = []
             for _ in range(self.n_view - 1):
                 n_view_list.append(self.generate_view(ori_seq, cov_bp_array_list, None))
-            last_ori_view = deepcopy(ori_view_tuple)
-            mask = np.random.random(size=[l, 1])
-            mask = np.array(mask > self.dropout_p, dtype=np.float32)
+            mask = np.array(np.random.random(size=[l, 1]) > self.dropout_p, dtype=np.float32)
             last_mask_view = (seq_tokens * mask, 
-                            np.random.randn(*cov_shape) * 0.01 + cov_mean, 
-                            np.random.randn(*cov_shape) * 0.01 + cov_var_sqrt)
-            con_list = [ori_view_tuple] + n_view_list + [last_mask_view, last_ori_view]
+                            np.clip(np.random.randn(*cov_shape) * 0.01 + cov_mean, a_min=0, a_max=None), 
+                            np.clip(np.random.randn(*cov_shape) * 0.01 + cov_var_sqrt, a_min=0, a_max=None),
+                            np.clip(np.random.randn(*whole_bp_cov_tnf_array.shape) * 0.001 + whole_bp_cov_tnf_array, a_min=0, a_max=None))
+            con_list = [ori_view_tuple] + n_view_list + [last_mask_view, ori_view_tuple]
             return con_list
         elif self.train_valid_test.lower() == "valid":
             return [ori_view_tuple] + [self.generate_view(ori_seq, cov_bp_array_list, index)] + [ori_view_tuple], self.data_name[index]

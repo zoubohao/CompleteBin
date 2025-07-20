@@ -107,8 +107,9 @@ def prepare_sequences_coverage(
         if max(var_val) > 1000:
             var_val /= 2.
         logger.info(f"--> The max of coverage mean value is {mean_val}.")
-        logger.info(f"--> The max of coverage std value is {var_val}.")
-        writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (mean_val, var_val))
+        logger.info(f"--> The max coverage std value is {var_val}.")
+        # writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (mean_val, var_val))
+        writePickle(os.path.join(temp_file_folder_path, "std.pkl"), var_val)
     
     logger.info("--> Start to Call 40 Marker Genes.")
     split_input_folder = os.path.join(temp_file_folder_path, "split_contigs_random")

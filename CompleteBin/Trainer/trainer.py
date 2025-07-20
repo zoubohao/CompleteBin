@@ -111,20 +111,28 @@ class Trainer(object):
         seq_tokens_n_views = []
         mean_n_views = []
         var_n_views = []
-        for i, (seq_tokens, cov_mean, cov_var_sqrt) in enumerate(n_views_tuple_list):
+        whole_bp_cov_tnf_array_n_views = []
+        for i, (seq_tokens, cov_mean, cov_var_sqrt, whole_bp_cov_tnf_array) in enumerate(n_views_tuple_list):
             seq_tokens_n_views.append(seq_tokens)
             mean_n_views.append(cov_mean)
             var_n_views.append(cov_var_sqrt)
+            whole_bp_cov_tnf_array_n_views.append(whole_bp_cov_tnf_array)
         seq_tokens_inputs = torch.cat(seq_tokens_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True)
-        mean_inputs = torch.cat(mean_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / self.max_cov_mean
-        var_inputs = torch.cat(var_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / self.max_cov_var
+        whole_bp_cov_tnf_inputs = torch.cat(whole_bp_cov_tnf_array_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True)
+        ## [b * nviews, L, C] max_cov_mean: [1, L]
+        # print("before", whole_bp_cov_tnf_inputs)
+        # print(self.max_cov_mean[..., None].shape)
+        whole_bp_cov_tnf_inputs /= self.max_cov_mean[..., None]
+        # print("after", whole_bp_cov_tnf_inputs, whole_bp_cov_tnf_inputs.shape)
+        mean_inputs = torch.cat(mean_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / self.max_cov_mean # max_cov_mean: [1, L]
+        var_inputs = torch.cat(var_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / self.max_cov_var # max_cov_mean: [1, L]
         if len(mean_inputs.shape) == 1:
             mean_inputs.unsqueeze(1)
         if len(var_inputs.shape) == 1:
             var_inputs.unsqueeze(1)
         assert len(mean_inputs.shape) == 2 and len(var_inputs.shape) == 2, \
             ValueError(f"The dim mean_input is {mean_inputs.shape}, The dim var_inputs is {var_inputs.shape}. One of them not equal with 2.")
-        return seq_tokens_inputs, mean_inputs, var_inputs
+        return seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs
 
     def train(self, train_loader: DataLoader, valid_loader: DataLoader = None, model_weight_path = None):
         logger.info(f"--> Start self-supervised training with {self.epochs} epochs.")
@@ -139,10 +147,10 @@ class Trainer(object):
             for n_views_tuple_list in tqdm(train_loader):
                 n_views = len(n_views_tuple_list)
                 assert n_views == self.n_views + 2, ValueError("Views number is not equal with each other.")
-                seq_tokens_inputs, mean_inputs, var_inputs = self.get_model_inputs(n_views_tuple_list)
+                seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs = self.get_model_inputs(n_views_tuple_list)
                 # ============ multi-res forward passes ... ============
                 self.optimizer.zero_grad()
-                simclr_emb_contrast, seq_emb, _= self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs)
+                simclr_emb_contrast, seq_emb, _= self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs)
                 ### SimCLR loss ## changed here
                 loss_simclr, logits, labels = info_nce_loss_for_loop(simclr_emb_contrast[0: -self.batch_size * 2], 
                                                             self.batch_size, 
@@ -151,7 +159,7 @@ class Trainer(object):
                                                             self.device, 
                                                             self.criterion)
                 if self.multi_contrast:
-                    loss_simclr_seq, logits_seq, labels_seq = info_nce_loss(seq_emb[0: -self.batch_size * 2], 
+                    loss_simclr_seq, logits_seq, labels_seq = info_nce_loss_for_loop(seq_emb[0: -self.batch_size * 2], 
                                                             self.batch_size, 
                                                             self.n_views,
                                                             self.temperature_schedule[epoch_counter - 1], 
@@ -233,9 +241,9 @@ class Trainer(object):
             for n_views_tuple_list, _  in tqdm(valid_loader):
                 n_views = len(n_views_tuple_list)
                 assert n_views == 3, ValueError("Views number is not equal with each other.")
-                seq_tokens_inputs, mean_inputs, var_inputs = self.get_model_inputs(n_views_tuple_list)
+                seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs = self.get_model_inputs(n_views_tuple_list)
                 # ============ multi-res forward passes ... ============
-                simclr_emb_contrast, _, _ = self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs)
+                simclr_emb_contrast, _, _ = self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs)
                 # align loss
                 x_o = simclr_emb_contrast[0: self.batch_size]
                 x_p1 = simclr_emb_contrast[self.batch_size: self.batch_size * 2]
@@ -286,11 +294,9 @@ class Trainer(object):
         simclr_contigname2emb_norm_ndarray = {}
         with torch.no_grad():
             for n_views_tuple_list, contigname_file_list in tqdm(infer_loader):
-                seq_tokens_inputs, mean_inputs, var_inputs = self.get_model_inputs(n_views_tuple_list)
+                seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs = self.get_model_inputs(n_views_tuple_list)
                 # ============ multi-res forward passes ... ============
-                simclr_emb, _, _ = self.model.forward(seq_tokens_inputs,
-                                                mean_inputs,
-                                                var_inputs)
+                simclr_emb, _, _ = self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs)
                 for i in range(len(contigname_file_list)):
                     prefix, suffix = os.path.splitext(contigname_file_list[i])
                     if suffix == ".pkl":

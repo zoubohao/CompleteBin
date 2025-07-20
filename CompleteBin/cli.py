@@ -5,7 +5,6 @@ import sys
 
 from CompleteBin.Binning_steps import binning_with_all_steps
 
-
 def main():
     
     myparser = argparse.ArgumentParser(
@@ -60,10 +59,15 @@ def main():
         default=6,
         help="Number of views to generate for each contig during training. Defaults to 6.")
     myparser.add_argument(
+        "--dropout_prob",
+        type=float,
+        default=0.15,
+        help="The dropout probability for training. Defaults to 0.15.")
+    myparser.add_argument(
         "--min_contig_length",
         type=int,
-        default=900,
-        help="The minimum length of contigs for binning. Defaults to 900.")
+        default=850,
+        help="The minimum length of contigs for binning. The minimum length we support is 768. Defaults to 850.")
     myparser.add_argument(
         "--batch_size",
         type=int,
@@ -118,6 +122,7 @@ def main():
         n_views=args.n_views,
         min_contig_length=args.min_contig_length,
         min_contig_length_auto_decision=args.auto_min_length,
+        drop_p=args.dropout_prob,
         batch_size=args.batch_size,
         base_epoch=args.base_epoch,
         num_workers=args.num_workers,

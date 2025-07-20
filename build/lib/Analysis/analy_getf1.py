@@ -88,114 +88,158 @@ if __name__ == "__main__":
     from Analysis.F1 import BinningF1
     from Analysis.utils import convert_paf2vamb, get_vamb_cluster_tsv
     from Analysis.vamb_benchmark import Binning, Reference
+
+    # # ######construct table
+    # bin_tool = "DeeperBin"
+    # data_input_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-other-datasets-final"
+    # data_output_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/other_datasets/"
     
-    bin_tool = "DeeperBin"
-    data = "plant"
-    data_output_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-Grid-Search-marine-v1.0.9.7/"
-    data_sample_num = 10
+    # files_list = os.listdir(data_input_folder)
+    # ## calculate F1
+    # final_res = dict()
+    # nc_mag, r90p90_mag, medium_mag = 0., 0., 0.
+    # for i in files_list:
+    #     ### this needs to change !!!!!
+    #     bin_folder = os.path.join(data_input_folder, i)
+    #     output_tsv_file = os.path.join(data_output_folder, f"{i}.cluster.tsv")
+    #     print(output_tsv_file)
+    #     get_vamb_cluster_tsv(
+    #         bin_folder,
+    #         output_tsv_file,
+    #         suffix=".fasta" # change this for different binning tools
+    #     )
+    #     ref_name = "-".join(i.split("-")[0:2])
+    #     ref_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/other_datasets/{ref_name}.contigs-{i.split('-')[0]}.minimap2.paf"
+    #     output_bin2f1_file = os.path.join(data_output_folder, f"{i}.auto.bin2f1.tsv")
+        
+    #     print(output_tsv_file, os.path.exists(output_tsv_file))
+        
+    #     bins = BinningF1(output_tsv_file, ref_folder)
+    #     res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag, cur_bin2f1 = bins.get_f1([0.5, 0.6, 0.7, 0.8, 0.9, 0.95])
+    #     print(res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag)
+    #     for k, v in res.items():
+    #         if k not in final_res:
+    #             final_res[k] = v
+    #         else:
+    #             final_res[k] += v
+    #     r90p90_mag += cur_r90p90_mag
+    #     nc_mag += cur_nc_mag
+    #     medium_mag += cur_medium_mag
+    #     with open(output_bin2f1_file, "w") as wh:
+    #         for k, v in cur_bin2f1.items():
+    #             wh.write(k + "\t" + "\t".join(v) + "\n")
+
+        
+    # print(bin_tool, f"NC MAGs: {nc_mag}, ", f"90 & 90 MAGs: {r90p90_mag}, ", f"Medium MAGs: {medium_mag}", final_res)
+    # print(list(final_res.values()))
     
-    drop_p_list = [0.11, 0.115, 0.12, 0.125, 0.13, 0.135, 0.14, 0.145, 0.15]
-    epoch_list = [800, 850, 900]
-    # multi_list = [False, True]
-    for drop_p in drop_p_list:
-        for min_len in epoch_list:
-        #     ### this needs to change !!!!!
-        #     for multi in multi_list:
-            bin_folder = f"{data_output_folder}"+ \
-                f"marine-sample-0-final-output-bins-drop-{drop_p}-min_len-{min_len}/"
-            output_tsv_file = f"{data_output_folder}marine-sample-0-final-output-bins-drop-{drop_p}-min_len-{min_len}.cluster.tsv"
-            print(output_tsv_file)
-            get_vamb_cluster_tsv(
-                bin_folder,
-                output_tsv_file,
-                suffix=".fasta" # change this for different binning tools
-            )
-        # break
+    # bin_tool = "DeeperBin"
+    # data = "plant"
+    # data_output_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-Grid-Search-marine-v1.0.9.7/"
+    # data_sample_num = 10
     
-    p_11 = []
-    p_115 = []
-    p_12 = []
-    p_125 = []
-    p_13 = []
-    p_135 = []
-    p_14 = []
-    p_145 = []
-    p_15 = []
+    # drop_p_list = [0.11, 0.115, 0.12, 0.125, 0.13, 0.135, 0.14, 0.145, 0.15]
+    # epoch_list = [800, 850, 900]
+    # # multi_list = [False, True]
+    # for drop_p in drop_p_list:
+    #     for min_len in epoch_list:
+    #     #     ### this needs to change !!!!!
+    #     #     for multi in multi_list:
+    #         bin_folder = f"{data_output_folder}"+ \
+    #             f"marine-sample-0-final-output-bins-drop-{drop_p}-min_len-{min_len}/"
+    #         output_tsv_file = f"{data_output_folder}marine-sample-0-final-output-bins-drop-{drop_p}-min_len-{min_len}.cluster.tsv"
+    #         print(output_tsv_file)
+    #         get_vamb_cluster_tsv(
+    #             bin_folder,
+    #             output_tsv_file,
+    #             suffix=".fasta" # change this for different binning tools
+    #         )
+    #     # break
     
-    l_800 = []
-    l_850 = []
-    l_900 = []
+    # p_11 = []
+    # p_115 = []
+    # p_12 = []
+    # p_125 = []
+    # p_13 = []
+    # p_135 = []
+    # p_14 = []
+    # p_145 = []
+    # p_15 = []
     
-    multi_true = []
-    multi_false = []
+    # l_800 = []
+    # l_850 = []
+    # l_900 = []
     
-    ## calculate F1
-    final_res = dict()
-    nc_mag, r90p90_mag, medium_mag = 0., 0., 0.
-    for drop_p in drop_p_list:
-        for min_len in epoch_list:
-        #     for multi in multi_list:
-                # ref_folder = f"{data_output_folder}{data}-sample-{i}.vamb.ref"
-                ref_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/marine/marine-sample-0.minimap2"
-                output_tsv_file = f"{data_output_folder}marine-sample-0-final-output-bins-drop-{drop_p}-min_len-{min_len}.cluster.tsv"
-                output_bin2f1_file = f"{data_output_folder}marine-sample-0-final-output-bins-drop-{drop_p}-min_len-{min_len}.bin2f1.tsv"
+    # multi_true = []
+    # multi_false = []
+    
+    # ## calculate F1
+    # final_res = dict()
+    # nc_mag, r90p90_mag, medium_mag = 0., 0., 0.
+    # for drop_p in drop_p_list:
+    #     for min_len in epoch_list:
+    #     #     for multi in multi_list:
+    #             # ref_folder = f"{data_output_folder}{data}-sample-{i}.vamb.ref"
+    #             ref_folder = "/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/marine/marine-sample-0.minimap2"
+    #             output_tsv_file = f"{data_output_folder}marine-sample-0-final-output-bins-drop-{drop_p}-min_len-{min_len}.cluster.tsv"
+    #             output_bin2f1_file = f"{data_output_folder}marine-sample-0-final-output-bins-drop-{drop_p}-min_len-{min_len}.bin2f1.tsv"
                 
-                print(output_tsv_file, os.path.exists(output_tsv_file))
+    #             print(output_tsv_file, os.path.exists(output_tsv_file))
                 
-                bins = BinningF1(output_tsv_file, ref_folder)
-                res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag, cur_bin2f1 = bins.get_f1([0.5, 0.6, 0.7, 0.8, 0.9, 0.95])
-                print(res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag)
+    #             bins = BinningF1(output_tsv_file, ref_folder)
+    #             res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag, cur_bin2f1 = bins.get_f1([0.5, 0.6, 0.7, 0.8, 0.9, 0.95])
+    #             print(res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag)
                 
                 
-                if drop_p == 0.11:
-                    p_11.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if drop_p == 0.115:
-                    p_115.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if drop_p == 0.12:
-                    p_12.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if drop_p == 0.125:
-                    p_125.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if drop_p == 0.13:
-                    p_13.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if drop_p == 0.135:
-                    p_135.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if drop_p == 0.14:
-                    p_14.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if drop_p == 0.145:
-                    p_145.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if drop_p == 0.15:
-                    p_15.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.11:
+    #                 p_11.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.115:
+    #                 p_115.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.12:
+    #                 p_12.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.125:
+    #                 p_125.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.13:
+    #                 p_13.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.135:
+    #                 p_135.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.14:
+    #                 p_14.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.145:
+    #                 p_145.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if drop_p == 0.15:
+    #                 p_15.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
                     
-                if min_len == 850:
-                    l_850.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if min_len == 900:
-                    l_900.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                if min_len == 800:
-                    l_800.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if min_len == 850:
+    #                 l_850.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if min_len == 900:
+    #                 l_900.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             if min_len == 800:
+    #                 l_800.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
                     
-                # if multi:
-                #     multi_true.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
-                # else:
-                #     multi_false.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             # if multi:
+    #             #     multi_true.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
+    #             # else:
+    #             #     multi_false.append(sum([cur_nc_mag * 1.2, cur_r90p90_mag * 0.95, res[0.95], res[0.9]*0.9]))
                 
-                for k, v in res.items():
-                    if k not in final_res:
-                        final_res[k] = v
-                    else:
-                        final_res[k] += v
-                r90p90_mag += cur_r90p90_mag
-                nc_mag += cur_nc_mag
-                medium_mag += cur_medium_mag
-                with open(output_bin2f1_file, "w") as wh:
-                    for k, v in cur_bin2f1.items():
-                        wh.write(k + "\t" + "\t".join(v) + "\n")
-        # break
+    #             for k, v in res.items():
+    #                 if k not in final_res:
+    #                     final_res[k] = v
+    #                 else:
+    #                     final_res[k] += v
+    #             r90p90_mag += cur_r90p90_mag
+    #             nc_mag += cur_nc_mag
+    #             medium_mag += cur_medium_mag
+    #             with open(output_bin2f1_file, "w") as wh:
+    #                 for k, v in cur_bin2f1.items():
+    #                     wh.write(k + "\t" + "\t".join(v) + "\n")
+    #     # break
     
     
     
-    print(f"0.11: {sum(p_11)}, 0.115: {sum(p_115)}, 0.12: {sum(p_12)}, 0.125: {sum(p_125)},\
-        0.13: {sum(p_13)}, 0.135: {sum(p_135)}, 0.14: {sum(p_14)}, 0.145: {sum(p_145)}, 0.15: {sum(p_15)}")
-    print(f"800: {sum(l_800)}, 850: {sum(l_850)}, 900: {sum(l_900)}")
+    # print(f"0.11: {sum(p_11)}, 0.115: {sum(p_115)}, 0.12: {sum(p_12)}, 0.125: {sum(p_125)},\
+    #     0.13: {sum(p_13)}, 0.135: {sum(p_135)}, 0.14: {sum(p_14)}, 0.145: {sum(p_145)}, 0.15: {sum(p_15)}")
+    # print(f"800: {sum(l_800)}, 850: {sum(l_850)}, 900: {sum(l_900)}")
     # print(f"multi-True: {sum(multi_true)}, false: {sum(multi_false)}")
     
     # grid search results collection
@@ -249,69 +293,69 @@ if __name__ == "__main__":
     
     
     
-    # # ######construct table
-    # bin_tool = "DeeperBin"
-    # data = "marine"
-    # data_output_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/{data}/"
-    # data_sample_num = 10
+    # ######construct table
+    bin_tool = "DeeperBin"
+    data = "marine"
+    data_output_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Analysis-data/{data}/"
+    data_sample_num = 10
     
-    # for i in range(data_sample_num):
-    #     ### this needs to change !!!!!
-    #     # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Comebin-{data}/comebin-marine-sample-{i}-outputs/comebin_res/comebin_res_bins"
-    #     # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Semibin2-marine/marine-sample-{i}/output_bins"
-    #     # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/MetaBAT2-marine/marine-sample-{i}/"
-    #     bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin--marine-v1.0.9.5/marine-sample-{i}-final-output-bins/"
-    #     # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-marine/marine-sample-{i}-final-output-bins-the-last/"
+    for i in range(data_sample_num):
+        ### this needs to change !!!!!
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Comebin-{data}/comebin-marine-sample-{i}-outputs/comebin_res/comebin_res_bins"
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Semibin2-marine/marine-sample-{i}/output_bins"
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/MetaBAT2-marine/marine-sample-{i}/"
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin--marine-v1.0.9.5/marine-sample-{i}-final-output-bins/"
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-marine/marine-sample-{i}-final-output-bins-the-last/"
+        bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/CAMI-marine-0--v1.0.9.12-final-bins-825-0.15-last/"
         
-        
-    #     ### plant
-    #     # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Comebin-{data}/comebin-plant-sample-{i}-outputs/comebin_res/comebin_res_bins"
-    #     # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Semibin2-plant/plant-sample-{i}/output_bins"
-    #     # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-plant/plant-sample-{i}-final-output-bins-with-checkm2/"
-    #     # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/MetaBAT2-plant/plant-sample-{i}/"
-    #     output_tsv_file = f"{data_output_folder}{data}-sample-{i}-{bin_tool}.auto.cluster.tsv"
-    #     print(output_tsv_file)
-    #     get_vamb_cluster_tsv(
-    #         bin_folder,
-    #         output_tsv_file,
-    #         suffix=".fasta" # change this for different binning tools
-    #     )
-    #     # break
+        ### plant
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Comebin-{data}/comebin-plant-sample-{i}-outputs/comebin_res/comebin_res_bins"
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/Semibin2-plant/plant-sample-{i}/output_bins"
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/DeeperBin-CAMI2-plant/plant-sample-{i}-final-output-bins-with-checkm2/"
+        # bin_folder = f"/home/datasets/ZOUbohao/Proj3-DeepMetaBin/MetaBAT2-plant/plant-sample-{i}/"
+        output_tsv_file = f"{data_output_folder}{data}-sample-{i}-{bin_tool}.10972.auto.cluster.tsv"
+        print(output_tsv_file)
+        get_vamb_cluster_tsv(
+            bin_folder,
+            output_tsv_file,
+            suffix=".fasta" # change this for different binning tools
+        )
+        break
     
-    # ## calculate F1
-    # final_res = dict()
-    # nc_mag, r90p90_mag, medium_mag = 0., 0., 0.
-    # for i in range(data_sample_num):
-    #     # ref_folder = f"{data_output_folder}{data}-sample-{i}.vamb.ref"
-    #     ref_folder = f"{data_output_folder}{data}-sample-{i}.minimap2"
-    #     output_tsv_file = f"{data_output_folder}{data}-sample-{i}-{bin_tool}.auto.cluster.tsv"
-    #     output_bin2f1_file = f"{data_output_folder}{data}-sample-{i}-{bin_tool}.auto.bin2f1.tsv"
+    ## calculate F1
+    final_res = dict()
+    nc_mag, r90p90_mag, medium_mag = 0., 0., 0.
+    for i in range(data_sample_num):
+        # ref_folder = f"{data_output_folder}{data}-sample-{i}.vamb.ref"
+        ref_folder = f"{data_output_folder}{data}-sample-{i}.minimap2"
+        output_tsv_file = f"{data_output_folder}{data}-sample-{i}-{bin_tool}.10972.auto.cluster.tsv"
+        output_bin2f1_file = f"{data_output_folder}{data}-sample-{i}-{bin_tool}.1097.auto.bin2f1.tsv"
         
-    #     print(output_tsv_file, os.path.exists(output_tsv_file))
+        print(output_tsv_file, os.path.exists(output_tsv_file))
         
-    #     # ref = Reference.from_file(open(ref_folder, "r"))
-    #     # bins = Binning.from_file(open(output_tsv_file, "r"), ref)
-    #     # cur_nc_mag = bins.print_matrix(rank=0)
-    #     # print(f"NC MAGs: {cur_nc_mag}")
+        # ref = Reference.from_file(open(ref_folder, "r"))
+        # bins = Binning.from_file(open(output_tsv_file, "r"), ref)
+        # cur_nc_mag = bins.print_matrix(rank=0)
+        # print(f"NC MAGs: {cur_nc_mag}")
         
-    #     bins = BinningF1(output_tsv_file, ref_folder)
-    #     res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag, cur_bin2f1 = bins.get_f1([0.5, 0.6, 0.7, 0.8, 0.9, 0.95])
-    #     print(res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag)
-    #     for k, v in res.items():
-    #         if k not in final_res:
-    #             final_res[k] = v
-    #         else:
-    #             final_res[k] += v
-    #     r90p90_mag += cur_r90p90_mag
-    #     nc_mag += cur_nc_mag
-    #     medium_mag += cur_medium_mag
-    #     with open(output_bin2f1_file, "w") as wh:
-    #         for k, v in cur_bin2f1.items():
-    #             wh.write(k + "\t" + "\t".join(v) + "\n")
-    #     # break
+        bins = BinningF1(output_tsv_file, ref_folder)
+        res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag, cur_bin2f1 = bins.get_f1([0.5, 0.6, 0.7, 0.8, 0.9, 0.95])
+        print(res, cur_nc_mag, cur_r90p90_mag, cur_medium_mag)
+        for k, v in res.items():
+            if k not in final_res:
+                final_res[k] = v
+            else:
+                final_res[k] += v
+        r90p90_mag += cur_r90p90_mag
+        nc_mag += cur_nc_mag
+        medium_mag += cur_medium_mag
+        with open(output_bin2f1_file, "w") as wh:
+            for k, v in cur_bin2f1.items():
+                wh.write(k + "\t" + "\t".join(v) + "\n")
+        break
         
-    # print(bin_tool, f"NC MAGs: {nc_mag}, ", f"90 & 90 MAGs: {r90p90_mag}, ", f"Medium MAGs: {medium_mag}", final_res)
-    # print(list(final_res.values()))
+    print(bin_tool, f"NC MAGs: {nc_mag}, ", f"90 & 90 MAGs: {r90p90_mag}, ", f"Medium MAGs: {medium_mag}", final_res)
+    print(list(final_res.values()))
     
     
     ### convert paf 2 vamb ref format.

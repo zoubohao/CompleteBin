@@ -139,6 +139,7 @@ class DeeperBinModel(nn.Module):
     
     def __init__(self,
                  kmer_dim,
+                 whole_kmer_dim,
                  feature_dim,
                  num_bam_files,
                  split_parts_list: List,
@@ -151,16 +152,18 @@ class DeeperBinModel(nn.Module):
         self.device = device
         self.multi_contrast=multi_contrast
         logger.info(f"--> Model hidden dim: {hidden_dim}, layers: {layers}, device: {device}. Ori")
-        self.cov_mean_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
-                                            nn.Linear(512, 512, bias=False)).to(device)
+        # self.cov_mean_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
+        #                                     nn.Linear(512, 512, bias=False)).to(device)
         self.cov_var_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
                                             nn.Linear(512, 512, bias=False)).to(device)
+        self.cov_tnf_model = nn.Sequential(MLP(num_bam_files * whole_kmer_dim, 512, 1024, p=dropout),
+                                            nn.Linear(1024, 1024, bias=False)).to(device)
         
         self.pretrain_model = DeeperBinBaseModel(kmer_dim, 0, split_parts_list, dropout, hidden_dim, layers).to(device)
         self.train_model = DeeperBinBaseModel(kmer_dim, 0, split_parts_list, dropout, hidden_dim, layers).to(device)
         
         self.projector_simclr = nn.Sequential(
-            MLP(hidden_dim * 2 + 1024, hidden_dim * 8, hidden_dim * 6, dropout),
+            MLP(hidden_dim * 2 + 1024 + 512, hidden_dim * 8, hidden_dim * 6, dropout),
             MLP(hidden_dim * 6, hidden_dim * 4, hidden_dim * 2, dropout),
             nn.Linear(hidden_dim * 2, feature_dim, bias=False)
         ).to(device)
@@ -171,23 +174,25 @@ class DeeperBinModel(nn.Module):
         for _, v in self.pretrain_model.named_parameters():
             v.requires_grad = False
             i += 1
-        logger.info(f"--> Number of {i} parameters have been fixed. Ori")
+        logger.info(f"--> Number of {i} parameters have been fixed.")
 
     def load_weight_for_model(self, pretrain_model_weight_path: str):
         self.pretrain_model.load_state_dict(torch.load(pretrain_model_weight_path, map_location=self.device), strict=False)
         self.train_model.load_state_dict(torch.load(pretrain_model_weight_path, map_location=self.device), strict=False)
         logger.info(f"--> Have loaded the pretrain weight.")
 
-    def forward(self, seq_tokens_inputs, mean_val, var_val):
+    def forward(self, seq_tokens_inputs, mean_val, var_val, whole_bp_cov_tnf_inputs):
         # get the seq taxon embedding from pretrain model
         # print(mean_val, mean_val.shape)
         with torch.no_grad():
             seq_taxon_enc = self.pretrain_model(seq_tokens_inputs)
-        cov_mean_fea_enc = self.cov_mean_model(mean_val)
+        # cov_mean_fea_enc = self.cov_mean_model(mean_val)
         cov_var_fea_enc = self.cov_var_model(var_val)
+        whole_bp_cov_tnf_inputs = torch.flatten(whole_bp_cov_tnf_inputs, 1)
+        cov_tnf_fea_enc = self.cov_tnf_model(whole_bp_cov_tnf_inputs)
         seq_fea_enc = self.train_model.get_feature_of_tokens(self.train_model.get_token_proj(seq_tokens_inputs))
         rep_seq_fea = seq_fea_enc[:, 0, :]
-        all_info_seq = torch.cat([rep_seq_fea, seq_taxon_enc, cov_mean_fea_enc, cov_var_fea_enc], dim=-1)
+        all_info_seq = torch.cat([rep_seq_fea, seq_taxon_enc, cov_tnf_fea_enc, cov_var_fea_enc], dim=-1)
         all_info_seq = F.normalize(self.projector_simclr(all_info_seq))
         if self.multi_contrast:
             return all_info_seq, F.normalize(seq_fea_enc), None
