@@ -68,7 +68,7 @@ source .bashrc
 
 ## Running CompleteBin
 
-** Note **. The minimum contig length we support is 768 bps. Our default setting is 900 bps.
+** Note **. The minimum contig length we support is 768 bps. Our default setting is 850 bps.
 
 **1.  You can run CompleteBin through the following command:**
 
