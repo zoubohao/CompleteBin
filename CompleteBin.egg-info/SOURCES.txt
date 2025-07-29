@@ -19,6 +19,7 @@ CompleteBin/__init__.py
 CompleteBin/cli.py
 CompleteBin/logger.py
 CompleteBin/pretrain.py
+CompleteBin/pretrain_vqvae.py
 CompleteBin/version.py
 CompleteBin.egg-info/PKG-INFO
 CompleteBin.egg-info/SOURCES.txt
@@ -70,7 +71,6 @@ useless/run_concoct.py
 useless/run_deeperbin.py
 useless/run_deeperbin_2.py
 useless/run_deeperbin_grid_search.py
-useless/run_deeperbin_multi.py
 useless/run_metabat.py
 useless/run_nonpa.py
 useless/run_semibin.py

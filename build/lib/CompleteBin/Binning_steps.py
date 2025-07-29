@@ -126,7 +126,7 @@ def binning_with_all_steps(
     db_folder_path: str=None,
     n_views: int=6,
     count_kmer: int=4,
-    min_contig_length=900,
+    min_contig_length=850,
     min_contig_length_auto_decision=False,
     short_long_ratio=0.333,
     # model training config
@@ -161,7 +161,7 @@ def binning_with_all_steps(
         db_folder_path (str, optional): The path of database folder. Defaults to None. You can ignore it if you set the 'DeeperBin_DB' environmental variable.
         n_views (int, optional): Number of views to generate for each contig during training. Defaults to 6.
         count_kmer (int, optional): The k setting of k-mer. Defaults to 4.
-        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 900.
+        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 850.
         min_contig_length_auto_decision  (bool, optional): Auto determining the length of min contig if it is True. 
         short_long_ratio (float, optional): The min contig length would be shorter if this parameter larger under the auto determing is True.
         feature_dim (int, optional): The feature dim of final embeddings. Defaults to 100.
@@ -181,13 +181,19 @@ def binning_with_all_steps(
         'mix (Apply von when number of contigs bigger than 150 and smaller than 1850, otherwise apply flspp)'. 
         'flspp' has the fastest speed. We recommand to use flspp for large datasets and mix for small datasets. Defaults to "flspp". 
         ensemble_with_SCGs (bool, optional): Apply the called SCGs to do quality evaluation and used them in ensembling the results if it is True. 
-        multi_seq_contrast (bool, optional): Add sequence embedding for contrastive learning if it is True.
-        min_training_step (int, optional): The min training steps for one epoch.
+        Defaults to False.
+        multi_seq_contrast (bool, optional): Add sequence embedding for contrastive learning if it is True. Defaults to False.
+        min_training_step (int, optional): The min training steps for one epoch. Defaults to 36.
         step_num (int, optional): The whole binning procedure can be divided into 3 steps. 
         The first step (step 1) is to process the training data. Focusing on using CPU.
         The second step (step 2) is training procedure. Focusing on using GPU.
         The third step (step 3) is clustering. Focusing on using CPU.
-        This function would combine these 3 steps if this parameter is None.
+        This function would stop at step 1 if it set as 1.
+        This function would stop at step 2 if it set as 2.
+        This function would combine these 3 steps if this parameter is None. 
+        This setting can be used if your have two machine, one has powerful CPU and the other has powerful GPU. You can use powerful CPU machine to 
+        run step 1 and move the temp folder to the machine with powerful GPU to run step 2. Finally, move the temp folder to CPU machine to run step 3.
+        Defaults to None.
         remove_temp_files (bool, optional): Remove the temp files if this is true.
         filter_huge_gap (bool, optional): Filter the MAGs if the checkm2's completeness has a huge gap (> 40%) with the SCGs' completeness if it is true. 
         Try to fix the bug of checkm2.

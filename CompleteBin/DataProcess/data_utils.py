@@ -1,17 +1,17 @@
 
-from collections import defaultdict, OrderedDict
 import multiprocessing
 import os
 import random
+from collections import OrderedDict, defaultdict
 
 import numpy as np
 import psutil
-
 from CompleteBin.CallGenes.gene_utils import splitListEqually
 from CompleteBin.IO import readPickle, writePickle
 from CompleteBin.logger import get_logger
 from CompleteBin.Seqs.seq_utils import (generate_feature_mapping_reverse,
-                                generate_feature_mapping_whole_tokens, random_generate_view)
+                                        generate_feature_mapping_whole_tokens,
+                                        random_generate_view)
 
 logger = get_logger()
 
@@ -72,25 +72,27 @@ def get_normlized_count_vec_of_seq(
         kmer_dict: dict,
         nr_features: int,
         kmer_len: int,
-        bparray_list: list,
+        bparray_list: np.ndarray,
         cal_bp_tnf = False
     ):
     seq = seq.upper()
     kmer2cov_list = OrderedDict()
+    bam_num = None
     if cal_bp_tnf:
+        bam_num = len(bparray_list)
         assert len(seq) == len(bparray_list[0]), ValueError(f"The len of seq is: {len(seq)}, but its bparray's length is {len(bparray_list[0])}")
         for kmer, _ in kmer_dict.items():
-            kmer2cov_list[get_tuple_kmer(kmer)] = [[] for _ in range(len(bparray_list))]
+            kmer2cov_list[get_tuple_kmer(kmer)] = []
     kmers = []
     N = len(seq)
+    div_val = kmer_len * N + 0.
     for i in range(N):
         cur_mer = seq[i: i + kmer_len]
         if cal_bp_tnf:
-            for j, cur_bp_array in enumerate(bparray_list):
-                if cur_mer in kmer_dict:
-                    bp_mer = get_tuple_kmer(cur_mer)
-                    cur_bp_cov = cur_bp_array[i: i + kmer_len]
-                    kmer2cov_list[bp_mer][j].append(sum(cur_bp_cov) / kmer_len + 0.)
+            cur_bp_cov = bparray_list[:, i: i + kmer_len] # bam_num, 4
+            if cur_mer in kmer_dict:
+                bp_mer = get_tuple_kmer(cur_mer)
+                kmer2cov_list[bp_mer].append(cur_bp_cov)
         if cur_mer in kmer_dict:
             kmers.append(kmer_dict[cur_mer])
     kmers.append(nr_features-1)
@@ -101,14 +103,14 @@ def get_normlized_count_vec_of_seq(
     ### return bp-tnf-array-list
     bp_cov_tnf_array = None
     if cal_bp_tnf:
-        bp_cov_tnf_array_list = [[] for _ in range(len(bparray_list))]
-        for _, values_list in kmer2cov_list.items():
-            for j, cur_cov_list in enumerate(values_list):
-                if len(cur_cov_list) != 0:
-                    bp_cov_tnf_array_list[j].append(sum(cur_cov_list) / N + 0.)
-                else:
-                    bp_cov_tnf_array_list[j].append(0.)
-        bp_cov_tnf_array = np.array(bp_cov_tnf_array_list, dtype=np.float32)
+        bp_cov_tnf_array_list = []
+        for _, bp_value_array_list in kmer2cov_list.items():
+            if len(bp_value_array_list) != 0:
+                bp_values_N = np.concatenate(bp_value_array_list, axis=1).sum(axis=1, keepdims=True) / div_val # bam_num, 1 
+            else:
+                bp_values_N = np.zeros(shape=[bam_num, 1], dtype=np.float32)
+            bp_cov_tnf_array_list.append(bp_values_N)
+        bp_cov_tnf_array = np.concatenate(bp_cov_tnf_array_list, axis=1)
         # print("bp_cov_tnf_array shape: ", bp_cov_tnf_array.shape, bp_cov_tnf_array, bparray_list[0], len(bparray_list[0]))
     return composition_v, bp_cov_tnf_array ### L, C
 
@@ -136,11 +138,8 @@ def get_features_of_one_seq(seq: str,
                             count_nr_features,
                             subparts_list):
     if bp_nparray_list is not None:
-        mean = []
-        sqrt_var = []
-        for bp_array in bp_nparray_list:
-            mean.append(sum(bp_array) / len(bp_array))
-            sqrt_var.append(np.std(bp_array, dtype=np.float32))
+        mean = np.mean(bp_nparray_list, axis=1, keepdims=False)
+        sqrt_var = np.std(bp_nparray_list, axis=1, keepdims=False)
     else:
         mean, sqrt_var = None, None
     seq_tokens = []
@@ -161,16 +160,8 @@ def get_features_of_one_seq(seq: str,
             if sub_parts == 1 and bp_nparray_list is not None:
                 whole_bp_cov_tnf_array = cur_bp_cov_tnf_array
     assert len(seq_tokens) == sum(subparts_list), ValueError(f"seq: {seq}, len seq tokens: {len(seq_tokens)}")
-    # assert whole_bp_cov_tnf_array.shape[0] == len(bp_nparray_list) and \
-    #     whole_bp_cov_tnf_array.shape[1] == len(count_kmer_dict)
     
     seq_tokens = np.stack(seq_tokens, axis=0) # L, C
-    if mean is not None and sqrt_var is not None:
-        mean = np.array(mean, dtype=np.float32)
-        sqrt_var = np.array(sqrt_var, dtype=np.float32)
-    else:
-        mean = None
-        sqrt_var = None
     return seq_tokens, mean, sqrt_var, whole_bp_cov_tnf_array
 
 

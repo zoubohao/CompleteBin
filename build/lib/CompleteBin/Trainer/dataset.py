@@ -74,9 +74,7 @@ class TrainingDataset(Dataset):
         # if seed is None and random.random() <= 0.5:
         #     cur_view_seq = sequence_data_augmentation(cur_view_seq)
         ### bp array
-        cur_bp_array_list = []
-        for cov_bp_array in cov_bp_array_list:
-            cur_bp_array_list.append(cov_bp_array[start_i: end_i])
+        cur_bp_array_list = cov_bp_array_list[:, start_i: end_i]
         cur_seq_tokens, cur_cov_mean, cur_cov_var_sqrt, cur_whole_bp_cov_tnf_array = get_features_of_one_seq(cur_view_seq,
                                                                                         cur_bp_array_list,
                                                                                         self.count_kmer,

@@ -148,7 +148,7 @@ class SelfSupervisedMethodsTrainer(object):
                                             dropout_p=drop_p)
         self.training_loader = DataLoader(self.training_set,
                                           batch_size,
-                                          num_workers=64,
+                                          num_workers=32,
                                           pin_memory=True,
                                           sampler=sampler,
                                           prefetch_factor=2,

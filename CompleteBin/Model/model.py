@@ -156,7 +156,7 @@ class DeeperBinModel(nn.Module):
         #                                     nn.Linear(512, 512, bias=False)).to(device)
         self.cov_var_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
                                             nn.Linear(512, 512, bias=False)).to(device)
-        self.cov_tnf_model = nn.Sequential(MLP(num_bam_files * whole_kmer_dim, 512, 1024, p=dropout),
+        self.cov_tnf_model = nn.Sequential(MLP(num_bam_files * whole_kmer_dim, 2048, 1024, p=dropout),
                                             nn.Linear(1024, 1024, bias=False)).to(device)
         
         self.pretrain_model = DeeperBinBaseModel(kmer_dim, 0, split_parts_list, dropout, hidden_dim, layers).to(device)
