@@ -33,10 +33,8 @@ class Reference:
                 contig_length = oneline[1]
                 self.contigname2length[contig_name] = float(contig_length)
                 
-                if "|" in oneline[5]:
-                    genome_name, _ = oneline[5].split("|")
-                else:
-                    genome_name = oneline[5]
+                assert "|" in oneline[5], ValueError(f"The genome name {oneline[5]} does not contain '|' to split genome name and contig name.")
+                genome_name, _ = oneline[5].split("|")
                 
                 # omit mobile elements
                 if "RNODE" in oneline[5] and "length" in oneline[5]:

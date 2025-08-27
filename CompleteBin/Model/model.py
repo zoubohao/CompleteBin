@@ -113,7 +113,7 @@ class DeeperBinBaseModel(nn.Module):
             [TransformerEncoder(hidden_dim, hidden_dim, dropout)
              for _ in range(self.layers)]
         )
-        if classes_num == 0:
+        if classes_num == 0 or classes_num is None:
             self.out_linear =  None
         else:
             self.out_linear =  nn.Linear(hidden_dim, classes_num, bias=False)
@@ -151,7 +151,7 @@ class DeeperBinModel(nn.Module):
         super(DeeperBinModel, self).__init__()
         self.device = device
         self.multi_contrast=multi_contrast
-        logger.info(f"--> Model hidden dim: {hidden_dim}, layers: {layers}, device: {device}. Ori")
+        logger.info(f"--> Model hidden dim: {hidden_dim}, layers: {layers}, device: {device}. Fix")
         # self.cov_mean_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
         #                                     nn.Linear(512, 512, bias=False)).to(device)
         self.cov_var_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
@@ -159,8 +159,8 @@ class DeeperBinModel(nn.Module):
         self.cov_tnf_model = nn.Sequential(MLP(num_bam_files * whole_kmer_dim, 2048, 1024, p=dropout),
                                             nn.Linear(1024, 1024, bias=False)).to(device)
         
-        self.pretrain_model = DeeperBinBaseModel(kmer_dim, 0, split_parts_list, dropout, hidden_dim, layers).to(device)
-        self.train_model = DeeperBinBaseModel(kmer_dim, 0, split_parts_list, dropout, hidden_dim, layers).to(device)
+        self.pretrain_model = DeeperBinBaseModel(kmer_dim, 15781, split_parts_list, dropout, hidden_dim, layers, True).to(device)
+        self.train_model = DeeperBinBaseModel(kmer_dim, None, split_parts_list, dropout, hidden_dim, layers, True).to(device)
         
         self.projector_simclr = nn.Sequential(
             MLP(hidden_dim * 2 + 1024 + 512, hidden_dim * 8, hidden_dim * 6, dropout),
@@ -177,7 +177,7 @@ class DeeperBinModel(nn.Module):
         logger.info(f"--> Number of {i} parameters have been fixed.")
 
     def load_weight_for_model(self, pretrain_model_weight_path: str):
-        self.pretrain_model.load_state_dict(torch.load(pretrain_model_weight_path, map_location=self.device), strict=False)
+        self.pretrain_model.load_state_dict(torch.load(pretrain_model_weight_path, map_location=self.device), strict=True)
         self.train_model.load_state_dict(torch.load(pretrain_model_weight_path, map_location=self.device), strict=False)
         logger.info(f"--> Have loaded the pretrain weight.")
 
@@ -191,7 +191,7 @@ class DeeperBinModel(nn.Module):
         whole_bp_cov_tnf_inputs = torch.flatten(whole_bp_cov_tnf_inputs, 1)
         cov_tnf_fea_enc = self.cov_tnf_model(whole_bp_cov_tnf_inputs)
         seq_fea_enc = self.train_model.get_feature_of_tokens(self.train_model.get_token_proj(seq_tokens_inputs))
-        rep_seq_fea = seq_fea_enc[:, 0, :]
+        rep_seq_fea = encode_seq2vec(seq_fea_enc) # seq_fea_enc[:, 0, :]
         all_info_seq = torch.cat([rep_seq_fea, seq_taxon_enc, cov_tnf_fea_enc, cov_var_fea_enc], dim=-1)
         all_info_seq = F.normalize(self.projector_simclr(all_info_seq))
         if self.multi_contrast:
@@ -199,4 +199,69 @@ class DeeperBinModel(nn.Module):
         return all_info_seq, None, None
 
 
+# #### UESLESS ####
+# class SimVQVAE(torch.nn.Module):
+    
+#     def __init__(self, kmer_dim, split_parts_list, infer_mode = False, hidden_dim = 512, dropout = 0.05, layers = 3):
+#         super().__init__()
+#         self.layers = layers
+        
+#         self.token_proj = nn.Linear(kmer_dim, hidden_dim, bias=False)
+#         self.pos_embedding = nn.Parameter(
+#             torch.zeros(1, sum(split_parts_list) + 100, hidden_dim, requires_grad=True), 
+#             requires_grad = True)
+#         self.enc = nn.ModuleList(
+#             [TransformerEncoder(hidden_dim, hidden_dim, dropout)
+#             for _ in range(layers)]
+#         )
+#         self.vq_med_layer = SimVQ(
+#             dim = hidden_dim,
+#             codebook_size = 1024,
+#             codebook_transform = nn.Sequential(
+#                 nn.Linear(hidden_dim, 1024),
+#                 nn.ReLU(),
+#                 nn.Linear(1024, hidden_dim)),
+#             rotation_trick = True  # use rotation trick from Fifty et al.
+#         )
+#         if not infer_mode:
+#             self.dec = nn.ModuleList(
+#             [TransformerEncoder(hidden_dim, hidden_dim, dropout)
+#             for _ in range(layers)]
+#             )
+#             self.token_rev = nn.Linear(hidden_dim, kmer_dim, bias=False)
+#         else:
+#             self.dec = None
+#             self.token_rev = None
+#         self.criteria = nn.KLDivLoss(reduction="batchmean")
 
+#     def custom_KL(self, y_pred, y_true):
+#         y_pred = torch.flatten(y_pred, end_dim=1)
+#         y_pred = F.log_softmax(y_pred, dim=1)
+#         y_true = torch.flatten(y_true, end_dim=1)
+#         # print(y_true, y_true.sum(dim=-1))
+#         return self.criteria(y_pred, y_true)
+
+#     def get_feature_of_tokens(self, x):
+#         _, l, _ = x.shape
+#         x += self.pos_embedding[:, 0: l]
+#         for i in range(self.layers):
+#             x = self.enc[i](x)
+#         return x
+    
+#     def dec_tokens(self, x):
+#         _, l, _ = x.shape
+#         x += self.pos_embedding[:, 0: l]
+#         for i in range(self.layers):
+#             x = self.dec[i](x)
+#         return x
+    
+#     def forward(self, x):
+#         # print(x.sum(dim=-1))
+#         x = self.token_proj(x)
+#         z_e = self.get_feature_of_tokens(x)
+#         z_q, indices, commit_loss = self.vq_med_layer(z_e)
+#         if self.dec is None:
+#             return indices
+#         logit = self.token_rev(self.dec_tokens(z_q))
+#         x_hat = F.softmax(logit, dim=-1)
+#         return x_hat, commit_loss, indices, logit

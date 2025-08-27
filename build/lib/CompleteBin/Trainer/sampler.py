@@ -28,7 +28,7 @@ class DeeperBinSampler(Sampler[List[int]]):
         # self.whole_trained_data_size = self.train_step * self.batch_size
         
         self.expand_ratio = 1
-        if self.train_step + 6 < min_training_step:
+        if self.train_step + 10 < min_training_step:
             self.expand_ratio = min_training_step // self.train_step + 1
         
         self.final_sample = self.get_indices()

@@ -148,7 +148,7 @@ class PretrainDataset(Dataset):
                         seq_min_len=self.min_contig_len,
                         seq_max_len=self.max_seq_length,
                         short_prob=self.short_prob,
-                        fixed=self.fixed)
+                        fixed=False)
             n_count = cur_genome_seq.count("N")
             if self.fixed:
                 break
@@ -156,7 +156,7 @@ class PretrainDataset(Dataset):
                 continue
             else:
                 break
-        genome_seq_tokens, _, _ = get_features_of_one_seq(
+        genome_seq_tokens, _, _, _ = get_features_of_one_seq(
             cur_genome_seq,
             None,
             self.count_kmer,

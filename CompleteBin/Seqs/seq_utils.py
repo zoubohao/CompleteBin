@@ -46,7 +46,7 @@ def base_pair_coverage_calculate(
     name2seq: Dict[str, str],
     bam_file_path: str,
     output_path: str,
-    min_contig_length: int = 600,
+    min_contig_length: int = 0,
     num_worker=64,
     write_pickle = False
 ):

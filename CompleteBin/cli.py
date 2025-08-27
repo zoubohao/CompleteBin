@@ -9,7 +9,7 @@ def main():
     
     myparser = argparse.ArgumentParser(
         prog=os.path.basename(sys.argv[0]), description=\
-            "CompleteBin is a Binner to cluster the contigs with Sequence Patch Embedding, Pretrained Deep Language Model, and Dynamic Contrastive Learning."
+            "CompleteBin is a Binner to cluster the contigs with context-based TNF, pretrained deep language model, and dynamic contrastive learning."
     )
 
     # Add parameters, required settings
@@ -50,7 +50,7 @@ def main():
         default="cpu",
         type=str,
         help="The device uses for training. The default is CPU. " + \
-            "We highly recommend using GPU, but not CPU. " + \
+            "We highly recommend using a GPU, but not the CPU. " + \
             "We need 24GB of GPU memory to run the default settings. You can adjust the 'batch_size' parameter to fit your GPU's memory. " + \
             "You can use CPU if you set this parameter with 'cpu'.")
     myparser.add_argument(
@@ -67,12 +67,12 @@ def main():
         "--min_contig_length",
         type=int,
         default=850,
-        help="The minimum length of contigs for binning. The minimum length we support is 768. Defaults to 850.")
+        help="The minimum length of contigs for binning. We support contigs longer then 768 bps. Defaults to 850 bps.")
     myparser.add_argument(
         "--batch_size",
         type=int,
-        default=1024,
-        help="The batch size. Defaults to 1024.")
+        default=700,
+        help="The batch size. Defaults to 700.")
     myparser.add_argument(
         "--base_epoch",
         type=int,
@@ -84,33 +84,48 @@ def main():
         default=None,
         help="Number of CPUs for clustering contigs. Defaults to None. We would set 1 / 3 of the total CPUs if it is None.")
     myparser.add_argument(
+        "--large_model",
+        type=bool,
+        default=True,
+        help="If use large pretrained model. Defaults to True.")
+    myparser.add_argument(
         "--auto_min_length",
         type=bool,
         default=False,
-        help="Auto-determining the min length for this sample.")
+        help="Auto-determining the min length for this sample. Defaults to False.")
     myparser.add_argument(
         "--step_num",
         type=int,
         default=None,
         help="The whole binning procedure can be divided into 3 steps. " + \
-            "The first step (step 1) is to process the training data. Focusing on using CPU." + \
-            "The second step (step 2) is training procedure. Focusing on using GPU." + \
-            "The third step (step 3) is clustering. Focusing on using CPU." + \
-            "This function would combine these 3 steps if this parameter is None. Defaults to None.")
+            "The first step (step 1) is to process the training data. Focusing on using CPU. " + \
+            "The second step (step 2) is training procedure. Focusing on using GPU. " + \
+            "The third step (step 3) is clustering. Focusing on using CPU. " + \
+            "This function would stop at step 1 if it set as 1. " + \
+            "This function would stop at step 2 if it set as 2. " + \
+            "This function would combine these 3 steps if this parameter is None. " + \
+        "This setting can be used if your have two machine, one has powerful CPU and the other has powerful GPU. " +  
+        "You can use powerful CPU machine to run step 1 and move the temp folder to the machine with powerful GPU to run step 2. " + 
+        "Finally, move the temp folder to CPU machine to run step 3. Defaults to None.")
     myparser.add_argument(
         "--sec_clu_algo",
         type=str,
         default="flspp",
         help="The clustering algorithm for the second stage clustering. You can set  'flspp' (FLS++ algorithm)," + \
         " 'von' (Estimator for Mixture of von Mises Fisher clustering on the unit sphere) or " + \
-        " 'mix' (Apply von when number of contigs bigger than 150 and smaller than 1850, otherwise apply flspp). " + \
+        " 'mix' (Apply von when number of contigs longer than 150 bps and shorter than 1850 bps, otherwise apply flspp). " + \
         " flspp has the fastest speed. We recommand to use flspp for large datasets and mix for small datasets. Defaults to flspp. ")
     myparser.add_argument(
         "--ensemble_with_SCGs",
         type=bool,
         default=False,
-        help="Apply the called SCGs to do quality evaluation and used them in ensembling the results if it is True. Defaults to False.")
-    
+        help="Apply the called SCGs into final quality evaluation and used them in ensembling the results by Galah " + 
+        "if it is True. Defaults to False.")
+    myparser.add_argument(
+        "--remove_temp_files",
+        type=bool,
+        default=False,
+        help="Remove the temp files if it is true. Defaults to False.")
     
     args = myparser.parse_args()
     binning_with_all_steps(
@@ -126,10 +141,12 @@ def main():
         batch_size=args.batch_size,
         base_epoch=args.base_epoch,
         num_workers=args.num_workers,
+        large_model=args.large_model,
         training_device=args.device,
         step_num=args.step_num,
         von_flspp_mix=args.sec_clu_algo,
         ensemble_with_SCGs=args.ensemble_with_SCGs,
+        remove_temp_files=args.remove_temp_files,
     )
 
 

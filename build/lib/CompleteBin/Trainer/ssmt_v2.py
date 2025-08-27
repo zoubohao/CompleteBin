@@ -74,7 +74,7 @@ class SelfSupervisedMethodsTrainer(object):
         torch.cuda.manual_seed_all(3407)
 
         if large_model:
-            hidden_dim = 2048
+            hidden_dim = 768
             layers = 4
         else:
             hidden_dim = 512
@@ -109,8 +109,8 @@ class SelfSupervisedMethodsTrainer(object):
             parameter_list,
             lr=lr,
             weight_decay=weight_decay,
-            betas=(0.9, 0.95),
-            eps=1e-6
+            betas=(0.8, 0.95),
+            eps=1e-10
         )
         # optimizer = get_optimizer("muon", parameter_list, lr, weight_decay)
         warmUpScheduler = GradualWarmupScheduler(

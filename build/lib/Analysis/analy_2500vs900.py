@@ -219,6 +219,8 @@ if __name__ == "__main__":
     for pair_index, values in gene_res.items():
         # print(pair_index)
         gene_num_2500 = float(values["2500"])
+        if gene_num_2500 == 0:
+            continue
         gene_num_900 = float(values["900"])
         gap_val = gene_num_900 - gene_num_2500
         if gap_val > 0:

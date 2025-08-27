@@ -109,12 +109,19 @@ def decision_lower_bound(
             continue
         cover_count += 1
     tmp_store = list(sorted(tmp_store, reverse=True))
+    N = len(contigname2seq)
+    assert N > batch_size, ValueError(f"There are only {N} contigs in this dataset. But we need at least {batch_size} (one batch size) contigs for training.")
     logger.info(f"--> The number of {cover_count} contigs are longer than {min_contig_length}.")
-    cover_count = (cover_count // batch_size + 2) * batch_size
-    logger.info(f"--> We should cover {cover_count} contigs for training.")
-    assert cover_count <= len(tmp_store) - 1, ValueError(f"There are only {len(tmp_store)} contigs in this dataset." + \
-                                                         f"But we need {cover_count} for training.")
-    min_length_decision = tmp_store[cover_count] - 1
+    if cover_count <= batch_size:
+        cover_count = batch_size
+    else:
+        gap_num = N - cover_count
+        multi = gap_num // batch_size
+        if multi > 3:
+            multi = 3
+        cover_count = (cover_count // batch_size + multi) * batch_size
+    logger.info(f"--> We cover {cover_count} contigs for training.")
+    min_length_decision = tmp_store[cover_count]
     return min_contig_length - min_length_decision
 
 
@@ -136,9 +143,9 @@ def binning_with_all_steps(
     lr_multiple=10,
     lr_warmup_epoch=1,
     weight_deay=1e-3,
-    batch_size=1024,
+    batch_size=700,
     base_epoch=35,
-    large_model=False,
+    large_model=True,
     log_every_n_steps=10,
     training_device="cuda:0",
     num_workers: int=None,
@@ -165,12 +172,12 @@ def binning_with_all_steps(
         min_contig_length_auto_decision  (bool, optional): Auto determining the length of min contig if it is True. 
         short_long_ratio (float, optional): The min contig length would be shorter if this parameter larger under the auto determing is True.
         feature_dim (int, optional): The feature dim of final embeddings. Defaults to 100.
-        drop_p (float, optional): The dropout probability setting. Defaults to 0.125.
+        drop_p (float, optional): The dropout probability setting. Defaults to 0.15.
         lr (float, optional): The learning rate setting. Defaults to 1e-5.
         lr_multiple (int, optional): The multiple value for learning rate. Defaults to 10.
         lr_warmup_epoch (int, optional): Number of epoches to warm up the learning rate. Defaults to 1.
         weight_deay (float, optional): L2 regularization. Defaults to 1e-3.
-        batch_size (int, optional): The batch size. Defaults to 1024.
+        batch_size (int, optional): The batch size. Defaults to 650.
         base_epoch (int, optional): Number of basic training epoches. Defaults to 35.
         large_model (bool, optional): If use large pretrained model. Defaults to False.
         log_every_n_steps (int, optional): Print log after n training step. Defaults to 10.
@@ -180,8 +187,8 @@ def binning_with_all_steps(
         'von (Estimator for Mixture of von Mises Fisher clustering on the unit sphere)' or 
         'mix (Apply von when number of contigs bigger than 150 and smaller than 1850, otherwise apply flspp)'. 
         'flspp' has the fastest speed. We recommand to use flspp for large datasets and mix for small datasets. Defaults to "flspp". 
-        ensemble_with_SCGs (bool, optional): Apply the called SCGs to do quality evaluation and used them in ensembling the results if it is True. 
-        Defaults to False.
+        ensemble_with_SCGs (bool, optional): Apply the called SCGs into final quality evaluation and used them in ensembling the results with Galah
+        if it is True. Defaults to False.
         multi_seq_contrast (bool, optional): Add sequence embedding for contrastive learning if it is True. Defaults to False.
         min_training_step (int, optional): The min training steps for one epoch. Defaults to 36.
         step_num (int, optional): The whole binning procedure can be divided into 3 steps. 
@@ -225,9 +232,11 @@ def binning_with_all_steps(
     phy2accs_path = os.path.join(db_folder_path, "HMM", "phy2accs_new.pkl")
     markerset_path = os.path.join(db_folder_path, "markerSets", "markersets.ms")
     if large_model:
-        pretrain_model_weight_path = os.path.join(db_folder_path, "CheckPoint", "pretrain_weight_hidden_dim_2048_layers_4.pth")
+        pretrain_model_weight_path = os.path.join(db_folder_path, "CheckPoint", "pretrain_weight_hidden_dim_768_layers_4_token_1_11.pth")
+        split_parts_list = [1, 11]
     else:
-        pretrain_model_weight_path = os.path.join(db_folder_path, "CheckPoint", "pretrain_weight_hidden_dim_512_layers_3.pth")
+        pretrain_model_weight_path = os.path.join(db_folder_path, "CheckPoint", "pretrain_weight_hidden_dim_512_layers_3_token_1_16.pth")
+        split_parts_list = [1, 16]
     
     logger.info("--> Start to read contigs.")
     contigname2seq_ori = readFasta(contig_file_path)
@@ -238,9 +247,8 @@ def binning_with_all_steps(
     if min_contig_length < 768:
         min_contig_length = 768
         logger.info(f"--> Set min contig length as 768 since the constrains of pretrain model.")
-    large_data_size_thre=153600
+    large_data_size_thre = 153600
     temp = temp_decision(contigname2seq_ori, min_contig_length, N50, large_data_size_thre)
-    split_parts_list = [1, 16]
     
     ########################################################
     # STEP1: Get the coverage information of contigs.
@@ -250,8 +258,8 @@ def binning_with_all_steps(
         batch_size
     )
     min_contig_length -= low_gap
-    logger.info(f"--> N50 is {N50}, seq split list: {split_parts_list}, temperature is {temp}, cluster mode: leiden + {von_flspp_mix}.")
-    logger.info(f"--> Dropout Probability: {drop_p}, n-views: {n_views}, base epoch is {base_epoch}.")
+    logger.info(f"--> N50: {N50}, contig split list: {split_parts_list}, training temperature: {temp}, cluster mode: leiden + {von_flspp_mix}.")
+    logger.info(f"--> Dropout probability: {drop_p}, n-views: {n_views}, base epoch is {base_epoch}, batch size is {batch_size}.")
     logger.info(f"--> The min contigs length for training is: {min_contig_length}, for clustring is {min_contig_length + low_gap}.")
     contigname2seq_path = os.path.join(temp_file_folder_path, "contigname2seq_str.pkl")
     if os.path.exists(contigname2seq_path) is False:

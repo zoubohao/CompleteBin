@@ -328,7 +328,7 @@ class PretrainTrainer(object):
         self.model_save_folder = model_save_folder
         self.log_every_n_steps = log_every_n_steps
         self.batch_size = batch_size
-        self.criterion = nn.CrossEntropyLoss(label_smoothing=0.01).to(self.device)
+        self.criterion = nn.CrossEntropyLoss(label_smoothing=0.0).to(self.device)
 
 
     def train(self, train_loader: DataLoader, valid_loader: DataLoader,  model_weight_path = None):
@@ -362,11 +362,111 @@ class PretrainTrainer(object):
                 n_iter += 1
             self.scheduler.step()
             self.model.eval()
+            losses_valid, f_acc1 = self.valid(valid_loader)
+            self.model.train()
+            loss_record[epoch_counter] = losses_valid
+            # save model checkpoints
+            checkpoint_name = f'checkpoint_{epoch_counter}_loss{losses_valid:.3f}_acc{f_acc1:.2f}.pth'
+            torch.save(self.model.state_dict(), os.path.join(self.model_save_folder, checkpoint_name))
+            logger.info(f"--> Model checkpoint has been saved at {os.path.join(self.model_save_folder, checkpoint_name)}.")
+        logger.info("--> Training has finished.")
+        return loss_record
+
+
+    def valid(self, valid_loader):
+        losses = 0.
+        self.model.eval()
+        self.optimizer.zero_grad()
+        acc_store = []
+        with torch.no_grad():
+            index = 0
+            for  batch_genome_seq_tokens, batch_taxon_labels in tqdm(valid_loader):
+                batch_genome_seq_tokens = batch_genome_seq_tokens.to(torch.float32).to(self.device, non_blocking=True)
+                batch_taxon_labels = batch_taxon_labels.to(self.device, non_blocking=True)
+                # ============ multi-res forward passes ... ============
+                genom_seq_fea = self.model.forward(batch_genome_seq_tokens)
+                # taxonomic loss
+                loss_taxon = self.criterion(genom_seq_fea, batch_taxon_labels)
+                loss = loss_taxon
+                losses += loss.item()
+                acc1 = accuracy(genom_seq_fea, batch_taxon_labels)[0]
+                acc_store.append(acc1.item())
+                index += 1
+        f_acc1 = sum(acc_store) / len(acc_store) + 0.
+        logger.info(f"--> Valid loss is {losses / index + 0.}, Acc1 is {f_acc1}.")
+        return losses / index + 0., f_acc1
+
+
+class PretrainVQVAETrainer(object):
+
+    def __init__(self,
+                 model: nn.Module,
+                 optimizer: torch.optim.Optimizer,
+                 scheduler: torch.optim.lr_scheduler.LRScheduler,
+                 device: str,
+                 epochs: int,
+                 model_save_folder: str,
+                 batch_size: int,
+                 log_every_n_steps: int = 20
+                 ):
+        self.device = device
+        self.model = model.to(device)
+        self.optimizer = optimizer
+        self.scheduler = scheduler
+        self.epochs = epochs
+        self.model_save_folder = model_save_folder
+        self.log_every_n_steps = log_every_n_steps
+        self.batch_size = batch_size
+        self.esp = 1e-9
+        self.criteria = nn.KLDivLoss(reduction="batchmean")
+
+    def custom_KL(self, y_pred, y_true):
+        y_pred = torch.flatten(y_pred, end_dim=1)
+        y_pred = F.log_softmax(y_pred, dim=1)
+        y_true = torch.flatten(y_true, end_dim=1)
+        # print(y_true, y_true.sum(dim=-1))
+        return self.criteria(y_pred, y_true)
+
+    def train(self, train_loader: DataLoader, valid_loader: DataLoader,  model_weight_path = None):
+        logger.info(f"--> Start VQ-VAE training with {self.epochs} epochs. Cross entropy loss. 1024.")
+        logger.info(f"--> Training with {self.device} device.")
+        loss_record = {}
+        if model_weight_path is not None:
+            self.model.load_state_dict(torch.load(model_weight_path, map_location=self.device))
+            logger.info(f"--> Model weight has been load.")
+        for epoch_counter in range(1, self.epochs + 1):
+            n_iter = 0.
+            self.model.train()
+            for batch_genome_seq_tokens, _, _ in tqdm(train_loader):
+                batch_genome_seq_tokens = batch_genome_seq_tokens.to(torch.float32).to(self.device, non_blocking=True)
+                # ============ multi-res forward passes ... ============
+                self.optimizer.zero_grad()
+                x_hat, commit_loss, indices, logit = self.model(batch_genome_seq_tokens)
+                # rec_loss = F.mse_loss(batch_genome_seq_tokens, x_hat, reduction="sum") / self.batch_size * 20.
+                rec_loss = self.custom_KL(logit, batch_genome_seq_tokens) * 4.
+                commit_loss *= 10.0
+                loss = rec_loss + commit_loss
+                loss.backward()
+                self.optimizer.step()
+                # logger
+                if n_iter % self.log_every_n_steps == 0:
+                    logger.info(f"--> Epoch: {epoch_counter} / {self.epochs} LossSum:{loss.item():.4f}" +
+                                f"|Rec Loss: {rec_loss.item():.4f}" + 
+                                f"|Commit Loss: {commit_loss.item():.4f}" + 
+                                f"|LR: {self.optimizer.param_groups[0]['lr']:.8f}")
+                n_iter += 1
+            self.scheduler.step()
+            print("#######")
+            print(batch_genome_seq_tokens)
+            print(x_hat)
+            print(indices)
+            print("#######")
+            self.model.eval()
             losses_valid = self.valid(valid_loader)
             self.model.train()
             loss_record[epoch_counter] = losses_valid
             # save model checkpoints
-            checkpoint_name = f'checkpoint_{epoch_counter}_loss{losses_valid:.2f}.pth'
+            checkpoint_name = f'checkpoint_{epoch_counter}_loss_{losses_valid:.4f}.pth'
             torch.save(self.model.state_dict(), os.path.join(self.model_save_folder, checkpoint_name))
             logger.info(f"--> Model checkpoint has been saved at {os.path.join(self.model_save_folder, checkpoint_name)}.")
         logger.info("--> Training has finished.")
@@ -379,14 +479,13 @@ class PretrainTrainer(object):
         self.optimizer.zero_grad()
         with torch.no_grad():
             index = 0
-            for  batch_genome_seq_tokens, batch_taxon_labels in tqdm(valid_loader):
+            for  batch_genome_seq_tokens, _, seq_len in tqdm(valid_loader):
                 batch_genome_seq_tokens = batch_genome_seq_tokens.to(torch.float32).to(self.device, non_blocking=True)
-                batch_taxon_labels = batch_taxon_labels.to(self.device, non_blocking=True)
                 # ============ multi-res forward passes ... ============
-                genom_seq_fea = self.model.forward(batch_genome_seq_tokens)
-                # taxonomic loss
-                loss_taxon = self.criterion(genom_seq_fea, batch_taxon_labels)
-                loss = loss_taxon
+                x_hat, commit_loss, indices, logit = self.model(batch_genome_seq_tokens)
+                rec_loss = self.custom_KL(logit, batch_genome_seq_tokens) * 4.
+                commit_loss *= 10.0
+                loss = rec_loss + commit_loss
                 losses += loss.item()
                 index += 1
         logger.info(f"--> Valid loss is {losses / index + 0.}")

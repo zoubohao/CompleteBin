@@ -1,17 +1,17 @@
 
+from collections import defaultdict, OrderedDict
 import multiprocessing
 import os
 import random
-from collections import OrderedDict, defaultdict
 
 import numpy as np
 import psutil
+
 from CompleteBin.CallGenes.gene_utils import splitListEqually
 from CompleteBin.IO import readPickle, writePickle
 from CompleteBin.logger import get_logger
 from CompleteBin.Seqs.seq_utils import (generate_feature_mapping_reverse,
-                                        generate_feature_mapping_whole_tokens,
-                                        random_generate_view)
+                                generate_feature_mapping_whole_tokens, random_generate_view)
 
 logger = get_logger()
 
@@ -76,8 +76,8 @@ def get_normlized_count_vec_of_seq(
         cal_bp_tnf = False
     ):
     seq = seq.upper()
-    kmer2cov_list = OrderedDict()
     bam_num = None
+    kmer2cov_list = OrderedDict()
     if cal_bp_tnf:
         bam_num = len(bparray_list)
         assert len(seq) == len(bparray_list[0]), ValueError(f"The len of seq is: {len(seq)}, but its bparray's length is {len(bparray_list[0])}")

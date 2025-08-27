@@ -6,7 +6,7 @@ requires_list = [i.strip() for i in requires_list]
 
 setup(
     name=name,
-    version='1.1.0.1',
+    version='1.1.0.2',
     author="Bohao Zou",
     author_email='csbhzou@comp.hkbu.edu.hk',
     description="The binner to cluster contigs.",
