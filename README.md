@@ -39,18 +39,18 @@ pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https
 #### 4. FOURTH STEP (Install Codes of CompleteBin)
 After preparing the environment, the code of CompleteBin can be installed via pip. 
 ```
-pip install CompleteBin==1.1.0.1
+pip install CompleteBin==1.1.0.2
 ```
 This installation will run for around 10 minutes.
 
 #### 5. FIFTH STEP (Download Pretrain Weights for CompleteBin)
-Download the pretrained weight and other files (**CompleteBin-DB.zip**) for running CompleteBin from this **[LINK](https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing)**.
-https://drive.google.com/file/d/1MLpt68I7MVZPKvwkjCOgDi0yPLfWRz7E/view?usp=sharing
+Download the pretrained weight and other files (**CompleteBin-DB-v1.1.0.2.zip**) for running CompleteBin from this **[LINK](https://drive.google.com/file/d/1Q7QwWyQcNLr3Wwp6w_q3BcpJ_Y7qMwyV/view?usp=sharing)**.
+https://drive.google.com/file/d/1Q7QwWyQcNLr3Wwp6w_q3BcpJ_Y7qMwyV/view?usp=sharing
 
 ##### You have two ways to use these files.
 
 ##### 1. Set Environmental Variable
-- Unzip the downloaded file (**CompleteBin-DB.zip**) and set an **environmental variable** called "CompleteBin_DB" by adding the following line to the last line of the .bashrc file (The path of the file: ~/.bashrc):
+- Unzip the downloaded file (**CompleteBin-DB-v1.1.0.2.zip**) and set an **environmental variable** called "CompleteBin_DB" by adding the following line to the last line of the .bashrc file (The path of the file: ~/.bashrc):
 ```
 export CompleteBin_DB=/path/of/this/CompleteBin-DB/
 ```
