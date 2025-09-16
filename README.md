@@ -63,7 +63,7 @@ source .bashrc
 
 For example, we run completebin with cuda 0 device
 ```
-completebin -c xxx.fasta -b xxx.bam  -o ./output -db ./DeeperBin-DB/ -temp ./temp --device cuda:0 
+completebin -c xxx.fasta -b xxx.bam  -o ./output -db ./CompleteBin-DB-v1.1.0.2/ -temp ./temp --device cuda:0 
 
 usage: completebin [-h] -c CONTIG_PATH -b SORTED_BAMS_PATHS [SORTED_BAMS_PATHS ...] -o OUTPUT_PATH -temp TEMP_FILE_PATH [-db DB_FILES_PATH] [--device DEVICE]
                [--n_views N_VIEWS] [--dropout_prob DROPOUT_PROB] [--min_contig_length MIN_CONTIG_LENGTH] [--batch_size BATCH_SIZE]
@@ -124,7 +124,7 @@ optional arguments:
 **2.  You can run CompleteBin through the **binning_with_all_steps** function in Python.**
 
 ```
-from Src.Binning_steps import binning_with_all_steps
+from CompleteBin.Binning_steps import binning_with_all_steps
 
 if __name__ == "__main__":
     contig_path = "contigs.fasta"
