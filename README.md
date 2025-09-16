@@ -11,6 +11,7 @@ Create CompleteBin's conda environment by using this command:
 ```
 conda env create -n CompleteBin -f completebin-conda-env.yml
 ```
+** Note **. You can use Mamba to accelerate the installation procedure.
 
 #### 2. SECOND STEP (Install PyTorch for CompleteBin)
 
