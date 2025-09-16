@@ -5,45 +5,33 @@ CompleteBin is a binner to cluster the contigs with context-based TNF embedding,
 
 ## Installation (Have Verified):
 #### Tip. Please use Python 3.9.15 in the following conda environment.
-#### 0. Preprocessing (Install mamba in your base conda env. Much, much faster than conda !!!)
-```
-conda activate base
-conda install mamba -c conda-forge
-```
 
-#### 1. FIRST STEP (Create Conda Environment for CompleteBin)
+#### 1. FIRST STEP (Create Conda Environment & Install Conda Packages for CompleteBin)
 Create CompleteBin's conda environment by using this command:
 ```
-conda create -n CompleteBin
-```
-#### 2. SECOND STEP (Install Conda packages for CompleteBin)
-```
-conda activate CompleteBin
-mamba env update --file completebin-conda-env.yml
+conda env create -n CompleteBin -f completebin-conda-env.yml
 ```
 
-#### 3. THIRD STEP (Install PyTorch for CompleteBin)
+#### 2. SECOND STEP (Install PyTorch for CompleteBin)
 
 Download PyTorch v2.1.0 -cu*** (or higher version) from **[http://pytorch.org/](http://pytorch.org/)**. 
 
 We highly recommend installing PyTorch with a supporting GPU version.
 
-For example (In our system with CUDA 11.8 version. You can download another PyTorch version to fit your CUDA):
+For example, in our system with the CUDA 11.8 version. You can download another PyTorch version to fit your CUDA:
 ```
 conda activate CompleteBin
 pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
 ```
 
-**Note**: Please use "conda create -n completebin --solver=classic" if you meet "CondaValueError: You have chosen a non-default solver backend (libmamba) but it was not recognized. Choose one of: classic" this error when you are creating the environment.
-
-#### 4. FOURTH STEP (Install Codes of CompleteBin)
+#### 3. THIRD STEP (Install Codes of CompleteBin)
 After preparing the environment, the code of CompleteBin can be installed via pip. 
 ```
 pip install CompleteBin==1.1.0.2
 ```
 This installation will run for around 10 minutes.
 
-#### 5. FIFTH STEP (Download Pretrain Weights for CompleteBin)
+#### 4. FOURTH STEP (Download Pretrain Weights for CompleteBin)
 Download the pretrained weight and other files (**CompleteBin-DB-v1.1.0.2.zip**) for running CompleteBin from this **[LINK](https://drive.google.com/file/d/1Q7QwWyQcNLr3Wwp6w_q3BcpJ_Y7qMwyV/view?usp=sharing)**.
 https://drive.google.com/file/d/1Q7QwWyQcNLr3Wwp6w_q3BcpJ_Y7qMwyV/view?usp=sharing
 
