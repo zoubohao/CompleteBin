@@ -1,5 +1,5 @@
 # CompleteBin
-**Paper --> Dynamic Contrastive Learning with Pretrained Deep Language Model Enhances Metagenome Binning for Contigs**
+**Paper --> CompleteBin: A transformer-based framework unlocks microbial dark matter through improved short contig binning**
 
 CompleteBin is a binner to cluster the contigs with context-based TNF embedding, a pretrained deep language model, and dynamic contrastive learning.
 
