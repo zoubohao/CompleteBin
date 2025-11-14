@@ -156,7 +156,7 @@ This file contains the following columns:
 ## Minimum System Requirements for Running CompleteBin
 - System: Linux
 - CPU: No restriction.
-- RAM: >= 80 GB
+- RAM: > 180 GB
 - GPU: The GPU memory must be equal to or greater than 24 GB.
 
 ## Our System Config
