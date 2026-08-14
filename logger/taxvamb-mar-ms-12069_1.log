@@ -1,0 +1,23 @@
+============================================
+TaxVAMB marine multi-sample binning started
+Assembly       : 1
+FASTA          : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-Marine-multi-samples/marine-sample-1.contigs.fasta
+Taxonomy       : /mnt/ME5024_PA1/home/csbhzou/taxVAMB-marine-assembled-1-taxon-results.tsv
+BAM files      : 10 cross-sample mappings
+Output         : /mnt/ME5024_PA2/shared/groups/ZHANGLU/TaxVAMB-CAMI2-Marine-Multi-Sample/marine-sample-1
+Node           : workernode3
+Started        : Wed Aug 12 21:50:14 HKT 2026
+============================================
+Traceback (most recent call last):
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/bin/vamb", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/lib/python3.11/site-packages/vamb/__main__.py", line 2368, in main
+    opt = BinTaxVambOptions.from_args(args)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/lib/python3.11/site-packages/vamb/__main__.py", line 757, in from_args
+    taxonomy = get_taxonomy(args)
+               ^^^^^^^^^^^^^^^^^^
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/lib/python3.11/site-packages/vamb/__main__.py", line 410, in get_taxonomy
+    raise ValueError(
+ValueError: ERROR: When reading taxonomy file at "/mnt/ME5024_PA1/home/csbhzou/taxVAMB-marine-assembled-1-taxon-results.tsv", the first line was not either 'contigs\tpredictions' or 'contigs\tpredictions\tscores''

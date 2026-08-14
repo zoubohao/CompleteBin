@@ -1,0 +1,22 @@
+============================================
+CAMI2-other minimap2 mapping
+Job ID       : 11809
+Sample       : Oral-2017.12.04_18.45.54_sample_15
+Contigs      : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Oral-2017.12.04_18.45.54_sample_15.contigs.fasta
+Reference    : /mnt/ME5024_PA2/shared/groups/ZHANGLU/reference_genomes_fasta_collect/Oral_ref_genomes.fasta
+Preset       : asm5
+Threads      : 24
+Output       : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Others-Datasets-Minimap2/Oral-2017.12.04_18.45.54_sample_15/Oral-2017.12.04_18.45.54_sample_15.to.Oral_ref_genomes.paf
+Started      : Mon Aug 10 02:45:16 PM HKT 2026
+============================================
+[M::mm_idx_gen::26.188*1.36] collected minimizers
+[M::mm_idx_gen::27.513*2.09] sorted minimizers
+[M::main::27.513*2.09] loaded/built the index for 1410 target sequence(s)
+[M::mm_mapopt_update::29.031*2.03] mid_occ = 89
+[M::mm_idx_stat] kmer size: 19; skip: 19; is_hpc: 0; #seq: 1410
+[M::mm_idx_stat::30.253*1.99] distinct minimizers: 128044783 (72.83% are singletons); average occurrences: 2.431; average spacing: 9.998; total length: 3112090857
+[M::worker_pipeline::33.724*3.82] mapped 294904 sequences
+[M::main] Version: 2.31-r1302
+[M::main] CMD: minimap2 -x asm5 --secondary=no -t 24 /mnt/ME5024_PA2/shared/groups/ZHANGLU/reference_genomes_fasta_collect/Oral_ref_genomes.fasta /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Oral-2017.12.04_18.45.54_sample_15.contigs.fasta
+[M::main] Real time: 34.239 sec; CPU: 129.237 sec; Peak RSS: 13.064 GB
+Finished: Mon Aug 10 02:45:51 PM HKT 2026

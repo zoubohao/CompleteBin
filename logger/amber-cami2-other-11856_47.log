@@ -1,0 +1,37 @@
+AMBER sample=Urogenital_tract-sample-5; binners=5; started=Tue Aug 11 12:49:12 HKT 2026
+2026-08-11 12:49:13,442 INFO Found @Version:0.9.1 in semibin2-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,443 INFO Found @SampleID:Urogenital_tract-sample-5 in semibin2-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,443 INFO Found @Version:0.9.1 in comebin-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,443 INFO Found @SampleID:Urogenital_tract-sample-5 in comebin-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,443 INFO Found @Version:0.9.1 in concoct-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,444 INFO Found @SampleID:Urogenital_tract-sample-5 in concoct-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,443 INFO Found @Version:0.9.1 in metabat2-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,444 INFO Found @SampleID:Urogenital_tract-sample-5 in metabat2-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,443 INFO Found @Version:0.9.1 in Gold standard
+2026-08-11 12:49:13,444 INFO Found @SampleID:Urogenital_tract-sample-5 in Gold standard
+2026-08-11 12:49:13,446 INFO Found @Version:0.9.1 in completebin-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,449 INFO Found @SampleID:Urogenital_tract-sample-5 in completebin-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,455 INFO Creating output directories
+2026-08-11 12:49:13,457 INFO Loading Urogenital_tract-sample-5 of Gold standard
+2026-08-11 12:49:13,476 INFO Evaluating Gold standard, sample Urogenital_tract-sample-5, genome binning
+2026-08-11 12:49:13,477 INFO Loading Urogenital_tract-sample-5 of Gold standard
+2026-08-11 12:49:13,623 INFO Evaluating comebin-Urogenital_tract-sample-5.All, sample Urogenital_tract-sample-5, genome binning
+2026-08-11 12:49:13,623 INFO Loading Urogenital_tract-sample-5 of comebin-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,674 WARNING 2917 sequences in comebin-Urogenital_tract-sample-5.All not found in the gold standard.
+2026-08-11 12:49:13,759 INFO Evaluating completebin-Urogenital_tract-sample-5.All, sample Urogenital_tract-sample-5, genome binning
+2026-08-11 12:49:13,759 INFO Loading Urogenital_tract-sample-5 of completebin-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,814 WARNING 4290 sequences in completebin-Urogenital_tract-sample-5.All not found in the gold standard.
+2026-08-11 12:49:13,901 INFO Evaluating concoct-Urogenital_tract-sample-5.All, sample Urogenital_tract-sample-5, genome binning
+2026-08-11 12:49:13,901 INFO Loading Urogenital_tract-sample-5 of concoct-Urogenital_tract-sample-5.All
+2026-08-11 12:49:13,953 WARNING 3058 sequences in concoct-Urogenital_tract-sample-5.All not found in the gold standard.
+2026-08-11 12:49:14,035 INFO Evaluating metabat2-Urogenital_tract-sample-5.All, sample Urogenital_tract-sample-5, genome binning
+2026-08-11 12:49:14,035 INFO Loading Urogenital_tract-sample-5 of metabat2-Urogenital_tract-sample-5.All
+2026-08-11 12:49:14,085 WARNING 1506 sequences in metabat2-Urogenital_tract-sample-5.All not found in the gold standard.
+2026-08-11 12:49:14,165 INFO Evaluating semibin2-Urogenital_tract-sample-5.All, sample Urogenital_tract-sample-5, genome binning
+2026-08-11 12:49:14,165 INFO Loading Urogenital_tract-sample-5 of semibin2-Urogenital_tract-sample-5.All
+2026-08-11 12:49:14,213 WARNING 823 sequences in semibin2-Urogenital_tract-sample-5.All not found in the gold standard.
+2026-08-11 12:49:14,307 INFO Saving computed metrics
+2026-08-11 12:49:14,337 INFO Creating genome binning plots
+2026-08-11 12:49:18,180 INFO Creating HTML page
+2026-08-11 12:49:18,955 INFO AMBER finished successfully. All results have been saved to /mnt/ME5024_PA2/shared/groups/ZHANGLU/AMBER-CAMI2-Other-Datasets-Results/AMBER-Urogenital_tract-sample-5
+AMBER completed Urogenital_tract-sample-5; finished=Tue Aug 11 12:49:19 HKT 2026

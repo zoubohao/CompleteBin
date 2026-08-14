@@ -1,0 +1,22 @@
+============================================
+CAMI2-other minimap2 mapping
+Job ID       : 11818
+Sample       : Skin-2017.12.04_18.56.22_sample_14
+Contigs      : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Skin-2017.12.04_18.56.22_sample_14.contigs.fasta
+Reference    : /mnt/ME5024_PA2/shared/groups/ZHANGLU/reference_genomes_fasta_collect/Skin_ref_genomes.fasta
+Preset       : asm5
+Threads      : 24
+Output       : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Others-Datasets-Minimap2/Skin-2017.12.04_18.56.22_sample_14/Skin-2017.12.04_18.56.22_sample_14.to.Skin_ref_genomes.paf
+Started      : Mon Aug 10 02:46:33 PM HKT 2026
+============================================
+[M::mm_idx_gen::34.940*1.33] collected minimizers
+[M::mm_idx_gen::36.382*2.03] sorted minimizers
+[M::main::36.382*2.03] loaded/built the index for 1433 target sequence(s)
+[M::mm_mapopt_update::38.237*1.98] mid_occ = 133
+[M::mm_idx_stat] kmer size: 19; skip: 19; is_hpc: 0; #seq: 1433
+[M::mm_idx_stat::39.356*1.95] distinct minimizers: 176257152 (73.06% are singletons); average occurrences: 2.359; average spacing: 9.999; total length: 4157641544
+[M::worker_pipeline::42.218*3.30] mapped 36245 sequences
+[M::main] Version: 2.31-r1302
+[M::main] CMD: minimap2 -x asm5 --secondary=no -t 24 /mnt/ME5024_PA2/shared/groups/ZHANGLU/reference_genomes_fasta_collect/Skin_ref_genomes.fasta /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Skin-2017.12.04_18.56.22_sample_14.contigs.fasta
+[M::main] Real time: 42.756 sec; CPU: 139.807 sec; Peak RSS: 14.945 GB
+Finished: Mon Aug 10 02:47:16 PM HKT 2026

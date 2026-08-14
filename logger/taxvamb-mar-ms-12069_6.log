@@ -1,0 +1,11 @@
+============================================
+TaxVAMB marine multi-sample binning started
+Assembly       : 6
+FASTA          : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-Marine-multi-samples/marine-sample-6.contigs.fasta
+Taxonomy       : /mnt/ME5024_PA1/home/csbhzou/taxVAMB-marine-assembled-6-taxon-results.tsv
+BAM files      : 10 cross-sample mappings
+Output         : /mnt/ME5024_PA2/shared/groups/ZHANGLU/TaxVAMB-CAMI2-Marine-Multi-Sample/marine-sample-6
+Node           : workernode3
+Started        : Thu Aug 13 08:05:48 HKT 2026
+============================================
+slurmstepd-workernode3: error: *** JOB 12187 ON workernode3 CANCELLED AT 2026-08-13T10:27:20 ***

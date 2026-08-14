@@ -3,43 +3,17 @@
 import os
 import random
 from itertools import product
+import time
 from typing import Dict
 
 import numpy as np
 import pysam
 from numpy.random import choice, shuffle
 
-from CompleteBin.CallGenes.gene_utils import callMarkerGenes
-from CompleteBin.IO import readFasta, readHMMFileReturnDict, writePickle
+from CompleteBin.IO import readFasta, writePickle
 from CompleteBin.logger import get_logger
 
 logger = get_logger()
-
-# def reject_outliers(data: np.ndarray, min_i = -100,  max_i = 100):
-#     """
-#     You can adjust your cut-off for outliers by adjusting argument m in function call. 
-#     The larger it is, the less outliers are removed. 
-#     This function seems to be more robust to various types of outliers compared to other outlier removal techniques.
-#     Args:
-#         data (_type_): _description_
-#         min_i (_type_, optional): _description_. Defaults to -100
-#         max_i (_type_, optional): _description_. Defaults to 100
-#     Returns:
-#         _type_: _description_
-#     """
-    
-#     p1 = np.percentile(data, 1)
-#     p99 = np.percentile(data, 99)
-#     d = data - np.median(data)
-#     mdev = np.median(d)
-#     if mdev != 0:
-#         s = d / mdev
-#     else:
-#         s = d
-#     print(s, mdev)
-#     data[s >= max_i] = p99
-#     data[s <= min_i] = p1
-#     return data
 
 
 def base_pair_coverage_calculate(
@@ -47,43 +21,100 @@ def base_pair_coverage_calculate(
     bam_file_path: str,
     output_path: str,
     min_contig_length: int = 0,
-    num_worker=64,
-    write_pickle = False
+    num_worker: int = 64,
+    write_pickle: bool = False,
 ):
+    """Calculate per-base-pair coverage for each contig from a sorted BAM file.
+
+    Iterates through every aligned read in the BAM, counting coverage at each
+    reference position.  Unlike the original implementation this version:
+
+    - Counts **all** aligned reads regardless of MAPQ (matching ``bedtools
+      genomecov`` behaviour).  The original MAPQ >= 30 filter discarded reads
+      with MAPQ = 0 (typically multi-mapped or repetitive-region reads),
+      causing complete coverage loss for ~9 % of contigs >= 1000 bp.
+
+    - Removes the ``jump_out_count >= 100_000_000`` early-exit guard that
+      could prematurely terminate the BAM scan on large metagenomic datasets
+      with many short (filtered-out) contigs.  Replaced by a progress log
+      emitted every 50 M skipped reads.
+
+    - Applies 97.5th-percentile clipping to per-base coverage on each contig
+      to dampen outlier spikes (unchanged from the original).
+    """
     logger.info("--> Start to calculate coverage for each contig.")
     name2numpyarray = {}
     for name, seq in name2seq.items():
         if len(seq) >= min_contig_length:
             name2numpyarray[name] = np.zeros(shape=[len(seq)], dtype=np.int64)
+
+    n_target = len(name2numpyarray)
+    logger.info(f"--> {n_target} contigs to track (>= {min_contig_length} bp).")
+
     bamfile = pysam.AlignmentFile(bam_file_path, "rb", threads=num_worker)
-    index = 0
-    jump_out_count = 0
+
+    counted_reads = 0        # reads that contributed to coverage
+    skipped_reads = 0        # reads mapping to filtered-out contigs
+    unmapped_reads = 0       # reads with reference_name is None
+    total_reads = 0
+    progress_interval = 50_000_000
+
+    t_start = time.time()
     for reads in bamfile:
+        total_reads += 1
         if reads.reference_name is None:
+            unmapped_reads += 1
             continue
-        if jump_out_count >= 100000000:
-            break
+
         name = ">" + reads.reference_name
-        # print(f"the ref name is {name}")
         if name not in name2numpyarray:
-            jump_out_count += 1
+            skipped_reads += 1
+            if skipped_reads % progress_interval == 0:
+                elapsed = time.time() - t_start
+                logger.info(
+                    f"--> Scanned {total_reads // 1_000_000}M reads, "
+                    f"{skipped_reads // 1_000_000}M mapped to filtered contigs "
+                    f"(elapsed {elapsed:.0f}s, continuing...)"
+                )
             continue
+
         cur_array = name2numpyarray[name]
         if reads.reference_start is not None and reads.reference_end is not None:
             s = reads.reference_start
             e = reads.reference_end
-            cur_array[s: e] += 1
-            index += 1
-            jump_out_count = 0
+            cur_array[s:e] += 1
+            counted_reads += 1
+
+    bamfile.close()
+    elapsed = time.time() - t_start
+    pct_useful = 100.0 * counted_reads / max(total_reads, 1)
+    logger.info(
+        f"--> BAM scan finished: {total_reads:,} total reads, "
+        f"{counted_reads:,} counted ({pct_useful:.1f}%), "
+        f"{skipped_reads:,} skipped (filtered contig), "
+        f"{unmapped_reads:,} unmapped, "
+        f"{elapsed:.0f}s elapsed"
+    )
+
+    # 97.5th-percentile clipping — dampen outlier coverage spikes per contig
     name2numpyarray_new = {}
-    for name, base_pair_arrary in name2numpyarray.items():
-        ## try to remove some outliers
-        cutoff = np.percentile(base_pair_arrary, q = 97.5)
-        del_index = base_pair_arrary > cutoff
-        base_pair_arrary[del_index] = cutoff
-        name2numpyarray_new[name] = base_pair_arrary
-    # if write_pickle:
-    writePickle(output_path, name2numpyarray_new)
+    for name, base_pair_array in name2numpyarray.items():
+        cutoff = np.percentile(base_pair_array, q=97.5)
+        exceed_mask = base_pair_array > cutoff
+        base_pair_array[exceed_mask] = cutoff
+        name2numpyarray_new[name] = base_pair_array
+
+    # Count contigs with zero coverage and warn
+    zero_cov_contigs = [name for name, arr in name2numpyarray_new.items() if arr.sum() == 0]
+    logger.info(
+        f"--> {len(zero_cov_contigs)} / {len(name2numpyarray_new)} contigs have zero coverage "
+        f"({100.0 * len(zero_cov_contigs) / max(len(name2numpyarray_new), 1):.1f}%). "
+        f"These contigs will have no signal for binning."
+    )
+
+    if write_pickle:
+        writePickle(output_path, name2numpyarray_new)
+
     return name2numpyarray_new
 
 
@@ -93,7 +124,7 @@ def softmax(x):
     return e_x / e_x.sum(axis=0)
 
 
-def sampleSeqFromFasta(fasta_path: str, seq_min_len, seq_max_len, short_prob = 0.25, fixed = False):
+def sampleSeqFromFasta(fasta_path: str, seq_min_len, seq_max_len, short_prob=0.25, fixed=False):
     """
     Args:
         fasta_path (str): _description_
@@ -109,7 +140,7 @@ def sampleSeqFromFasta(fasta_path: str, seq_min_len, seq_max_len, short_prob = 0
     else:
         random.seed(None)
         np.random.seed(None)
-    
+
     contig2seq = readFasta(fasta_path)
     contigs_list = list(contig2seq.values())
     shuffle(contigs_list)
@@ -130,7 +161,7 @@ def sampleSeqFromFasta(fasta_path: str, seq_min_len, seq_max_len, short_prob = 0
         p = softmax(p * l)
         index = choice(contigs_num, None, p=p)
         seq = contigs_list[index]
-    
+
     n = len(seq)
     rand = np.random.rand()
     if rand <= 0.5:
@@ -154,15 +185,41 @@ def random_generate_view(
     min_contig_len: int,
     seed=None
 ):
-    if seed is None:
-        random.seed()
-    else:
+    if seed:
         random.seed(seed)
     n = len(seq)
     sim_len = random.randint(min_contig_len - 1, n)
     start = random.randint(0, n - sim_len)
     end = start + sim_len
-    random.seed()
+    random.seed(2048)
+    return seq[start: end], start, end
+
+
+def random_generate_view_with_range(
+    seq: str,
+    min_contig_len: int,
+    part_range: float,
+    seed=None
+):
+    assert part_range <= 1
+    n = len(seq)
+    sim_len = max(min_contig_len - 10, int(n * part_range))
+    start = random.randint(0, n - sim_len)
+    end = start + sim_len
+    return seq[start: end], start, end
+
+
+def generate_view_with_fixed_len(
+    seq: str,
+    fix_len: int,
+    seed=None
+):
+    n = len(seq)
+    # if fix_len >= n: fix_len = n - 2
+    fix_len = min(n - 10, fix_len)
+    # print(fix_len)
+    start = random.randint(0, n - fix_len)
+    end = start + fix_len
     return seq[start: end], start, end
 
 
@@ -224,7 +281,7 @@ def seqDeletion(seq: str, dRatio=0.05, scatter=False) -> str:
     return "".join(newSeq)
 
 
-def sequence_data_augmentation(seq: str, dRatio = 0.005, vRatio = 0.005, iRatio = 0.005):
+def sequence_data_augmentation(seq: str, dRatio=0.005, vRatio=0.005, iRatio=0.005):
     rand_v = random.random()
     if rand_v <= 0.333:
         return seqSimulateSNV(seq, vRatio)
@@ -240,7 +297,7 @@ def sequence_data_augmentation(seq: str, dRatio = 0.005, vRatio = 0.005, iRatio 
             return seqInsertion(seq, iRatio, scatter=False)
 
 
-## kmer functions
+# kmer functions
 def generate_feature_mapping_reverse(kmer_len):
     BASE_COMPLEMENT = {"A": "T", "T": "A", "G": "C", "C": "G"}
     kmer_hash = {}
@@ -256,6 +313,17 @@ def generate_feature_mapping_reverse(kmer_len):
     return kmer_hash, counter
 
 
+def generate_feature_mapping_protein(kmer_len):
+    kmer_hash = {}
+    counter = 0
+    for kmer in product("ACDEFGHIKLMNPQRSTVWY", repeat=kmer_len):
+        kmer = "".join(kmer)
+        if kmer not in kmer_hash:
+            kmer_hash[kmer] = counter
+            counter += 1
+    return kmer_hash, counter
+
+
 def generate_feature_mapping_whole_tokens(kmer_len):
     kmer_hash = {}
     counter = 0
@@ -267,7 +335,7 @@ def generate_feature_mapping_whole_tokens(kmer_len):
     return kmer_hash, counter
 
 
-def getGeneWithLongestLength(gene2contigNames: dict, contigname2seq: dict, intersect_accs = None):
+def getGeneWithLongestLength(gene2contigNames: dict, contigname2seq: dict, intersect_accs=None):
     gene2count = []
     for gene_name, contigs_with_this_gene in gene2contigNames.items():
         if intersect_accs is not None:
@@ -300,31 +368,30 @@ def getGeneWithLargestCount(gene2contigNames: dict, contigname2seq: dict, inters
     return gene_name, count, gene2contigNames[gene_name]
 
 
-def callGenesForKmeans(
-    temp_file_folder_path,
-    input_bins_folder,
-    num_workers,
-    hmm_model_path,
-    ):
-    logger.info("--> Start to Call 40 Marker Genes.")
-    call_genes_folder = os.path.join(temp_file_folder_path, "call_genes_initial_kmeans")
-    if os.path.exists(call_genes_folder) is False:
-        os.mkdir(call_genes_folder)
-    callMarkerGenes(input_bins_folder,
-                    call_genes_folder,
-                    num_workers,
-                    hmm_model_path,
-                    "fasta")
-    ##
-    logger.info("--> Start to Collect 40 Marker Genes.")
-    contigname2hits = {}
-    # gene file build
-    for file in os.listdir(call_genes_folder):
-        _, suffix = os.path.splitext(file)
-        if suffix[1:] == "txt":
-            contigname2hits.update(
-                readHMMFileReturnDict(os.path.join(call_genes_folder, file))
-            )
-        elif suffix[1:] not in ["faa", "gff"]:
-            raise ValueError(f"ERROR in the output folder: {call_genes_folder}, the file is {file}, suffix is {suffix[1:]}")
-    writePickle(os.path.join(temp_file_folder_path, "contigname2hmmhits_list_initial_kmeans.pkl"), contigname2hits)
+def filter_short_contigs(
+    faa_folder,
+    contig_file_path,
+    contigName2_gene2num,
+):
+    contigname2seq = readFasta(contig_file_path)
+    contigname2orf_num = {}
+    for name, _ in contigname2seq.items():
+        contigname2orf_num[name] = 0
+    for file in os.listdir(faa_folder):
+        if ".faa" in file:
+            cur_longname2seq = readFasta(os.path.join(faa_folder, file))
+            for longname, _ in cur_longname2seq.items():
+                if "partial=00" in longname or "partial=01" in longname or "partial=10" in longname:
+                    real_contigname = "_".join(longname.split()[0].split("_")[0:-1])
+                    contigname2orf_num[real_contigname] += 1
+    final_contig_set = set()
+    for name, orf_num in contigname2orf_num.items():
+        if orf_num > 0:
+            final_contig_set.add(name)
+    for name, _ in contigName2_gene2num.items():
+        if name not in final_contig_set:
+            final_contig_set.add(name)
+    output = {}
+    for name in final_contig_set:
+        output[name] = contigname2seq[name]
+    return output

@@ -1,12 +1,14 @@
+from CompleteBin.version import bin_v
 from setuptools import find_packages, setup
 
-name = 'CompleteBin'
+name = 'completebin'
 requires_list = open('./requirements.txt', 'r', encoding='utf8').readlines()
 requires_list = [i.strip() for i in requires_list]
 
+
 setup(
     name=name,
-    version='1.1.0.2',
+    version=bin_v,
     author="Bohao Zou",
     author_email='csbhzou@comp.hkbu.edu.hk',
     description="The binner to cluster contigs.",

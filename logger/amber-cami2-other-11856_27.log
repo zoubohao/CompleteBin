@@ -1,0 +1,37 @@
+AMBER sample=Oral-sample-6; binners=5; started=Tue Aug 11 12:48:15 HKT 2026
+2026-08-11 12:48:16,858 INFO Found @Version:0.9.1 in semibin2-Oral-sample-6.All
+2026-08-11 12:48:16,858 INFO Found @Version:0.9.1 in Gold standard
+2026-08-11 12:48:16,858 INFO Found @SampleID:Oral-sample-6 in Gold standard
+2026-08-11 12:48:16,858 INFO Found @Version:0.9.1 in metabat2-Oral-sample-6.All
+2026-08-11 12:48:16,858 INFO Found @SampleID:Oral-sample-6 in metabat2-Oral-sample-6.All
+2026-08-11 12:48:16,858 INFO Found @Version:0.9.1 in concoct-Oral-sample-6.All
+2026-08-11 12:48:16,858 INFO Found @SampleID:Oral-sample-6 in concoct-Oral-sample-6.All
+2026-08-11 12:48:16,858 INFO Found @SampleID:Oral-sample-6 in semibin2-Oral-sample-6.All
+2026-08-11 12:48:16,858 INFO Found @Version:0.9.1 in completebin-Oral-sample-6.All
+2026-08-11 12:48:16,858 INFO Found @Version:0.9.1 in comebin-Oral-sample-6.All
+2026-08-11 12:48:16,860 INFO Found @SampleID:Oral-sample-6 in completebin-Oral-sample-6.All
+2026-08-11 12:48:16,865 INFO Found @SampleID:Oral-sample-6 in comebin-Oral-sample-6.All
+2026-08-11 12:48:16,883 INFO Creating output directories
+2026-08-11 12:48:16,885 INFO Loading Oral-sample-6 of Gold standard
+2026-08-11 12:48:16,915 INFO Evaluating Gold standard, sample Oral-sample-6, genome binning
+2026-08-11 12:48:16,915 INFO Loading Oral-sample-6 of Gold standard
+2026-08-11 12:48:17,177 INFO Evaluating comebin-Oral-sample-6.All, sample Oral-sample-6, genome binning
+2026-08-11 12:48:17,177 INFO Loading Oral-sample-6 of comebin-Oral-sample-6.All
+2026-08-11 12:48:17,281 WARNING 12569 sequences in comebin-Oral-sample-6.All not found in the gold standard.
+2026-08-11 12:48:17,420 INFO Evaluating completebin-Oral-sample-6.All, sample Oral-sample-6, genome binning
+2026-08-11 12:48:17,421 INFO Loading Oral-sample-6 of completebin-Oral-sample-6.All
+2026-08-11 12:48:17,529 WARNING 16654 sequences in completebin-Oral-sample-6.All not found in the gold standard.
+2026-08-11 12:48:17,673 INFO Evaluating concoct-Oral-sample-6.All, sample Oral-sample-6, genome binning
+2026-08-11 12:48:17,673 INFO Loading Oral-sample-6 of concoct-Oral-sample-6.All
+2026-08-11 12:48:17,777 WARNING 13967 sequences in concoct-Oral-sample-6.All not found in the gold standard.
+2026-08-11 12:48:17,990 INFO Evaluating metabat2-Oral-sample-6.All, sample Oral-sample-6, genome binning
+2026-08-11 12:48:17,990 INFO Loading Oral-sample-6 of metabat2-Oral-sample-6.All
+2026-08-11 12:48:18,089 WARNING 5244 sequences in metabat2-Oral-sample-6.All not found in the gold standard.
+2026-08-11 12:48:18,223 INFO Evaluating semibin2-Oral-sample-6.All, sample Oral-sample-6, genome binning
+2026-08-11 12:48:18,223 INFO Loading Oral-sample-6 of semibin2-Oral-sample-6.All
+2026-08-11 12:48:18,316 WARNING 1632 sequences in semibin2-Oral-sample-6.All not found in the gold standard.
+2026-08-11 12:48:18,461 INFO Saving computed metrics
+2026-08-11 12:48:18,498 INFO Creating genome binning plots
+2026-08-11 12:48:22,574 INFO Creating HTML page
+2026-08-11 12:48:23,382 INFO AMBER finished successfully. All results have been saved to /mnt/ME5024_PA2/shared/groups/ZHANGLU/AMBER-CAMI2-Other-Datasets-Results/AMBER-Oral-sample-6
+AMBER completed Oral-sample-6; finished=Tue Aug 11 12:48:23 HKT 2026

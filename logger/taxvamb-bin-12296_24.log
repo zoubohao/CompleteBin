@@ -1,0 +1,220 @@
+TaxVAMB: sample=Oral-2017.12.04_18.45.54_sample_17, threads=32, started=Thu Aug 13 14:52:52 HKT 2026
+2026-08-13 14:52:54.784 | INFO    | Starting Vamb version 5.0.4
+2026-08-13 14:52:54.785 | INFO    | Random seed is 25395951618241393
+2026-08-13 14:52:54.785 | INFO    | Invoked with CLI args: '/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/bin/vamb bin taxvamb --outdir /mnt/ME5024_PA2/shared/groups/ZHANGLU/Results_of_CAMI2_Other_datasets_other_binning_tools/TaxVAMB/Oral/Oral-2017.12.04_18.45.54_sample_17 --fasta /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Oral-2017.12.04_18.45.54_sample_17.contigs.fasta --bamdir /mnt/ME5024_PA2/shared/groups/ZHANGLU/TaxVAMB-Taxonomy-TSV/Oral-2017.12.04_18.45.54_sample_17/bamdir --taxonomy /mnt/ME5024_PA2/shared/groups/ZHANGLU/TaxVAMB-Taxonomy-TSV/Oral-2017.12.04_18.45.54_sample_17/Oral-2017.12.04_18.45.54_sample_17.taxonomy.tsv --minfasta 200000 -m 2000 -p 32'
+2026-08-13 14:52:54.785 | INFO    | Loading TNF
+2026-08-13 14:52:54.785 | INFO    | 	Minimum sequence length: 2000
+2026-08-13 14:52:54.785 | INFO    | 	Loading data from FASTA file /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Oral-2017.12.04_18.45.54_sample_17.contigs.fasta
+
+2026-08-13 14:52:56.160 | WARNING | Binsplit separator (option `-o`) implicitly passed as "C", but sequence identifier "NODE_1_length_607180_cov_87.426879" does not contain this separator, or contains it at the very start or end.
+A binsplit separator X implies that every sequence identifier is formatted as
+[sample identifier][X][sequence identifier], e.g. a binsplit separator of 'C' means that 'S1C19' and '7C11' are valid identifiers.
+
+Skipping binsplitting.
+
+2026-08-13 14:52:56.161 | WARNING | The minimum sequence length has been set to 2000, but 141052 sequences fell below this threshold and was filtered away.
+Better results are obtained if the sequence file is filtered to the minimum sequence length before mapping.
+
+2026-08-13 14:52:56.161 | INFO    | 	Kept 53751635 bases in 6967 sequences
+2026-08-13 14:52:56.161 | INFO    | 	Processed TNF in 1.38 seconds.
+
+2026-08-13 14:52:56.161 | INFO    | Loading depths
+2026-08-13 14:52:56.161 | INFO    | 	Reference hash: da4ce7c5b4344c76dd196b584aaab9e8
+2026-08-13 14:52:56.161 | INFO    | 	Parsing 1 BAM files with 32 threads
+2026-08-13 14:52:56.161 | INFO    | 	Min identity: 0.0
+2026-08-13 14:53:23.941 | INFO    | 	Order of columns is:
+2026-08-13 14:53:23.942 | INFO    | 	     0: /mnt/ME5024_PA2/shared/groups/ZHANGLU/TaxVAMB-Taxonomy-TSV/Oral-2017.12.04_18.45.54_sample_17/bamdir/Oral-2017.12.04_18.45.54_sample_17.sorted.bam
+2026-08-13 14:53:23.942 | INFO    | 	Processed abundance in 27.78 seconds.
+
+2026-08-13 14:53:23.942 | INFO    | Predicting taxonomy with Taxometer
+2026-08-13 14:53:23.978 | INFO    | 	370 nodes in the graph
+2026-08-13 14:53:24.042 | INFO    | 	Created dataloader
+2026-08-13 14:53:24.042 | INFO    | Starting training the taxonomy predictor
+2026-08-13 14:53:24.042 | INFO    | Using threshold 0.5
+2026-08-13 14:53:24.876 | INFO    | 	Network properties:
+2026-08-13 14:53:24.876 | INFO    | 	    CUDA: False
+2026-08-13 14:53:24.877 | INFO    | 	    Hierarchical loss: flat_softmax
+2026-08-13 14:53:24.877 | INFO    | 	    Alpha: 0.5
+2026-08-13 14:53:24.877 | INFO    | 	    Beta: 200.0
+2026-08-13 14:53:24.877 | INFO    | 	    Dropout: 0.2
+2026-08-13 14:53:24.877 | INFO    | 	    N hidden: 512, 512, 512, 512
+2026-08-13 14:53:24.877 | INFO    | 	Training properties:
+2026-08-13 14:53:24.877 | INFO    | 	    N epochs: 100
+2026-08-13 14:53:24.877 | INFO    | 	    Starting batch size: 1024
+2026-08-13 14:53:24.877 | INFO    | 	    Batchsteps: None
+2026-08-13 14:53:24.877 | INFO    | 	    Learning rate: 0.001
+2026-08-13 14:53:24.877 | INFO    | 	    N labels: torch.Size([6967, 1])
+Using decoupled weight decay
+2026-08-13 14:53:25.351 | INFO    | 	Epoch: 1	CE: 4.0926177	Batchsize: 1024
+2026-08-13 14:53:25.776 | INFO    | 	Epoch: 2	CE: 2.3945492	Batchsize: 1024
+2026-08-13 14:53:26.244 | INFO    | 	Epoch: 3	CE: 1.4121389	Batchsize: 1024
+2026-08-13 14:53:26.733 | INFO    | 	Epoch: 4	CE: 0.8934501	Batchsize: 1024
+2026-08-13 14:53:27.327 | INFO    | 	Epoch: 5	CE: 0.6826947	Batchsize: 1024
+2026-08-13 14:53:27.832 | INFO    | 	Epoch: 6	CE: 0.6170487	Batchsize: 1024
+2026-08-13 14:53:28.363 | INFO    | 	Epoch: 7	CE: 0.4980464	Batchsize: 1024
+2026-08-13 14:53:29.008 | INFO    | 	Epoch: 8	CE: 0.4588723	Batchsize: 1024
+2026-08-13 14:53:29.505 | INFO    | 	Epoch: 9	CE: 0.3926644	Batchsize: 1024
+2026-08-13 14:53:30.263 | INFO    | 	Epoch: 10	CE: 0.3667813	Batchsize: 1024
+2026-08-13 14:53:30.872 | INFO    | 	Epoch: 11	CE: 0.3188286	Batchsize: 1024
+2026-08-13 14:53:31.408 | INFO    | 	Epoch: 12	CE: 0.2926601	Batchsize: 1024
+2026-08-13 14:53:31.967 | INFO    | 	Epoch: 13	CE: 0.2775054	Batchsize: 1024
+2026-08-13 14:53:32.615 | INFO    | 	Epoch: 14	CE: 0.2480080	Batchsize: 1024
+2026-08-13 14:53:33.236 | INFO    | 	Epoch: 15	CE: 0.2400055	Batchsize: 1024
+2026-08-13 14:53:33.866 | INFO    | 	Epoch: 16	CE: 0.2277936	Batchsize: 1024
+2026-08-13 14:53:34.385 | INFO    | 	Epoch: 17	CE: 0.2032734	Batchsize: 1024
+2026-08-13 14:53:35.074 | INFO    | 	Epoch: 18	CE: 0.1857941	Batchsize: 1024
+2026-08-13 14:53:35.647 | INFO    | 	Epoch: 19	CE: 0.1694215	Batchsize: 1024
+2026-08-13 14:53:36.158 | INFO    | 	Epoch: 20	CE: 0.1641582	Batchsize: 1024
+2026-08-13 14:53:36.786 | INFO    | 	Epoch: 21	CE: 0.1697409	Batchsize: 1024
+2026-08-13 14:53:37.412 | INFO    | 	Epoch: 22	CE: 0.1424072	Batchsize: 1024
+2026-08-13 14:53:38.067 | INFO    | 	Epoch: 23	CE: 0.1373416	Batchsize: 1024
+2026-08-13 14:53:38.715 | INFO    | 	Epoch: 24	CE: 0.1322361	Batchsize: 1024
+2026-08-13 14:53:39.435 | INFO    | 	Epoch: 25	CE: 0.1299267	Batchsize: 1024
+2026-08-13 14:53:40.151 | INFO    | 	Epoch: 26	CE: 0.1141629	Batchsize: 1024
+2026-08-13 14:53:40.870 | INFO    | 	Epoch: 27	CE: 0.1068462	Batchsize: 1024
+2026-08-13 14:53:41.397 | INFO    | 	Epoch: 28	CE: 0.0936600	Batchsize: 1024
+2026-08-13 14:53:41.984 | INFO    | 	Epoch: 29	CE: 0.1056892	Batchsize: 1024
+2026-08-13 14:53:42.446 | INFO    | 	Epoch: 30	CE: 0.1023906	Batchsize: 1024
+2026-08-13 14:53:43.035 | INFO    | 	Epoch: 31	CE: 0.1114496	Batchsize: 1024
+2026-08-13 14:53:43.526 | INFO    | 	Epoch: 32	CE: 0.0905489	Batchsize: 1024
+2026-08-13 14:53:44.133 | INFO    | 	Epoch: 33	CE: 0.0894156	Batchsize: 1024
+2026-08-13 14:53:44.616 | INFO    | 	Epoch: 34	CE: 0.0825352	Batchsize: 1024
+2026-08-13 14:53:45.204 | INFO    | 	Epoch: 35	CE: 0.0832602	Batchsize: 1024
+2026-08-13 14:53:45.925 | INFO    | 	Epoch: 36	CE: 0.0778232	Batchsize: 1024
+2026-08-13 14:53:46.396 | INFO    | 	Epoch: 37	CE: 0.0777157	Batchsize: 1024
+2026-08-13 14:53:46.935 | INFO    | 	Epoch: 38	CE: 0.0668475	Batchsize: 1024
+2026-08-13 14:53:47.412 | INFO    | 	Epoch: 39	CE: 0.0679138	Batchsize: 1024
+2026-08-13 14:53:47.948 | INFO    | 	Epoch: 40	CE: 0.0665870	Batchsize: 1024
+2026-08-13 14:53:48.458 | INFO    | 	Epoch: 41	CE: 0.0603806	Batchsize: 1024
+2026-08-13 14:53:49.101 | INFO    | 	Epoch: 42	CE: 0.0641168	Batchsize: 1024
+2026-08-13 14:53:49.565 | INFO    | 	Epoch: 43	CE: 0.0663889	Batchsize: 1024
+2026-08-13 14:53:50.159 | INFO    | 	Epoch: 44	CE: 0.0601870	Batchsize: 1024
+2026-08-13 14:53:50.777 | INFO    | 	Epoch: 45	CE: 0.0592120	Batchsize: 1024
+2026-08-13 14:53:51.655 | INFO    | 	Epoch: 46	CE: 0.0545144	Batchsize: 1024
+2026-08-13 14:53:52.434 | INFO    | 	Epoch: 47	CE: 0.0555769	Batchsize: 1024
+2026-08-13 14:53:53.113 | INFO    | 	Epoch: 48	CE: 0.0504659	Batchsize: 1024
+2026-08-13 14:53:53.957 | INFO    | 	Epoch: 49	CE: 0.0536977	Batchsize: 1024
+2026-08-13 14:53:54.797 | INFO    | 	Epoch: 50	CE: 0.0499325	Batchsize: 1024
+2026-08-13 14:53:55.365 | INFO    | 	Epoch: 51	CE: 0.0549984	Batchsize: 1024
+2026-08-13 14:53:56.279 | INFO    | 	Epoch: 52	CE: 0.0576264	Batchsize: 1024
+2026-08-13 14:53:57.265 | INFO    | 	Epoch: 53	CE: 0.0519679	Batchsize: 1024
+2026-08-13 14:53:57.941 | INFO    | 	Epoch: 54	CE: 0.0513184	Batchsize: 1024
+2026-08-13 14:53:58.524 | INFO    | 	Epoch: 55	CE: 0.0504187	Batchsize: 1024
+2026-08-13 14:53:59.474 | INFO    | 	Epoch: 56	CE: 0.0443815	Batchsize: 1024
+2026-08-13 14:54:00.348 | INFO    | 	Epoch: 57	CE: 0.0478453	Batchsize: 1024
+2026-08-13 14:54:01.086 | INFO    | 	Epoch: 58	CE: 0.0418642	Batchsize: 1024
+2026-08-13 14:54:01.857 | INFO    | 	Epoch: 59	CE: 0.0454144	Batchsize: 1024
+2026-08-13 14:54:03.357 | INFO    | 	Epoch: 60	CE: 0.0390449	Batchsize: 1024
+2026-08-13 14:54:03.954 | INFO    | 	Epoch: 61	CE: 0.0382374	Batchsize: 1024
+2026-08-13 14:54:04.552 | INFO    | 	Epoch: 62	CE: 0.0397083	Batchsize: 1024
+2026-08-13 14:54:05.282 | INFO    | 	Epoch: 63	CE: 0.0450012	Batchsize: 1024
+2026-08-13 14:54:05.838 | INFO    | 	Epoch: 64	CE: 0.0405339	Batchsize: 1024
+2026-08-13 14:54:06.478 | INFO    | 	Epoch: 65	CE: 0.0408874	Batchsize: 1024
+2026-08-13 14:54:07.063 | INFO    | 	Epoch: 66	CE: 0.0405342	Batchsize: 1024
+2026-08-13 14:54:07.795 | INFO    | 	Epoch: 67	CE: 0.0357069	Batchsize: 1024
+2026-08-13 14:54:08.583 | INFO    | 	Epoch: 68	CE: 0.0407626	Batchsize: 1024
+2026-08-13 14:54:09.734 | INFO    | 	Epoch: 69	CE: 0.0320654	Batchsize: 1024
+2026-08-13 14:54:10.585 | INFO    | 	Epoch: 70	CE: 0.0393700	Batchsize: 1024
+2026-08-13 14:54:11.481 | INFO    | 	Epoch: 71	CE: 0.0313726	Batchsize: 1024
+2026-08-13 14:54:12.103 | INFO    | 	Epoch: 72	CE: 0.0345908	Batchsize: 1024
+2026-08-13 14:54:12.947 | INFO    | 	Epoch: 73	CE: 0.0355737	Batchsize: 1024
+2026-08-13 14:54:13.789 | INFO    | 	Epoch: 74	CE: 0.0344931	Batchsize: 1024
+2026-08-13 14:54:14.433 | INFO    | 	Epoch: 75	CE: 0.0317146	Batchsize: 1024
+2026-08-13 14:54:15.434 | INFO    | 	Epoch: 76	CE: 0.0317347	Batchsize: 1024
+2026-08-13 14:54:16.242 | INFO    | 	Epoch: 77	CE: 0.0271677	Batchsize: 1024
+2026-08-13 14:54:16.828 | INFO    | 	Epoch: 78	CE: 0.0255369	Batchsize: 1024
+2026-08-13 14:54:17.678 | INFO    | 	Epoch: 79	CE: 0.0274312	Batchsize: 1024
+2026-08-13 14:54:18.500 | INFO    | 	Epoch: 80	CE: 0.0300168	Batchsize: 1024
+2026-08-13 14:54:19.149 | INFO    | 	Epoch: 81	CE: 0.0333650	Batchsize: 1024
+2026-08-13 14:54:19.878 | INFO    | 	Epoch: 82	CE: 0.0291569	Batchsize: 1024
+2026-08-13 14:54:20.789 | INFO    | 	Epoch: 83	CE: 0.0400564	Batchsize: 1024
+2026-08-13 14:54:21.449 | INFO    | 	Epoch: 84	CE: 0.0258700	Batchsize: 1024
+2026-08-13 14:54:22.227 | INFO    | 	Epoch: 85	CE: 0.0314297	Batchsize: 1024
+2026-08-13 14:54:23.296 | INFO    | 	Epoch: 86	CE: 0.0279095	Batchsize: 1024
+2026-08-13 14:54:24.202 | INFO    | 	Epoch: 87	CE: 0.0266208	Batchsize: 1024
+2026-08-13 14:54:24.967 | INFO    | 	Epoch: 88	CE: 0.0305818	Batchsize: 1024
+2026-08-13 14:54:25.736 | INFO    | 	Epoch: 89	CE: 0.0276533	Batchsize: 1024
+2026-08-13 14:54:26.743 | INFO    | 	Epoch: 90	CE: 0.0286547	Batchsize: 1024
+2026-08-13 14:54:27.692 | INFO    | 	Epoch: 91	CE: 0.0251705	Batchsize: 1024
+2026-08-13 14:54:28.626 | INFO    | 	Epoch: 92	CE: 0.0299795	Batchsize: 1024
+2026-08-13 14:54:29.462 | INFO    | 	Epoch: 93	CE: 0.0292053	Batchsize: 1024
+2026-08-13 14:54:30.263 | INFO    | 	Epoch: 94	CE: 0.0279537	Batchsize: 1024
+2026-08-13 14:54:31.212 | INFO    | 	Epoch: 95	CE: 0.0240955	Batchsize: 1024
+2026-08-13 14:54:32.079 | INFO    | 	Epoch: 96	CE: 0.0203309	Batchsize: 1024
+2026-08-13 14:54:33.316 | INFO    | 	Epoch: 97	CE: 0.0219549	Batchsize: 1024
+2026-08-13 14:54:34.757 | INFO    | 	Epoch: 98	CE: 0.0240224	Batchsize: 1024
+2026-08-13 14:54:35.977 | INFO    | 	Epoch: 99	CE: 0.0180222	Batchsize: 1024
+2026-08-13 14:54:36.687 | INFO    | 	Epoch: 100	CE: 0.0196690	Batchsize: 1024
+2026-08-13 14:54:36.696 | INFO    | Finished training the taxonomy predictor in 72.65 seconds.
+2026-08-13 14:54:36.696 | INFO    | Writing the taxonomy predictions
+2026-08-13 14:54:36.697 | INFO    | Using threshold 0.5
+2026-08-13 14:54:37.273 | INFO    | Completed taxonomy predictions in 73.33 seconds.
+2026-08-13 14:54:37.344 | INFO    | 	Network properties:
+2026-08-13 14:54:37.344 | INFO    | 	    CUDA: False
+2026-08-13 14:54:37.344 | INFO    | 	    Alpha: 0.5
+2026-08-13 14:54:37.344 | INFO    | 	    Beta: 200.0
+2026-08-13 14:54:37.344 | INFO    | 	    Dropout: 0.0
+2026-08-13 14:54:37.344 | INFO    | 	    N hidden: 256, 256
+2026-08-13 14:54:37.344 | INFO    | 	    N latent: 32
+2026-08-13 14:54:37.344 | INFO    | 	Training properties:
+2026-08-13 14:54:37.344 | INFO    | 	    N epochs: 300
+2026-08-13 14:54:37.344 | INFO    | 	    Starting batch size: 256
+2026-08-13 14:54:37.344 | INFO    | 	    Batchsteps: 25, 75, 150, 225
+2026-08-13 14:54:37.344 | INFO    | 	    Learning rate: 0.001
+2026-08-13 14:54:37.344 | INFO    | 	    N sequences: 6967
+2026-08-13 14:54:37.344 | INFO    | 	    N samples: 1
+2026-08-13 14:54:39.054 | INFO    | 		Epoch: 0  loss_vamb: 5.40573e-01  ab_vamb: 1.83307e-01  ce_vamb: 0.00000e+00  sse_vamb: 3.52984e-01  kld_vamb: 3.62020e-03  loss_labels: 2.13568e+00  ce_labels_labels: 2.12980e+00  kld_labels: 3.76327e+01  correct_labels_labels: 0.00000e+00  loss_joint: 3.63841e+00  ce_joint: 0.00000e+00  sse_joint: 7.18933e+01  ce_labels_joint: 3.08296e+00  kld_vamb_joint: 1.18126e+00  kld_labels_joint: 1.30660e+00  correct_labels_joint: 0.00000e+00  loss: 6.31466e+00
+2026-08-13 14:54:40.526 | INFO    | 		Epoch: 1  loss_vamb: 2.50103e-01  ab_vamb: 4.74446e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.94672e-01  kld_vamb: 8.01078e-03  loss_labels: 5.82967e-01  ce_labels_labels: 5.71941e-01  kld_labels: 7.05646e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.46406e+00  ce_joint: 0.00000e+00  sse_joint: 4.13828e+01  ce_labels_joint: 1.21484e+00  kld_vamb_joint: 2.18924e+00  kld_labels_joint: 2.09253e+00  correct_labels_joint: 0.00000e+00  loss: 2.29713e+00
+2026-08-13 14:54:42.050 | INFO    | 		Epoch: 2  loss_vamb: 2.04108e-01  ab_vamb: 2.91725e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.64925e-01  kld_vamb: 1.00474e-02  loss_labels: 3.74638e-01  ce_labels_labels: 3.62075e-01  kld_labels: 8.04001e+01  correct_labels_labels: 0.00000e+00  loss_joint: 9.53045e-01  ce_joint: 0.00000e+00  sse_joint: 3.63823e+01  ce_labels_joint: 7.41175e-01  kld_vamb_joint: 2.49660e+00  kld_labels_joint: 2.24924e+00  correct_labels_joint: 0.00000e+00  loss: 1.53179e+00
+2026-08-13 14:54:43.630 | INFO    | 		Epoch: 3  loss_vamb: 1.85245e-01  ab_vamb: 2.27014e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.51486e-01  kld_vamb: 1.11080e-02  loss_labels: 2.61856e-01  ce_labels_labels: 2.48460e-01  kld_labels: 8.57309e+01  correct_labels_labels: 0.00000e+00  loss_joint: 7.00329e-01  ce_joint: 0.00000e+00  sse_joint: 3.45377e+01  ce_labels_joint: 5.01316e-01  kld_vamb_joint: 2.77051e+00  kld_labels_joint: 2.31202e+00  correct_labels_joint: 0.00000e+00  loss: 1.14743e+00
+2026-08-13 14:54:45.178 | INFO    | 		Epoch: 4  loss_vamb: 1.75149e-01  ab_vamb: 1.97564e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.43623e-01  kld_vamb: 1.18230e-02  loss_labels: 1.79225e-01  ce_labels_labels: 1.65295e-01  kld_labels: 8.91497e+01  correct_labels_labels: 0.00000e+00  loss_joint: 5.65309e-01  ce_joint: 0.00000e+00  sse_joint: 3.32253e+01  ce_labels_joint: 3.74247e-01  kld_vamb_joint: 3.01206e+00  kld_labels_joint: 2.46018e+00  correct_labels_joint: 0.00000e+00  loss: 9.19683e-01
+2026-08-13 14:54:46.867 | INFO    | 		Epoch: 5  loss_vamb: 1.68181e-01  ab_vamb: 1.79718e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.37850e-01  kld_vamb: 1.24196e-02  loss_labels: 1.29966e-01  ce_labels_labels: 1.15668e-01  kld_labels: 9.15093e+01  correct_labels_labels: 0.00000e+00  loss_joint: 4.64246e-01  ce_joint: 0.00000e+00  sse_joint: 3.22293e+01  ce_labels_joint: 2.80268e-01  kld_vamb_joint: 3.27614e+00  kld_labels_joint: 2.61352e+00  correct_labels_joint: 0.00000e+00  loss: 7.62393e-01
+2026-08-13 14:54:48.314 | INFO    | 		Epoch: 6  loss_vamb: 1.61506e-01  ab_vamb: 1.60546e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.32724e-01  kld_vamb: 1.27801e-02  loss_labels: 9.59994e-02  ce_labels_labels: 8.13295e-02  kld_labels: 9.38871e+01  correct_labels_labels: 0.00000e+00  loss_joint: 3.94056e-01  ce_joint: 0.00000e+00  sse_joint: 3.14879e+01  ce_labels_joint: 2.15919e-01  kld_vamb_joint: 3.46448e+00  kld_labels_joint: 2.76029e+00  correct_labels_joint: 0.00000e+00  loss: 6.51561e-01
+2026-08-13 14:54:49.994 | INFO    | 		Epoch: 7  loss_vamb: 1.57291e-01  ab_vamb: 1.50866e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.29189e-01  kld_vamb: 1.30731e-02  loss_labels: 7.16776e-02  ce_labels_labels: 5.69791e-02  kld_labels: 9.40705e+01  correct_labels_labels: 0.00000e+00  loss_joint: 3.37142e-01  ce_joint: 0.00000e+00  sse_joint: 3.05998e+01  ce_labels_joint: 1.63432e-01  kld_vamb_joint: 3.63758e+00  kld_labels_joint: 2.93964e+00  correct_labels_joint: 0.00000e+00  loss: 5.66111e-01
+2026-08-13 14:54:51.382 | INFO    | 		Epoch: 8  loss_vamb: 1.53683e-01  ab_vamb: 1.46690e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.25539e-01  kld_vamb: 1.35301e-02  loss_labels: 5.38967e-02  ce_labels_labels: 3.91834e-02  kld_labels: 9.41652e+01  correct_labels_labels: 0.00000e+00  loss_joint: 3.02382e-01  ce_joint: 0.00000e+00  sse_joint: 3.00388e+01  ce_labels_joint: 1.32258e-01  kld_vamb_joint: 3.80311e+00  kld_labels_joint: 3.09918e+00  correct_labels_joint: 0.00000e+00  loss: 5.09962e-01
+2026-08-13 14:54:52.804 | INFO    | 		Epoch: 9  loss_vamb: 1.49685e-01  ab_vamb: 1.34436e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.22516e-01  kld_vamb: 1.37818e-02  loss_labels: 4.18965e-02  ce_labels_labels: 2.74018e-02  kld_labels: 9.27662e+01  correct_labels_labels: 0.00000e+00  loss_joint: 2.69692e-01  ce_joint: 0.00000e+00  sse_joint: 2.95991e+01  ce_labels_joint: 1.03225e-01  kld_vamb_joint: 3.92083e+00  kld_labels_joint: 3.28593e+00  correct_labels_joint: 0.00000e+00  loss: 4.61274e-01
+2026-08-13 14:54:54.239 | INFO    | 		Epoch: 10  loss_vamb: 1.47765e-01  ab_vamb: 1.38735e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.19903e-01  kld_vamb: 1.40430e-02  loss_labels: 3.08940e-02  ce_labels_labels: 1.66227e-02  kld_labels: 9.13362e+01  correct_labels_labels: 0.00000e+00  loss_joint: 2.52186e-01  ce_joint: 0.00000e+00  sse_joint: 2.90395e+01  ce_labels_joint: 8.86637e-02  kld_vamb_joint: 4.14240e+00  kld_labels_joint: 3.47410e+00  correct_labels_joint: 0.00000e+00  loss: 4.30846e-01
+2026-08-13 14:54:55.647 | INFO    | 		Epoch: 11  loss_vamb: 1.45062e-01  ab_vamb: 1.34804e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.17265e-01  kld_vamb: 1.43699e-02  loss_labels: 2.77008e-02  ce_labels_labels: 1.36860e-02  kld_labels: 8.96951e+01  correct_labels_labels: 0.00000e+00  loss_joint: 2.35938e-01  ce_joint: 0.00000e+00  sse_joint: 2.84592e+01  ce_labels_joint: 7.65759e-02  kld_vamb_joint: 4.19978e+00  kld_labels_joint: 3.64712e+00  correct_labels_joint: 0.00000e+00  loss: 4.08701e-01
+2026-08-13 14:54:57.053 | INFO    | 		Epoch: 12  loss_vamb: 1.42802e-01  ab_vamb: 1.30778e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.15145e-01  kld_vamb: 1.46343e-02  loss_labels: 2.45255e-02  ce_labels_labels: 1.08675e-02  kld_labels: 8.74110e+01  correct_labels_labels: 0.00000e+00  loss_joint: 2.17517e-01  ce_joint: 0.00000e+00  sse_joint: 2.80669e+01  ce_labels_joint: 6.06609e-02  kld_vamb_joint: 4.37221e+00  kld_labels_joint: 3.85610e+00  correct_labels_joint: 0.00000e+00  loss: 3.84845e-01
+2026-08-13 14:54:58.450 | INFO    | 		Epoch: 13  loss_vamb: 1.40825e-01  ab_vamb: 1.29163e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.13141e-01  kld_vamb: 1.48215e-02  loss_labels: 2.10682e-02  ce_labels_labels: 7.71242e-03  kld_labels: 8.54773e+01  correct_labels_labels: 0.00000e+00  loss_joint: 2.02907e-01  ce_joint: 0.00000e+00  sse_joint: 2.74973e+01  ce_labels_joint: 4.97088e-02  kld_vamb_joint: 4.43335e+00  kld_labels_joint: 4.05984e+00  correct_labels_joint: 0.00000e+00  loss: 3.64800e-01
+2026-08-13 14:54:59.886 | INFO    | 		Epoch: 14  loss_vamb: 1.38830e-01  ab_vamb: 1.24269e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.11371e-01  kld_vamb: 1.50835e-02  loss_labels: 1.93926e-02  ce_labels_labels: 6.57016e-03  kld_labels: 8.20636e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.91005e-01  ce_joint: 0.00000e+00  sse_joint: 2.70479e+01  ce_labels_joint: 4.03351e-02  kld_vamb_joint: 4.51744e+00  kld_labels_joint: 4.23726e+00  correct_labels_joint: 0.00000e+00  loss: 3.49228e-01
+2026-08-13 14:55:01.303 | INFO    | 		Epoch: 15  loss_vamb: 1.37140e-01  ab_vamb: 1.21823e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.09770e-01  kld_vamb: 1.52294e-02  loss_labels: 1.97532e-02  ce_labels_labels: 7.22325e-03  kld_labels: 8.01915e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.87150e-01  ce_joint: 0.00000e+00  sse_joint: 2.65901e+01  ce_labels_joint: 3.96107e-02  kld_vamb_joint: 4.56429e+00  kld_labels_joint: 4.42210e+00  correct_labels_joint: 0.00000e+00  loss: 3.44044e-01
+2026-08-13 14:55:02.773 | INFO    | 		Epoch: 16  loss_vamb: 1.35038e-01  ab_vamb: 1.16899e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.08027e-01  kld_vamb: 1.53757e-02  loss_labels: 1.80591e-02  ce_labels_labels: 5.84615e-03  kld_labels: 7.81629e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.76579e-01  ce_joint: 0.00000e+00  sse_joint: 2.62512e+01  ce_labels_joint: 3.15592e-02  kld_vamb_joint: 4.66728e+00  kld_labels_joint: 4.60122e+00  correct_labels_joint: 0.00000e+00  loss: 3.29677e-01
+2026-08-13 14:55:04.267 | INFO    | 		Epoch: 17  loss_vamb: 1.33779e-01  ab_vamb: 1.17431e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.06471e-01  kld_vamb: 1.56116e-02  loss_labels: 1.68745e-02  ce_labels_labels: 5.05308e-03  kld_labels: 7.56570e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.69800e-01  ce_joint: 0.00000e+00  sse_joint: 2.57504e+01  ce_labels_joint: 2.73742e-02  kld_vamb_joint: 4.69437e+00  kld_labels_joint: 4.78495e+00  correct_labels_joint: 0.00000e+00  loss: 3.20453e-01
+2026-08-13 14:55:05.691 | INFO    | 		Epoch: 18  loss_vamb: 1.32186e-01  ab_vamb: 1.13990e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.05115e-01  kld_vamb: 1.57170e-02  loss_labels: 1.59490e-02  ce_labels_labels: 4.51837e-03  kld_labels: 7.31559e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.60395e-01  ce_joint: 0.00000e+00  sse_joint: 2.53689e+01  ce_labels_joint: 2.04629e-02  kld_vamb_joint: 4.80249e+00  kld_labels_joint: 4.95454e+00  correct_labels_joint: 0.00000e+00  loss: 3.08530e-01
+2026-08-13 14:55:07.291 | INFO    | 		Epoch: 19  loss_vamb: 1.30576e-01  ab_vamb: 1.11490e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.03535e-01  kld_vamb: 1.59441e-02  loss_labels: 1.52193e-02  ce_labels_labels: 4.08918e-03  kld_labels: 7.12325e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.62296e-01  ce_joint: 0.00000e+00  sse_joint: 2.51119e+01  ce_labels_joint: 2.41398e-02  kld_vamb_joint: 4.83741e+00  kld_labels_joint: 5.14943e+00  correct_labels_joint: 0.00000e+00  loss: 3.08091e-01
+2026-08-13 14:55:08.718 | INFO    | 		Epoch: 20  loss_vamb: 1.29788e-01  ab_vamb: 1.13990e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.02387e-01  kld_vamb: 1.60470e-02  loss_labels: 1.42905e-02  ce_labels_labels: 3.55503e-03  kld_labels: 6.87070e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.54629e-01  ce_joint: 0.00000e+00  sse_joint: 2.47958e+01  ce_labels_joint: 1.79599e-02  kld_vamb_joint: 4.91662e+00  kld_labels_joint: 5.33634e+00  correct_labels_joint: 0.00000e+00  loss: 2.98708e-01
+2026-08-13 14:55:10.155 | INFO    | 		Epoch: 21  loss_vamb: 1.27985e-01  ab_vamb: 1.08996e-02  ce_vamb: 0.00000e+00  sse_vamb: 1.00878e-01  kld_vamb: 1.62508e-02  loss_labels: 1.41724e-02  ce_labels_labels: 3.65564e-03  kld_labels: 6.73070e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.53586e-01  ce_joint: 0.00000e+00  sse_joint: 2.44098e+01  ce_labels_joint: 1.88755e-02  kld_vamb_joint: 5.01092e+00  kld_labels_joint: 5.54613e+00  correct_labels_joint: 0.00000e+00  loss: 2.95743e-01
+2026-08-13 14:55:11.619 | INFO    | 		Epoch: 22  loss_vamb: 1.27085e-01  ab_vamb: 1.06419e-02  ce_vamb: 0.00000e+00  sse_vamb: 9.99828e-02  kld_vamb: 1.65114e-02  loss_labels: 1.32511e-02  ce_labels_labels: 2.99857e-03  kld_labels: 6.56159e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.53778e-01  ce_joint: 0.00000e+00  sse_joint: 2.43065e+01  ce_labels_joint: 1.98569e-02  kld_vamb_joint: 5.13218e+00  kld_labels_joint: 5.74980e+00  correct_labels_joint: 0.00000e+00  loss: 2.94115e-01
+2026-08-13 14:55:13.069 | INFO    | 		Epoch: 23  loss_vamb: 1.25734e-01  ab_vamb: 1.02973e-02  ce_vamb: 0.00000e+00  sse_vamb: 9.90190e-02  kld_vamb: 1.64640e-02  loss_labels: 1.30207e-02  ce_labels_labels: 3.10862e-03  kld_labels: 6.34374e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.50292e-01  ce_joint: 0.00000e+00  sse_joint: 2.40064e+01  ce_labels_joint: 1.83313e-02  kld_vamb_joint: 5.12571e+00  kld_labels_joint: 5.93939e+00  correct_labels_joint: 0.00000e+00  loss: 2.89047e-01
+2026-08-13 14:55:14.462 | INFO    | 		Epoch: 24  loss_vamb: 1.25020e-01  ab_vamb: 1.06020e-02  ce_vamb: 0.00000e+00  sse_vamb: 9.77754e-02  kld_vamb: 1.66888e-02  loss_labels: 1.29948e-02  ce_labels_labels: 3.33816e-03  kld_labels: 6.18027e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.46149e-01  ce_joint: 0.00000e+00  sse_joint: 2.37145e+01  ce_labels_joint: 1.53395e-02  kld_vamb_joint: 5.17094e+00  kld_labels_joint: 6.09147e+00  correct_labels_joint: 0.00000e+00  loss: 2.84164e-01
+2026-08-13 14:55:15.532 | INFO    | 		Epoch: 25  loss_vamb: 1.21073e-01  ab_vamb: 8.97989e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.53494e-02  kld_vamb: 1.68126e-02  loss_labels: 1.29095e-02  ce_labels_labels: 3.44164e-03  kld_labels: 6.05943e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.41192e-01  ce_joint: 0.00000e+00  sse_joint: 2.30934e+01  ce_labels_joint: 1.55780e-02  kld_vamb_joint: 5.17401e+00  kld_labels_joint: 6.24279e+00  correct_labels_joint: 0.00000e+00  loss: 2.75175e-01
+2026-08-13 14:55:16.672 | INFO    | 		Epoch: 26  loss_vamb: 1.19428e-01  ab_vamb: 8.88008e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.36680e-02  kld_vamb: 1.68619e-02  loss_labels: 1.25118e-02  ce_labels_labels: 3.17266e-03  kld_labels: 5.97705e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.37104e-01  ce_joint: 0.00000e+00  sse_joint: 2.27693e+01  ce_labels_joint: 1.27760e-02  kld_vamb_joint: 5.20558e+00  kld_labels_joint: 6.32955e+00  correct_labels_joint: 0.00000e+00  loss: 2.69043e-01
+2026-08-13 14:55:17.837 | INFO    | 		Epoch: 27  loss_vamb: 1.18090e-01  ab_vamb: 8.38847e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.30860e-02  kld_vamb: 1.67061e-02  loss_labels: 1.19693e-02  ce_labels_labels: 2.69595e-03  kld_labels: 5.93492e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.32476e-01  ce_joint: 0.00000e+00  sse_joint: 2.24467e+01  ce_labels_joint: 1.03547e-02  kld_vamb_joint: 5.29296e+00  kld_labels_joint: 6.44866e+00  correct_labels_joint: 0.00000e+00  loss: 2.62535e-01
+2026-08-13 14:55:19.031 | INFO    | 		Epoch: 28  loss_vamb: 1.18373e-01  ab_vamb: 7.78809e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.38908e-02  kld_vamb: 1.67571e-02  loss_labels: 1.21293e-02  ce_labels_labels: 2.91338e-03  kld_labels: 5.89820e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.30318e-01  ce_joint: 0.00000e+00  sse_joint: 2.24035e+01  ce_labels_joint: 9.59070e-03  kld_vamb_joint: 5.31362e+00  kld_labels_joint: 6.56585e+00  correct_labels_joint: 0.00000e+00  loss: 2.60819e-01
+2026-08-13 14:55:20.243 | INFO    | 		Epoch: 29  loss_vamb: 1.18298e-01  ab_vamb: 7.74675e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.36802e-02  kld_vamb: 1.69057e-02  loss_labels: 1.30395e-02  ce_labels_labels: 3.79355e-03  kld_labels: 5.91743e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.28101e-01  ce_joint: 0.00000e+00  sse_joint: 2.23726e+01  ce_labels_joint: 7.93900e-03  kld_vamb_joint: 5.36490e+00  kld_labels_joint: 6.66446e+00  correct_labels_joint: 0.00000e+00  loss: 2.59439e-01
+2026-08-13 14:55:21.756 | INFO    | 		Epoch: 30  loss_vamb: 1.17330e-01  ab_vamb: 8.69452e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.17013e-02  kld_vamb: 1.69535e-02  loss_labels: 1.25192e-02  ce_labels_labels: 3.01853e-03  kld_labels: 6.08043e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.24897e-01  ce_joint: 0.00000e+00  sse_joint: 2.19073e+01  ce_labels_joint: 6.45504e-03  kld_vamb_joint: 5.36706e+00  kld_labels_joint: 6.70843e+00  correct_labels_joint: 0.00000e+00  loss: 2.54747e-01
+2026-08-13 14:55:22.982 | INFO    | 		Epoch: 31  loss_vamb: 1.16743e-01  ab_vamb: 8.19624e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.16102e-02  kld_vamb: 1.70007e-02  loss_labels: 1.16157e-02  ce_labels_labels: 2.14241e-03  kld_labels: 6.06292e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.25000e-01  ce_joint: 0.00000e+00  sse_joint: 2.17875e+01  ce_labels_joint: 7.16612e-03  kld_vamb_joint: 5.36546e+00  kld_labels_joint: 6.74346e+00  correct_labels_joint: 0.00000e+00  loss: 2.53359e-01
+2026-08-13 14:55:24.330 | INFO    | 		Epoch: 32  loss_vamb: 1.17079e-01  ab_vamb: 8.34612e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.18204e-02  kld_vamb: 1.69650e-02  loss_labels: 1.13818e-02  ce_labels_labels: 2.05336e-03  kld_labels: 5.97018e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.23795e-01  ce_joint: 0.00000e+00  sse_joint: 2.17695e+01  ce_labels_joint: 6.21090e-03  kld_vamb_joint: 5.36692e+00  kld_labels_joint: 6.81839e+00  correct_labels_joint: 0.00000e+00  loss: 2.52256e-01
+2026-08-13 14:55:25.540 | INFO    | 		Epoch: 33  loss_vamb: 1.15657e-01  ab_vamb: 7.24695e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.15383e-02  kld_vamb: 1.70147e-02  loss_labels: 1.15198e-02  ce_labels_labels: 2.45557e-03  kld_labels: 5.80111e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.21092e-01  ce_joint: 0.00000e+00  sse_joint: 2.16452e+01  ce_labels_joint: 5.11833e-03  kld_vamb_joint: 5.35891e+00  kld_labels_joint: 6.88528e+00  correct_labels_joint: 0.00000e+00  loss: 2.48268e-01
+2026-08-13 14:55:26.964 | INFO    | 		Epoch: 34  loss_vamb: 1.15844e-01  ab_vamb: 7.73677e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.10139e-02  kld_vamb: 1.70581e-02  loss_labels: 1.14084e-02  ce_labels_labels: 2.45227e-03  kld_labels: 5.73195e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.21768e-01  ce_joint: 0.00000e+00  sse_joint: 2.14681e+01  ce_labels_joint: 6.11804e-03  kld_vamb_joint: 5.35429e+00  kld_labels_joint: 6.96652e+00  correct_labels_joint: 0.00000e+00  loss: 2.49020e-01
+2026-08-13 14:55:28.441 | INFO    | 		Epoch: 35  loss_vamb: 1.14923e-01  ab_vamb: 7.88135e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.98286e-02  kld_vamb: 1.71514e-02  loss_labels: 1.15964e-02  ce_labels_labels: 2.70469e-03  kld_labels: 5.69068e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.20201e-01  ce_joint: 0.00000e+00  sse_joint: 2.11993e+01  ce_labels_joint: 5.83805e-03  kld_vamb_joint: 5.35131e+00  kld_labels_joint: 7.01176e+00  correct_labels_joint: 0.00000e+00  loss: 2.46720e-01
+2026-08-13 14:55:29.600 | INFO    | 		Epoch: 36  loss_vamb: 1.16204e-01  ab_vamb: 8.97956e-03  ce_vamb: 0.00000e+00  sse_vamb: 9.00295e-02  kld_vamb: 1.72123e-02  loss_labels: 1.10248e-02  ce_labels_labels: 2.14828e-03  kld_labels: 5.68100e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.19962e-01  ce_joint: 0.00000e+00  sse_joint: 2.11789e+01  ce_labels_joint: 5.18353e-03  kld_vamb_joint: 5.34672e+00  kld_labels_joint: 7.08778e+00  correct_labels_joint: 0.00000e+00  loss: 2.47191e-01
+2026-08-13 14:55:30.853 | INFO    | 		Epoch: 37  loss_vamb: 1.15341e-01  ab_vamb: 8.18775e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.99095e-02  kld_vamb: 1.73106e-02  loss_labels: 1.09402e-02  ce_labels_labels: 2.13609e-03  kld_labels: 5.63463e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.18326e-01  ce_joint: 0.00000e+00  sse_joint: 2.10246e+01  ce_labels_joint: 4.91482e-03  kld_vamb_joint: 5.33551e+00  kld_labels_joint: 7.15527e+00  correct_labels_joint: 0.00000e+00  loss: 2.44607e-01
+2026-08-13 14:55:32.147 | INFO    | 		Epoch: 38  loss_vamb: 1.14065e-01  ab_vamb: 7.74464e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.89144e-02  kld_vamb: 1.73694e-02  loss_labels: 1.07178e-02  ce_labels_labels: 2.09697e-03  kld_labels: 5.51736e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.17281e-01  ce_joint: 0.00000e+00  sse_joint: 2.08700e+01  ce_labels_joint: 5.45545e-03  kld_vamb_joint: 5.39140e+00  kld_labels_joint: 7.31345e+00  correct_labels_joint: 0.00000e+00  loss: 2.42064e-01
+2026-08-13 14:55:33.329 | INFO    | 		Epoch: 39  loss_vamb: 1.13642e-01  ab_vamb: 7.70706e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.85906e-02  kld_vamb: 1.73185e-02  loss_labels: 1.07787e-02  ce_labels_labels: 2.27450e-03  kld_labels: 5.44271e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.16930e-01  ce_joint: 0.00000e+00  sse_joint: 2.08488e+01  ce_labels_joint: 4.86310e-03  kld_vamb_joint: 5.39219e+00  kld_labels_joint: 7.37338e+00  correct_labels_joint: 0.00000e+00  loss: 2.41351e-01
+2026-08-13 14:55:34.582 | INFO    | 		Epoch: 40  loss_vamb: 1.12466e-01  ab_vamb: 7.08740e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.80207e-02  kld_vamb: 1.72905e-02  loss_labels: 1.03591e-02  ce_labels_labels: 2.00197e-03  kld_labels: 5.34856e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.14243e-01  ce_joint: 0.00000e+00  sse_joint: 2.05577e+01  ce_labels_joint: 3.92916e-03  kld_vamb_joint: 5.38764e+00  kld_labels_joint: 7.44467e+00  correct_labels_joint: 0.00000e+00  loss: 2.37068e-01
+2026-08-13 14:55:35.759 | INFO    | 		Epoch: 41  loss_vamb: 1.13154e-01  ab_vamb: 7.88215e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.79481e-02  kld_vamb: 1.74509e-02  loss_labels: 1.09200e-02  ce_labels_labels: 2.67125e-03  kld_labels: 5.27918e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.14490e-01  ce_joint: 0.00000e+00  sse_joint: 2.04791e+01  ce_labels_joint: 4.25472e-03  kld_vamb_joint: 5.36513e+00  kld_labels_joint: 7.51689e+00  correct_labels_joint: 0.00000e+00  loss: 2.38563e-01
+2026-08-13 14:55:37.284 | INFO    | 		Epoch: 42  loss_vamb: 1.11465e-01  ab_vamb: 7.00545e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.69539e-02  kld_vamb: 1.74612e-02  loss_labels: 1.09447e-02  ce_labels_labels: 2.74791e-03  kld_labels: 5.24595e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.12677e-01  ce_joint: 0.00000e+00  sse_joint: 2.03270e+01  ce_labels_joint: 3.94390e-03  kld_vamb_joint: 5.38901e+00  kld_labels_joint: 7.61865e+00  correct_labels_joint: 0.00000e+00  loss: 2.35087e-01
+2026-08-13 14:55:38.533 | INFO    | 		Epoch: 43  loss_vamb: 1.12638e-01  ab_vamb: 8.06267e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.70223e-02  kld_vamb: 1.74782e-02  loss_labels: 1.02606e-02  ce_labels_labels: 2.07571e-03  kld_labels: 5.23835e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.13371e-01  ce_joint: 0.00000e+00  sse_joint: 2.02899e+01  ce_labels_joint: 4.07484e-03  kld_vamb_joint: 5.38247e+00  kld_labels_joint: 7.69865e+00  correct_labels_joint: 0.00000e+00  loss: 2.36270e-01
+2026-08-13 14:55:39.714 | INFO    | 		Epoch: 44  loss_vamb: 1.11844e-01  ab_vamb: 8.19929e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.61129e-02  kld_vamb: 1.75220e-02  loss_labels: 1.00226e-02  ce_labels_labels: 1.88987e-03  kld_labels: 5.20494e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.13131e-01  ce_joint: 0.00000e+00  sse_joint: 2.00811e+01  ce_labels_joint: 4.41993e-03  kld_vamb_joint: 5.39131e+00  kld_labels_joint: 7.76105e+00  correct_labels_joint: 0.00000e+00  loss: 2.34997e-01
+2026-08-13 14:55:40.869 | INFO    | 		Epoch: 45  loss_vamb: 1.11826e-01  ab_vamb: 8.22890e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.60486e-02  kld_vamb: 1.74802e-02  loss_labels: 9.89622e-03  ce_labels_labels: 1.85902e-03  kld_labels: 5.14381e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.12671e-01  ce_joint: 0.00000e+00  sse_joint: 1.99929e+01  ce_labels_joint: 4.43798e-03  kld_vamb_joint: 5.41431e+00  kld_labels_joint: 7.82213e+00  correct_labels_joint: 0.00000e+00  loss: 2.34393e-01
+2026-08-13 14:55:42.005 | INFO    | 		Epoch: 46  loss_vamb: 1.12149e-01  ab_vamb: 8.24533e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.63846e-02  kld_vamb: 1.75373e-02  loss_labels: 9.95978e-03  ce_labels_labels: 2.01647e-03  kld_labels: 5.08372e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.13123e-01  ce_joint: 0.00000e+00  sse_joint: 2.01972e+01  ce_labels_joint: 4.07860e-03  kld_vamb_joint: 5.44462e+00  kld_labels_joint: 7.84352e+00  correct_labels_joint: 0.00000e+00  loss: 2.35232e-01
+2026-08-13 14:55:43.198 | INFO    | 		Epoch: 47  loss_vamb: 1.12346e-01  ab_vamb: 8.15767e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.66341e-02  kld_vamb: 1.76091e-02  loss_labels: 1.00785e-02  ce_labels_labels: 2.14346e-03  kld_labels: 5.07840e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.12282e-01  ce_joint: 0.00000e+00  sse_joint: 2.01155e+01  ce_labels_joint: 4.29153e-03  kld_vamb_joint: 5.43008e+00  kld_labels_joint: 7.90210e+00  correct_labels_joint: 0.00000e+00  loss: 2.34707e-01
+2026-08-13 14:55:44.411 | INFO    | 		Epoch: 48  loss_vamb: 1.10646e-01  ab_vamb: 7.58078e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.52516e-02  kld_vamb: 1.77015e-02  loss_labels: 1.00291e-02  ce_labels_labels: 2.06418e-03  kld_labels: 5.09756e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.11153e-01  ce_joint: 0.00000e+00  sse_joint: 1.99316e+01  ce_labels_joint: 4.05240e-03  kld_vamb_joint: 5.43088e+00  kld_labels_joint: 7.93037e+00  correct_labels_joint: 0.00000e+00  loss: 2.31828e-01
+2026-08-13 14:55:45.593 | INFO    | 		Epoch: 49  loss_vamb: 1.13166e-01  ab_vamb: 9.56554e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.60506e-02  kld_vamb: 1.76657e-02  loss_labels: 9.88766e-03  ce_labels_labels: 1.96944e-03  kld_labels: 5.06767e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.12389e-01  ce_joint: 0.00000e+00  sse_joint: 2.00051e+01  ce_labels_joint: 3.69067e-03  kld_vamb_joint: 5.46759e+00  kld_labels_joint: 7.99559e+00  correct_labels_joint: 0.00000e+00  loss: 2.35443e-01
+2026-08-13 14:55:46.797 | INFO    | 		Epoch: 50  loss_vamb: 1.09738e-01  ab_vamb: 7.17803e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.47829e-02  kld_vamb: 1.78154e-02  loss_labels: 1.00946e-02  ce_labels_labels: 2.26918e-03  kld_labels: 5.00827e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.09925e-01  ce_joint: 0.00000e+00  sse_joint: 1.97150e+01  ce_labels_joint: 4.20601e-03  kld_vamb_joint: 5.44882e+00  kld_labels_joint: 8.08789e+00  correct_labels_joint: 0.00000e+00  loss: 2.29758e-01
+2026-08-13 14:55:47.973 | INFO    | 		Epoch: 51  loss_vamb: 1.09910e-01  ab_vamb: 7.65987e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.42340e-02  kld_vamb: 1.78738e-02  loss_labels: 9.91090e-03  ce_labels_labels: 2.15485e-03  kld_labels: 4.96387e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.09784e-01  ce_joint: 0.00000e+00  sse_joint: 1.95676e+01  ce_labels_joint: 4.22414e-03  kld_vamb_joint: 5.43159e+00  kld_labels_joint: 8.10871e+00  correct_labels_joint: 0.00000e+00  loss: 2.29605e-01
+2026-08-13 14:55:49.149 | INFO    | 		Epoch: 52  loss_vamb: 1.10241e-01  ab_vamb: 7.42516e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.49297e-02  kld_vamb: 1.78612e-02  loss_labels: 1.10280e-02  ce_labels_labels: 3.11979e-03  kld_labels: 5.06128e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.11545e-01  ce_joint: 0.00000e+00  sse_joint: 1.97714e+01  ce_labels_joint: 5.15706e-03  kld_vamb_joint: 5.53956e+00  kld_labels_joint: 8.15239e+00  correct_labels_joint: 0.00000e+00  loss: 2.32814e-01
+2026-08-13 14:55:50.337 | INFO    | 		Epoch: 53  loss_vamb: 1.10358e-01  ab_vamb: 8.49453e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.39761e-02  kld_vamb: 1.78160e-02  loss_labels: 1.11890e-02  ce_labels_labels: 2.87457e-03  kld_labels: 5.32126e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.10276e-01  ce_joint: 0.00000e+00  sse_joint: 1.95491e+01  ce_labels_joint: 3.96982e-03  kld_vamb_joint: 5.52399e+00  kld_labels_joint: 8.12804e+00  correct_labels_joint: 0.00000e+00  loss: 2.31823e-01
+2026-08-13 14:55:51.492 | INFO    | 		Epoch: 54  loss_vamb: 1.11328e-01  ab_vamb: 9.08167e-03  ce_vamb: 0.00000e+00  sse_vamb: 8.43774e-02  kld_vamb: 1.78999e-02  loss_labels: 1.08187e-02  ce_labels_labels: 2.38679e-03  kld_labels: 5.39643e+01  correct_labels_labels: 0.00000e+00  loss_joint: 1.09721e-01  ce_joint: 0.00000e+00  sse_joint: 1.95611e+01  ce_labels_joint: 3.98856e-03  kld_vamb_joint: 5.53439e+00  kld_labels_joint: 8.14168e+00  correct_labels_joint: 0.00000e+00  loss: 2.31868e-01

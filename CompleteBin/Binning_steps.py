@@ -1,27 +1,102 @@
 
-import multiprocessing as mp
-import os
-from shutil import rmtree
-from typing import List, Union
 
-import numpy as np
-import psutil
-
-from CompleteBin.CallGenes.gene_utils import callMarkerGenesByCheckm
-from CompleteBin.CallGenes.hmm_utils import processHits
-from CompleteBin.Cluster.cluster import combine_two_cluster_steps
-from CompleteBin.Cluster.split_utils import kmeans_split
-from CompleteBin.DataProcess.data_utils import build_training_seq_data_numpy_save
-from CompleteBin.Dereplication.galah_utils import process_galah
-from CompleteBin.IO import readFasta, readPickle
-from CompleteBin.Trainer.sampler import DeeperBinSampler
-from CompleteBin.logger import get_logger
-from CompleteBin.Seqs.seq_info import calculateN50, prepare_sequences_coverage
-from CompleteBin.Seqs.seq_utils import callGenesForKmeans, getGeneWithLargestCount
-from CompleteBin.Trainer.ssmt_v2 import SelfSupervisedMethodsTrainer
+from CompleteBin.Utils.pretrain_decision import (
+    compute_S, compute_O, decide_pretrained, apply_epoch_safety_valve, auto_min_contig_length
+)
+from CompleteBin.Cluster.polish_bin_improved import ensure_compact_coverage_path
+from CompleteBin.Cluster.k_means_v2 import cluster_kmeans_for_low_v2
+from .combine_cluster_derep import clustering_and_dereplication, selected_recluster_contigs
 from CompleteBin.version import bin_v
+from CompleteBin.Trainer.ssmt_v2 import SelfSupervisedMethodsTrainer
+from CompleteBin.Seqs.seq_info import calculateN50, clip_coverage_outliers, prepare_sequences_coverage
+from CompleteBin.Seqs.generate_seed import gen_seed
+from CompleteBin.logger import get_logger
+from CompleteBin.Trainer.sampler import DeeperBinSampler
+from CompleteBin.IO import readFasta, readMarkerSets, readPickle, readSeedFile, writeFasta
+from CompleteBin.DataProcess.data_utils_fixed import (
+    build_training_seq_data_numpy_save_fixed as build_training_seq_data_numpy_save,
+)
+from CompleteBin.Cluster.split_utils import kmeans_split
+from CompleteBin.CallGenes.gene_utils import callMarkerGenesByHMM
+import torch
+import psutil
+import numpy as np
+from typing import List
+from shutil import copy, rmtree
+import random
+import os
+import multiprocessing as mp
+import math
+import time
+import warnings
+warnings.filterwarnings("ignore")
 
 logger = get_logger()
+
+
+def get_time(f):
+
+    def inner(*arg, **kwarg):
+        s_time = time.time()
+        res = f(*arg, **kwarg)
+        e_time = time.time()
+        logger.info(f"--> Time: {e_time - s_time:.2f} seconds")
+        return res
+    return inner
+
+
+def _write_time_tsv(temp_file_folder_path: str, entries: dict) -> None:
+    """Incrementally record per-step timings into ``time.tsv``.
+
+    ``binning_with_all_steps`` is resumable and, in split SLURM execution
+    (``step_num=1/2/3``), each step runs in its own process.  Every step writes
+    only its own measurements through this helper; rows recorded by an earlier
+    step are preserved and ``SummedTime(s)`` is recomputed from all recorded
+    rows.
+    """
+    path = os.path.join(temp_file_folder_path, "time.tsv")
+    times = {}
+    if os.path.exists(path):
+        with open(path) as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                label, _, value = line.rpartition("\t")
+                try:
+                    times[label] = float(value)
+                except ValueError:
+                    continue
+    times.update(entries)
+    times["SummedTime(s)"] = sum(v for k, v in times.items() if k != "SummedTime(s)")
+    with open(path, "w") as wh:
+        for label, value in times.items():
+            wh.write(f"{label}\t{value}\n")
+
+
+def writeMetaInfo(wh, outName, comp, cont, state):
+    wh.write(outName
+             + "\t"
+             + "SCG_EVAL(Comp,Cont,Quality)"
+             + "\t"
+             + str(comp)
+             + "\t"
+             + str(cont)
+             + "\t"
+             + state
+             + "\n")
+
+
+def seed_everything(seed=2048):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
 
 def filterSpaceInFastaFile(input_fasta, output_fasta):
@@ -33,46 +108,16 @@ def filterSpaceInFastaFile(input_fasta, output_fasta):
             wh.write(oneline + "\n")
 
 
-def auto_decision(
-    contigname2seq_ori: dict,
-    short_long_ratio: float,
-):
-    long_contig_num = 0
-    short_contig_num = 0
-    collect_list = []
-    for name, seq in contigname2seq_ori.items():
-        n = len(seq)
-        collect_list.append((n, name))
-        if 1000 <= n:
-            long_contig_num += 1
-    sorted_collect_list = list(sorted(collect_list, key=lambda x: x[0], reverse=True))
-    estimated_num_short_conitgs = int(long_contig_num * short_long_ratio)
-    for n, name in sorted_collect_list:
-        if n < 1000:
-            if short_contig_num < estimated_num_short_conitgs:
-                short_contig_num += 1
-            else:
-                min_contig_length = n - 1
-                break
-    ratio = short_contig_num / long_contig_num + 0.
-    logger.info(f"--> # of short: {short_contig_num}, long {long_contig_num}, ratio: {ratio}. min length is {min_contig_length}.")
-    min_contig_length = min_contig_length // 10 * 10
-    if min_contig_length < 768: 
-        logger.info(f"--> Set min contig length as 768 since the constrains of pretrain model.")
-        min_contig_length = 768
-    return min_contig_length
-
-
 def temp_decision(
     contigname2seq_ori: dict,
     min_contig_length: int,
     N50: int,
     large_data_size_thre: int
 ):
-    ## Weak Augmentations: Views are more similar; use higher temperatures to smooth similarity distribution. --> N50 samaller, temp higher
-    ## Data Noise: Higher noise levels benefit from a higher temperature to smoothen similarity scores. --> N50 samaller, temp higher
-    ## Dataset Size: For large datasets, lower temperatures often work better as they increase the discriminative power of the embeddings.
-    ## --> larger size, lower temp
+    # Weak Augmentations: Views are more similar; use higher temperatures to smooth similarity distribution. --> N50 samaller, temp higher
+    # Data Noise: Higher noise levels benefit from a higher temperature to smoothen similarity scores. --> N50 samaller, temp higher
+    # Dataset Size: For large datasets, lower temperatures often work better as they increase the discriminative power of the embeddings.
+    # --> larger size, lower temp
     count_contigs = 0
     for _, seq in contigname2seq_ori.items():
         if len(seq) >= min_contig_length:
@@ -110,18 +155,19 @@ def decision_lower_bound(
         cover_count += 1
     tmp_store = list(sorted(tmp_store, reverse=True))
     N = len(contigname2seq)
-    assert N > batch_size, ValueError(f"There are only {N} contigs in this dataset. But we need at least {batch_size} (one batch size) contigs for training.")
+    assert N > batch_size, ValueError(
+        f"There are only {N} contigs in this dataset. But we need at least {batch_size} (one batch size) contigs for training.")
     logger.info(f"--> The number of {cover_count} contigs are longer than {min_contig_length}.")
     if cover_count <= batch_size:
         cover_count = batch_size
     else:
         gap_num = N - cover_count
         multi = gap_num // batch_size
-        if multi > 3:
-            multi = 3
+        if multi > 2:
+            multi = 2
         cover_count = (cover_count // batch_size + multi) * batch_size
     logger.info(f"--> We cover {cover_count} contigs for training.")
-    min_length_decision = tmp_store[cover_count]
+    min_length_decision = tmp_store[min(cover_count, len(tmp_store) - 1)]
     return min_contig_length - min_length_decision
 
 
@@ -130,194 +176,282 @@ def binning_with_all_steps(
     sorted_bam_file_list: List[str],
     temp_file_folder_path: str,
     bin_output_folder_path: str,
-    db_folder_path: str=None,
-    n_views: int=6,
-    count_kmer: int=4,
-    min_contig_length=850,
-    min_contig_length_auto_decision=False,
-    short_long_ratio=0.333,
-    # model training config
+    n_views=6,
     feature_dim=100,
+    auto_feature_dim=False,
+    db_folder_path: str = None,
+    count_kmer: int = 4,
+    min_contig_length=850,
+    leiden_iter_mode="accurate",  # "accurate" or "fast"
+    # model training config
     drop_p=0.15,
     lr=1e-5,
     lr_multiple=10,
-    lr_warmup_epoch=1,
+    lr_warmup_epoch=2,
     weight_deay=1e-3,
-    batch_size=700,
+    batch_size=544,
     base_epoch=35,
-    large_model=True,
     log_every_n_steps=10,
-    training_device="cuda:0",
-    num_workers: int=None,
-    von_flspp_mix = "flspp",
-    ensemble_with_SCGs=False,
-    multi_seq_contrast=False,
+    training_device="cpu",
+    cpu_workers=None,
+    gpu_dataloader_workers=32,
     min_training_step=36,
-    step_num = None,
-    remove_temp_files = False,
-    filter_huge_gap = False
+    step_num=None,
+    remove_temp_files=True,
+    auto_disable_pretrain=True
 ):
-    """
-    The whole binning process of DeeperBin.
+    """Run the complete, resumable CompleteBin binning workflow.
+
+    The workflow has three stages: (1) contig filtering, coverage/k-mer
+    feature preparation and marker-gene calling; (2) contrastive-model
+    training and embedding generation; and (3) two Leiden clustering rounds,
+    SCG-aware dereplication, and K-means recovery of residual low-quality
+    contigs. Cached products in ``temp_file_folder_path`` are reused, making
+    it possible to run the three stages on different CPU/GPU nodes.
 
     Args:
-        contig_file_path (str): The contigs fasta file path.
-        sorted_bam_file_list (List[str]): The list of sorted bam files paths.
-        temp_file_folder_path (str): The folder path to store temp files.
-        bin_output_folder_path (str): The folder path to store final MAGs.
-        db_folder_path (str, optional): The path of database folder. Defaults to None. You can ignore it if you set the 'DeeperBin_DB' environmental variable.
-        n_views (int, optional): Number of views to generate for each contig during training. Defaults to 6.
-        count_kmer (int, optional): The k setting of k-mer. Defaults to 4.
-        min_contig_length (int, optional): The minimum length of contigs for binning. Defaults to 850.
-        min_contig_length_auto_decision  (bool, optional): Auto determining the length of min contig if it is True. 
-        short_long_ratio (float, optional): The min contig length would be shorter if this parameter larger under the auto determing is True.
-        feature_dim (int, optional): The feature dim of final embeddings. Defaults to 100.
-        drop_p (float, optional): The dropout probability setting. Defaults to 0.15.
-        lr (float, optional): The learning rate setting. Defaults to 1e-5.
-        lr_multiple (int, optional): The multiple value for learning rate. Defaults to 10.
-        lr_warmup_epoch (int, optional): Number of epoches to warm up the learning rate. Defaults to 1.
-        weight_deay (float, optional): L2 regularization. Defaults to 1e-3.
-        batch_size (int, optional): The batch size. Defaults to 650.
-        base_epoch (int, optional): Number of basic training epoches. Defaults to 35.
-        large_model (bool, optional): If use large pretrained model. Defaults to False.
-        log_every_n_steps (int, optional): Print log after n training step. Defaults to 10.
-        training_device (str, optional): The device for training model. You can set 'cpu' to use CPU. Defaults to "cuda:0".
-        num_workers (int, optional): Number of cpus for clustering contigs. Defaults to None. We would set 1 / 3 of total cpus if it is None.
-        von_flspp_mix (str, optional): The clustering algorithm for the second stage clustering. You can set  'flspp (FLS++ algorithm)', 
-        'von (Estimator for Mixture of von Mises Fisher clustering on the unit sphere)' or 
-        'mix (Apply von when number of contigs bigger than 150 and smaller than 1850, otherwise apply flspp)'. 
-        'flspp' has the fastest speed. We recommand to use flspp for large datasets and mix for small datasets. Defaults to "flspp". 
-        ensemble_with_SCGs (bool, optional): Apply the called SCGs into final quality evaluation and used them in ensembling the results with Galah
-        if it is True. Defaults to False.
-        multi_seq_contrast (bool, optional): Add sequence embedding for contrastive learning if it is True. Defaults to False.
-        min_training_step (int, optional): The min training steps for one epoch. Defaults to 36.
-        step_num (int, optional): The whole binning procedure can be divided into 3 steps. 
-        The first step (step 1) is to process the training data. Focusing on using CPU.
-        The second step (step 2) is training procedure. Focusing on using GPU.
-        The third step (step 3) is clustering. Focusing on using CPU.
-        This function would stop at step 1 if it set as 1.
-        This function would stop at step 2 if it set as 2.
-        This function would combine these 3 steps if this parameter is None. 
-        This setting can be used if your have two machine, one has powerful CPU and the other has powerful GPU. You can use powerful CPU machine to 
-        run step 1 and move the temp folder to the machine with powerful GPU to run step 2. Finally, move the temp folder to CPU machine to run step 3.
-        Defaults to None.
-        remove_temp_files (bool, optional): Remove the temp files if this is true.
-        filter_huge_gap (bool, optional): Filter the MAGs if the checkm2's completeness has a huge gap (> 40%) with the SCGs' completeness if it is true. 
-        Try to fix the bug of checkm2.
+        contig_file_path (str): Input contig FASTA. Contig identifiers are
+            normalised internally to remove whitespace.
+        sorted_bam_file_list (List[str]): Coordinate-sorted BAM files used to
+            construct contig coverage profiles.
+        temp_file_folder_path (str): Persistent work directory for cached
+            features, training artefacts, marker-gene calls and clustering data.
+        bin_output_folder_path (str): Destination directory for final MAG FASTAs
+            and ``MetaInfo.tsv``.
+        n_views (int): Number of augmented views used for contrastive training.
+        feature_dim (int): Requested feature dimension before any automatic
+            feature-dimension selection.
+        auto_feature_dim (bool): Whether to select the feature dimension from
+            the input data automatically.
+        db_folder_path (str, optional): CompleteBin database directory. If None,
+            the ``CompleteBin_DB`` environment variable is used.
+        count_kmer (int): k-mer size used during feature construction.
+        min_contig_length (int): Initial minimum contig length in bp. The
+            effective threshold may be adjusted from input statistics.
+        leiden_iter_mode (str): Leiden optimisation mode: ``"accurate"`` for
+            convergence or ``"fast"`` for adaptive early stopping.
+        drop_p (float): Training dropout probability.
+        lr (float): Base learning rate.
+        lr_multiple (float): Multiplier applied to the learning rate schedule.
+        lr_warmup_epoch (int): Number of learning-rate warm-up epochs.
+        weight_deay (float): L2 regularisation weight. The spelling is retained
+            for API compatibility.
+        batch_size (int): Training batch size.
+        base_epoch (int): Baseline number of training epochs.
+        log_every_n_steps (int): Logging interval during training.
+        training_device (str): PyTorch device for training, e.g. ``"cpu"`` or
+            ``"cuda:0"``.
+        cpu_workers (int, optional): CPU workers for preprocessing, marker-gene
+            calling and clustering. If None, it is auto-detected.
+        gpu_dataloader_workers (int): Data-loader workers used during training.
+        min_training_step (int): Minimum training steps per epoch.
+        step_num (int, optional): Split-workflow stop point: ``1`` prepares
+            data then returns; ``2`` trains using prepared data then returns;
+            ``3`` runs binning/clustering using cached stages 1 and 2; None
+            runs the complete workflow in one invocation.
+        remove_temp_files (bool): Remove first/second clustering temporary
+            directories after their corresponding outputs are finalised.
+        auto_disable_pretrain (bool): Automatically skip pretrained weights when
+            the input statistics indicate that pretraining is unsuitable.
     """
-    
-    
-    logger.info(f"--> CompleteBin version: *** {bin_v} ***")
-    mp.set_start_method("fork", force=True) 
-    
-    if num_workers is None:
-        num_workers = psutil.cpu_count() // 3 + 1
-    logger.info(f"--> Total CPUs: {psutil.cpu_count()}. Number of {num_workers} CPUs are applied.")
-    
+    seed = 2048
+    cov_time_s = time.time()
+    logger.info(f"--> CompleteBin version: *** {bin_v} ***. The random seed is {seed}.")
+    mp.set_start_method("fork", force=True)
+    seed_everything(seed)
+
+    if cpu_workers is None:
+        cpu_workers = psutil.cpu_count() // 3 + 1
+    logger.info(f"--> Total CPUs: {psutil.cpu_count()}. Number of {cpu_workers} CPUs are applied.")
+
     if os.path.exists(temp_file_folder_path) is False:
         os.mkdir(temp_file_folder_path)
-    
+
     #############################################
-    ##### Remove the space in the name of contigs.
+    # Remove the space in the name of contigs.
     logger.info("--> Start to filter the space in contig name. Make sure the first string of contig name is unique in fasta file.")
     output_fasta_path = os.path.join(temp_file_folder_path, "filtered_space_in_name.contigs.fasta")
     if os.path.exists(output_fasta_path) is False:
         filterSpaceInFastaFile(contig_file_path, output_fasta_path)
     contig_file_path = output_fasta_path
-    
+
     ####################################
-    ##### prepare the files in databases
+    # prepare the files in databases
     if db_folder_path is None:
         db_folder_path = os.environ["CompleteBin_DB"]
-    phy2accs_path = os.path.join(db_folder_path, "HMM", "phy2accs_new.pkl")
-    markerset_path = os.path.join(db_folder_path, "markerSets", "markersets.ms")
-    if large_model:
-        pretrain_model_weight_path = os.path.join(db_folder_path, "CheckPoint", "pretrain_weight_hidden_dim_768_layers_4_token_1_11.pth")
-        split_parts_list = [1, 11]
-    else:
-        pretrain_model_weight_path = os.path.join(db_folder_path, "CheckPoint", "pretrain_weight_hidden_dim_512_layers_3_token_1_16.pth")
-        split_parts_list = [1, 16]
-    
+    markerset_path = os.path.join(db_folder_path, "data", "markersets.ms")
+    pfma_file_path = os.path.join(db_folder_path, "data", "pfam_file.dat")
+    num_classes = 15434  # 0 index pretrain model is the best
+    layers = 4
+    pretrain_model_weight_path = os.path.join(db_folder_path, "CheckPoint", "pretrain_weight_large_hidden_dim_768_layers_4.pth")
+    split_parts_list = [1, 11]
     logger.info("--> Start to read contigs.")
+
+    training_data_path = os.path.join(temp_file_folder_path, "training_data.npy")
+    contigname2seq_path = os.path.join(temp_file_folder_path, "contigname2seq_str.pkl")
+    contigname2bp_nparray_list_path = os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl")
+    coverage_profile_path = None
+    mean_var_path = os.path.join(temp_file_folder_path, "mean_var.pkl")
+
     contigname2seq_ori = readFasta(contig_file_path)
+    min_contig_length = auto_min_contig_length(contigname2seq_ori, current_min_len=min_contig_length)
     N50 = calculateN50(contigname2seq_ori)
-    
-    if min_contig_length_auto_decision:
-        min_contig_length = auto_decision(contigname2seq_ori, short_long_ratio)
     if min_contig_length < 768:
         min_contig_length = 768
-        logger.info(f"--> Set min contig length as 768 since the constrains of pretrain model.")
-    large_data_size_thre = 153600
+        logger.info(f"--> Set min contig length as 768 since the constraints of pretrain model.")
+    large_data_size_thre = 115000
     temp = temp_decision(contigname2seq_ori, min_contig_length, N50, large_data_size_thre)
-    
-    ########################################################
-    # STEP1: Get the coverage information of contigs.
     low_gap = decision_lower_bound(
         contigname2seq_ori,
         min_contig_length,
         batch_size
     )
     min_contig_length -= low_gap
-    logger.info(f"--> N50: {N50}, contig split list: {split_parts_list}, training temperature: {temp}, cluster mode: leiden + {von_flspp_mix}.")
-    logger.info(f"--> Dropout probability: {drop_p}, n-views: {n_views}, base epoch is {base_epoch}, batch size is {batch_size}.")
-    logger.info(f"--> The min contigs length for training is: {min_contig_length}, for clustring is {min_contig_length + low_gap}.")
-    contigname2seq_path = os.path.join(temp_file_folder_path, "contigname2seq_str.pkl")
-    if os.path.exists(contigname2seq_path) is False:
-        prepare_sequences_coverage(
-            contigname2seq_ori,
-            sorted_bam_file_list,
-            temp_file_folder_path,
-            min_contig_length,
-            os.path.join(db_folder_path, "HMM", "40_marker.hmm"),
-            num_workers,
-            remove_temp_files
+
+    # Step 1 is resumable.  Keep track of whether this invocation actually
+    # performed work so a cache-hit invocation cannot overwrite a previous
+    # real timing with 0 seconds.
+    step1_preparation_ran = os.path.exists(training_data_path) is False
+    cal_coverage_time = 0.0
+    if step1_preparation_ran:
+        ########################################################
+        # STEP1: Get the coverage information of contigs.
+        logger.info(f"--> Model Weight Path: {pretrain_model_weight_path}")
+        logger.info(f"--> N50: {N50}, training temperature: {temp}, cluster mode: leiden + leiden.")
+        logger.info(
+            f"--> The min contigs length for training is: {min_contig_length}, for clustering is {min_contig_length + low_gap}.")
+        if os.path.exists(contigname2seq_path) is False:
+            prepare_sequences_coverage(
+                contig_file_path,
+                sorted_bam_file_list,
+                temp_file_folder_path,
+                min_contig_length,
+                os.path.join(db_folder_path, "HMM", "40_marker.hmm"),
+                os.path.join(db_folder_path, "HMM", "get_40marker.pl"),
+                cpu_workers
+            )
+
+        cov_time_e = time.time()
+        cal_coverage_time = cov_time_e - cov_time_s
+
+        #########################################################
+        # the following four files would be generated by function "prepare_sequences_coverage"
+        mean_val, std_val = readPickle(mean_var_path)
+        if auto_feature_dim:
+            feature_dim = int(math.log(len(readPickle(contigname2seq_path))) * 8.33)
+
+        # ── Gap-based coverage outlier 检测与截断 ──
+        clip_result = clip_coverage_outliers(
+            contigname2seq_path,
+            contigname2bp_nparray_list_path,
+            mean_var_path,
+            gap_threshold_mean=1.15,
+            gap_threshold_std=1.265,
+            min_length=2500,
         )
-    
+        logger.info(f"--> Coverage outlier processing: "
+                    f"removed={clip_result.get('n_removed', 0)}, "
+                    f"clipped={clip_result.get('n_clipped', 0)}, "
+                    f"std_protected={clip_result.get('n_std_only_protected', 0)}")
+
+        # 重新读取更新后的 mean_var
+        mean_val, std_val = readPickle(mean_var_path)
+
+        # 用过滤后的 contig 重新生成 40-marker 种子
+        filtered_fasta = os.path.join(temp_file_folder_path, "filtered_contigs.fasta")
+        filtered_contigname2seq = readPickle(contigname2seq_path)
+        writeFasta(filtered_contigname2seq, filtered_fasta)
+        seed_folder = os.path.join(temp_file_folder_path, "seed_folder")
+        if os.path.exists(seed_folder) is False:
+            os.mkdir(seed_folder)
+        gen_seed(
+            filtered_fasta,
+            cpu_workers,
+            seed_folder,
+            os.path.join(db_folder_path, "HMM", "40_marker.hmm"),
+            os.path.join(db_folder_path, "HMM", "get_40marker.pl"),
+            min_contig_length,
+        )
+        if os.path.exists(filtered_fasta):
+            os.remove(filtered_fasta)
+        # ── Outlier 处理结束 ──
+
+    logger.info(
+        f"--> Dropout probability: {drop_p}, n-views: {n_views}, base epoch is {base_epoch}, batch size is {batch_size}, feature_dim: {feature_dim}.")
     #########################################################
-    ## the following four files would be generated by function "prepare_sequences_coverage"
-    std_val = readPickle(os.path.join(temp_file_folder_path, "std.pkl"))
-    contigname2seq_path = os.path.join(temp_file_folder_path, "contigname2seq_str.pkl")
-    contigname2bp_nparray_list_path = os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl")
-    
-    #########################################################
-    ## build training data
-    ## this function would generate 'training_data.npy' file in 'temp_file_folder_path'
-    training_data_path = os.path.join(temp_file_folder_path, "training_data.npy")
-    if os.path.exists(training_data_path) is False and \
-        os.path.exists(os.path.join(temp_file_folder_path, f"SimCLR_contigname2emb_norm_ndarray.pkl")) is False:
+    # build training data
+    # this function would generate 'training_data.npy' file in 'temp_file_folder_path'
+    cov_time_s = time.time()
+    process_data_ran = os.path.exists(training_data_path) is False and \
+        os.path.exists(os.path.join(temp_file_folder_path, f"SimCLR_contigname2emb_norm_ndarray.pkl")) is False
+    if process_data_ran:
         build_training_seq_data_numpy_save(
             contigname2seq_path,
             contigname2bp_nparray_list_path,
             temp_file_folder_path,
             count_kmer,
-            split_parts_list,
-            num_workers
-        )  
-    
+            min_contig_length,
+            cpu_workers
+        )
     logger.info(f"--> Step 1 is over.")
+    cov_time_e = time.time()
+    cal_data_time = cov_time_e - cov_time_s
+    if step_num is None or step_num == 1:
+        step1_times = {}
+        if step1_preparation_ran:
+            step1_times["CalculateCoverageTime(s)"] = cal_coverage_time
+        if process_data_ran:
+            step1_times["ProcessDataTime(s)"] = cal_data_time
+        if step1_times:
+            _write_time_tsv(temp_file_folder_path, step1_times)
     if step_num is not None and step_num == 1:
         return 0
-    
     ##########################################################
-    ## STEP2:  Strat to training
+    # STEP2:  Strat to training
+    cov_time_s = time.time()
     if os.path.exists(os.path.join(temp_file_folder_path, f"SimCLR_contigname2emb_norm_ndarray.pkl")) is False:
         # model training
         contigname2seq = readPickle(contigname2seq_path)
+        mean_val, std_val = readPickle(mean_var_path)
+        # Compute k-mer sufficiency S from training contig lengths
+        if auto_disable_pretrain:
+            train_lengths = [len(seq) for seq in contigname2seq.values()]
+            train_avg_len = sum(train_lengths) / max(len(train_lengths), 1)
+            S = compute_S(train_avg_len, min_contig_length)
+            logger.info(
+                f"--> Training contigs: n={len(train_lengths)}, "
+                f"avg_len={train_avg_len:.0f}bp, S={S:.3f}"
+            )
+        else:
+            S = 0.0
         model_save_folder = os.path.join(temp_file_folder_path, "model_save")
         if os.path.exists(model_save_folder) is False:
             os.mkdir(model_save_folder)
-        ## epoch setting, base epoch
-        if N50 >= 1536: 
+        # epoch setting, base epoch
+        if N50 >= 1536:
             base_epoch += 4
-        sampler = DeeperBinSampler(len(contigname2seq) // batch_size * batch_size, batch_size, min_training_step=min_training_step)
+        sampler = DeeperBinSampler(len(contigname2seq) // batch_size * batch_size, batch_size, min_training_step=min_training_step, seed=seed)
         num_contigs = len(sampler.final_sample)
-        if num_contigs >= large_data_size_thre: 
+        if num_contigs >= large_data_size_thre:
             train_epoch = base_epoch
-        else: 
-            train_epoch = large_data_size_thre * base_epoch // num_contigs 
-        if train_epoch > 200: 
+        else:
+            train_epoch = large_data_size_thre * base_epoch // num_contigs
+        if train_epoch > 200:
             train_epoch = 200
-        
+
+        # ---- Automatic pretrained model decision ----
+        if auto_disable_pretrain:
+            O = compute_O(train_epoch, num_contigs)
+            use_pretrained, decision_reason = decide_pretrained(S, O)
+            logger.info(f"--> Pretrain decision: {decision_reason}")
+            # Safety valve: reduce epoch cap only under extreme overfitting
+            train_epoch, valve_reason = apply_epoch_safety_valve(train_epoch, S, O)
+            if valve_reason:
+                logger.info(f"--> Epoch safety valve: {valve_reason}")
+        else:
+            use_pretrained = True
+            logger.info("--> Auto pretrain disabled: always using pretrained model.")
+
         trainer_obj = SelfSupervisedMethodsTrainer(
             feature_dim,
             n_views,
@@ -336,28 +470,37 @@ def binning_with_all_steps(
             model_save_folder=model_save_folder,
             emb_output_folder=temp_file_folder_path,
             count_kmer=count_kmer,
-            split_parts_list = split_parts_list,
+            split_parts_list=split_parts_list,
             N50=N50,
-            large_model=large_model,
             num_bam_files=len(sorted_bam_file_list),
-            std_val = std_val,
+            mean_std_val=(mean_val, std_val),
             pretrain_model_weight_path=pretrain_model_weight_path,
             log_every_n_steps=log_every_n_steps,
-            multi_contrast=multi_seq_contrast
+            dataloader_workers=gpu_dataloader_workers,
+            num_classes=num_classes,
+            layers=layers,
+            seed=seed,
+            use_pretrained=use_pretrained,
         )
-        logger.info(f"--> Start to train model. The tempeature is {temp}.")
+
+        logger.info(f"--> Start to train model. The temperature is {temp}.")
         trainer_obj.train(load_epoch_set=None)
         logger.info(f"--> Start to inference contig embeddings with model.")
-        trainer_obj.inference(min_epoch_set=None)
-        if remove_temp_files:
+        min_epoch_set = trainer_obj.inference(min_epoch_set=None)
+        copy(os.path.join(model_save_folder, f'checkpoint_{min_epoch_set}.pth'), temp_file_folder_path)
+        if os.path.exists(model_save_folder):
             rmtree(model_save_folder, ignore_errors=True)
-    
+
     logger.info(f"--> Step 2 is over.")
+    cov_time_e = time.time()
+    train_time = cov_time_e - cov_time_s
+    if step_num is None or step_num == 2:
+        _write_time_tsv(temp_file_folder_path, {"TrainingTime(s)": train_time})
     if step_num is not None and step_num == 2:
         return 0
-    
     #############################################################
-    ## STEP3: Start Clustring
+    # STEP3: Start Clustring
+    cov_time_s = time.time()
     min_contig_length += low_gap
     contigname2seq = readPickle(contigname2seq_path)
     simclr_contigname2emb_norm_array = readPickle(os.path.join(temp_file_folder_path, f"SimCLR_contigname2emb_norm_ndarray.pkl"))
@@ -372,101 +515,148 @@ def binning_with_all_steps(
         simclr_emb_list.append(simclr_contigname2emb_norm_array[contigname])
         length_list.append(length)
     logger.info(f"--> There are {len(contigname2seq)} contigs for training and {len(simclr_emb_list)} for clustering.")
-    
+
     initial_fasta_path = os.path.join(temp_file_folder_path, "split_contigs_initial_kmeans")
     if os.path.exists(initial_fasta_path) is False:
         os.mkdir(initial_fasta_path)
-    
-    contigname2hits = readPickle(os.path.join(temp_file_folder_path, "contigname2hmmhits_list.pkl"))
-    mar40_gene2contigNames, _ = processHits(contigname2hits)
-    _, _, contignames_40mar = getGeneWithLargestCount(mar40_gene2contigNames, contigname2seq, None)
-    bin_number = int(len(contignames_40mar) * 1.6) + 1
+
+    seed_path = os.path.join(temp_file_folder_path, "seed_folder", "bacar_marker.2quarter.seed")
+    seed_set = readSeedFile(seed_path)
+    bin_number = int(len(seed_set) * 1.5) + 1
     if len(os.listdir(initial_fasta_path)) != bin_number:
         kmeans_split(
-                logger,
-                initial_fasta_path,
-                contigname2seq,
-                sub_contigname_list,
-                np.stack(simclr_emb_list, axis=0),
-                np.array(length_list),
-                bin_number,
-                contignames_40mar,
-                min_contig_length
+            logger,
+            initial_fasta_path,
+            contigname2seq,
+            sub_contigname_list,
+            np.stack(simclr_emb_list, axis=0),
+            np.array(length_list),
+            bin_number,
+            seed_set,
+            min_contig_length
         )
-        callGenesForKmeans(
-            temp_file_folder_path, 
-            initial_fasta_path, 
-            num_workers, 
-            os.path.join(db_folder_path, "HMM", "40_marker.hmm"))
-    refined_fasta_path = os.path.join(temp_file_folder_path, "split_contigs_refined_kmeans")
-    if os.path.exists(refined_fasta_path) is False:
-        os.mkdir(refined_fasta_path)
-    contigname2hits = readPickle(os.path.join(temp_file_folder_path, "contigname2hmmhits_list_initial_kmeans.pkl"))
-    mar40_gene2contigNames, _ = processHits(contigname2hits)
-    _, _, contignames_40mar = getGeneWithLargestCount(mar40_gene2contigNames, contigname2seq, None)
-    bin_number = int(len(contignames_40mar) * 1.6) + 1
-    if len(os.listdir(refined_fasta_path)) != bin_number:
-        kmeans_split(
-                logger,
-                refined_fasta_path,
-                contigname2seq,
-                sub_contigname_list,
-                np.stack(simclr_emb_list, axis=0),
-                np.array(length_list),
-                bin_number,
-                contignames_40mar,
-                min_contig_length
-        )
-    bac_ms_path = os.path.join(db_folder_path, "checkm", "bacteria.ms")
-    arc_ms_path = os.path.join(db_folder_path, "checkm", "archaea.ms")
     call_genes_folder = os.path.join(temp_file_folder_path, "call_genes")
     if os.path.exists(os.path.join(temp_file_folder_path, "bac_gene_info.pkl")) is False or \
-        os.path.exists(os.path.join(temp_file_folder_path, "arc_gene_info.pkl")) is False:
-        callMarkerGenesByCheckm(temp_file_folder_path,
-                                bac_ms_path,
-                                arc_ms_path,
-                                refined_fasta_path,
-                                call_genes_folder,
-                                os.path.join(db_folder_path, "checkm", "checkm_db"),
-                                num_workers)
+            os.path.exists(os.path.join(temp_file_folder_path, "arc_gene_info.pkl")) is False:
+        bac_acc_set = set()
+        arc_acc_set = set()
+        marset = readMarkerSets(markerset_path)
+        for cur_gene_set in marset["d__Bacteria"]:
+            for cur_gene in cur_gene_set:
+                bac_acc_set.add(cur_gene)
+        for cur_gene_set in marset["d__Archaea"]:
+            for cur_gene in cur_gene_set:
+                arc_acc_set.add(cur_gene)
+        callMarkerGenesByHMM(
+            initial_fasta_path,
+            call_genes_folder,
+            cpu_workers,
+            hmm_model_path=os.path.join(db_folder_path, "HMM", "bac_arc_hmm_model_extended.hmm"),
+            bin_suffix="fasta",
+            bac_acc_set=bac_acc_set,
+            arc_acc_set=arc_acc_set,
+            pfma_file_path=pfma_file_path,
+            output_folder=temp_file_folder_path
+        )
     bac_gene2contigNames, bac_contigName2_gene2num = readPickle(os.path.join(temp_file_folder_path, "bac_gene_info.pkl"))
     arc_gene2contigNames, arc_contigName2_gene2num = readPickle(os.path.join(temp_file_folder_path, "arc_gene_info.pkl"))
-    if os.path.exists(bin_output_folder_path) is False:
-        os.mkdir(bin_output_folder_path)
-    clustering_all_folder = os.path.join(temp_file_folder_path, "clustering_res")
-    if os.path.exists(os.path.join(clustering_all_folder, f"ensemble_methods_list_{von_flspp_mix}.pkl")) is False:
-        phy2accs = readPickle(phy2accs_path)
-        ensemble_list = combine_two_cluster_steps(
+    if os.path.exists(call_genes_folder):
+        rmtree(call_genes_folder, ignore_errors=True)
+
+    coverage_profile_path = ensure_compact_coverage_path(contigname2bp_nparray_list_path)
+    logger.info(f"--> Improved polish coverage profile ready: {coverage_profile_path}")
+
+    # first clustering
+    first_clustering_bins = os.path.join(temp_file_folder_path, "first_clustering_bins")
+    if os.path.exists(os.path.join(first_clustering_bins, "MetaInfo.tsv")) is False:
+        clustering_and_dereplication(
+            temp_file_folder_path,
+            "first_clustering_temp",
             contigname2seq,
             simclr_contigname2emb_norm_array,
             markerset_path,
-            phy2accs,
             min_contig_length,
-            cpu_num=num_workers,
-            clustering_all_folder=clustering_all_folder,
-            bac_gene2contigNames = bac_gene2contigNames,
-            arc_gene2contigNames = arc_gene2contigNames,
-            bac_contigName2_gene2num=bac_contigName2_gene2num,
-            arc_contigName2_gene2num=arc_contigName2_gene2num,
-            gmm_flspp=von_flspp_mix
+            cpu_workers,
+            seed_path,
+            bac_contigName2_gene2num,
+            arc_contigName2_gene2num,
+            100000,
+            first_clustering_bins,
+            leiden_iter_mode,
+            clustering_stages=1,
+            coverage_profile_path=coverage_profile_path,
         )
-    # ensemble the grouped results by galah.
-    ensemble_list = readPickle(os.path.join(clustering_all_folder, f"ensemble_methods_list_{von_flspp_mix}.pkl"))
-    temp_flspp_bin_output = os.path.join(clustering_all_folder, f"temp_binning_results_{von_flspp_mix}")
-    scg_quality_report_path = os.path.join(clustering_all_folder, f"quality_record_{von_flspp_mix}.tsv")
-    process_galah(
-        temp_file_folder_path,
-        temp_flspp_bin_output,
-        ensemble_list,
-        refined_fasta_path,
-        db_folder_path,
-        bin_output_folder_path,
-        ensemble_with_SCGs,
-        scg_quality_report_path,
-        filter_huge_gap,
-        von_flspp_mix,
-        cpus=num_workers,
+    if remove_temp_files and os.path.exists(os.path.join(temp_file_folder_path, "first_clustering_temp")):
+        rmtree(os.path.join(temp_file_folder_path, "first_clustering_temp"))
+    # selected contigs for next clustering
+    sec_seleceted_contigs = selected_recluster_contigs(contigname2seq, first_clustering_bins, ["HighQuality", "MediumQuality"], comp_thre=50.)
+    sec_contigname2seq = {}
+    for name in sec_seleceted_contigs:
+        sec_contigname2seq[name] = contigname2seq[name]
+    # ## second clustering
+    second_clustering_bins = os.path.join(temp_file_folder_path, "second_clustering_bins")
+    if os.path.exists(os.path.join(second_clustering_bins, "MetaInfo.tsv")) is False:
+        clustering_and_dereplication(
+            temp_file_folder_path,
+            "second_clustering_temp",
+            sec_contigname2seq,
+            simclr_contigname2emb_norm_array,
+            markerset_path,
+            min_contig_length,
+            cpu_workers,
+            seed_path,
+            bac_contigName2_gene2num,
+            arc_contigName2_gene2num,
+            100000,
+            second_clustering_bins,
+            leiden_iter_mode,
+            clustering_stages=2,
+            coverage_profile_path=coverage_profile_path,
+        )
+    if remove_temp_files and os.path.exists(os.path.join(temp_file_folder_path, "second_clustering_temp")):
+        rmtree(os.path.join(temp_file_folder_path, "second_clustering_temp"))
+    # third clustering with K-Mearns
+    thi_seleceted_contigs = selected_recluster_contigs(sec_contigname2seq, second_clustering_bins, ["HighQuality", "MediumQuality"], comp_thre=50.)
+    thi_contigname2seq = {}
+    for name in thi_seleceted_contigs:
+        thi_contigname2seq[name] = contigname2seq[name]
+    third_clustering_bins = os.path.join(temp_file_folder_path, "thi_clustering_bins")
+    cluster_kmeans_for_low_v2(
+        thi_contigname2seq,
+        simclr_contigname2emb_norm_array,
+        bac_gene2contigNames,
+        bac_contigName2_gene2num,
+        0,
+        third_clustering_bins,
+        first_metainfo_path=os.path.join(first_clustering_bins, "MetaInfo.tsv"),
+        second_metainfo_path=os.path.join(second_clustering_bins, "MetaInfo.tsv"),
+        min_k_ratio=0.1,
+        percentile=10
     )
-    if remove_temp_files:
-        rmtree(temp_file_folder_path, ignore_errors=True)
+    # select final bins from first and second results.
+    first_selected_list = readPickle(os.path.join(first_clustering_bins, "bin_copy_list.pkl"))
+    second_selected_list = readPickle(os.path.join(second_clustering_bins, "bin_copy_list.pkl"))
+    index = 0
+    if os.path.exists(bin_output_folder_path) is False:
+        os.mkdir(bin_output_folder_path)
+    wh = open(os.path.join(bin_output_folder_path, "MetaInfo.tsv"), "w")
+    for item_tuple in first_selected_list + second_selected_list:
+        ori_path, comp, cont, state = item_tuple
+        outName = f"CompleteBin_{index}.fasta"
+        writeMetaInfo(wh, outName, comp, cont, state)
+        copy(ori_path, os.path.join(bin_output_folder_path, outName))
+        index += 1
+    for filename in os.listdir(third_clustering_bins):
+        comp = "0."
+        cont = "0."
+        state = "LowQuality"
+        outName = f"CompleteBin_{index}.fasta"
+        writeMetaInfo(wh, outName, comp, cont, state)
+        copy(os.path.join(third_clustering_bins, filename), os.path.join(bin_output_folder_path, outName))
+        index += 1
+    wh.close()
+
+    cov_time_e = time.time()
+    cluster_time = cov_time_e - cov_time_s
+    _write_time_tsv(temp_file_folder_path, {"ClusteringTime(s)": cluster_time})
     return 0

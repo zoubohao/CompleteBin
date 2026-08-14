@@ -1,0 +1,37 @@
+AMBER sample=Gastrointestinal_tract-sample-4; binners=5; started=Tue Aug 11 12:47:55 HKT 2026
+2026-08-11 12:47:56,685 INFO Found @Version:0.9.1 in semibin2-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @SampleID:Gastrointestinal_tract-sample-4 in semibin2-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @Version:0.9.1 in completebin-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @SampleID:Gastrointestinal_tract-sample-4 in completebin-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @Version:0.9.1 in metabat2-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @SampleID:Gastrointestinal_tract-sample-4 in metabat2-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,685 INFO Found @Version:0.9.1 in concoct-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @SampleID:Gastrointestinal_tract-sample-4 in concoct-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @Version:0.9.1 in comebin-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @SampleID:Gastrointestinal_tract-sample-4 in comebin-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,686 INFO Found @Version:0.9.1 in Gold standard
+2026-08-11 12:47:56,686 INFO Found @SampleID:Gastrointestinal_tract-sample-4 in Gold standard
+2026-08-11 12:47:56,710 INFO Creating output directories
+2026-08-11 12:47:56,713 INFO Loading Gastrointestinal_tract-sample-4 of Gold standard
+2026-08-11 12:47:56,739 INFO Evaluating Gold standard, sample Gastrointestinal_tract-sample-4, genome binning
+2026-08-11 12:47:56,739 INFO Loading Gastrointestinal_tract-sample-4 of Gold standard
+2026-08-11 12:47:56,914 INFO Evaluating comebin-Gastrointestinal_tract-sample-4.All, sample Gastrointestinal_tract-sample-4, genome binning
+2026-08-11 12:47:56,914 INFO Loading Gastrointestinal_tract-sample-4 of comebin-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:56,991 WARNING 9692 sequences in comebin-Gastrointestinal_tract-sample-4.All not found in the gold standard.
+2026-08-11 12:47:57,076 INFO Evaluating completebin-Gastrointestinal_tract-sample-4.All, sample Gastrointestinal_tract-sample-4, genome binning
+2026-08-11 12:47:57,077 INFO Loading Gastrointestinal_tract-sample-4 of completebin-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:57,158 WARNING 13489 sequences in completebin-Gastrointestinal_tract-sample-4.All not found in the gold standard.
+2026-08-11 12:47:57,247 INFO Evaluating concoct-Gastrointestinal_tract-sample-4.All, sample Gastrointestinal_tract-sample-4, genome binning
+2026-08-11 12:47:57,247 INFO Loading Gastrointestinal_tract-sample-4 of concoct-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:57,324 WARNING 9692 sequences in concoct-Gastrointestinal_tract-sample-4.All not found in the gold standard.
+2026-08-11 12:47:57,409 INFO Evaluating metabat2-Gastrointestinal_tract-sample-4.All, sample Gastrointestinal_tract-sample-4, genome binning
+2026-08-11 12:47:57,409 INFO Loading Gastrointestinal_tract-sample-4 of metabat2-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:57,478 WARNING 1740 sequences in metabat2-Gastrointestinal_tract-sample-4.All not found in the gold standard.
+2026-08-11 12:47:57,559 INFO Evaluating semibin2-Gastrointestinal_tract-sample-4.All, sample Gastrointestinal_tract-sample-4, genome binning
+2026-08-11 12:47:57,560 INFO Loading Gastrointestinal_tract-sample-4 of semibin2-Gastrointestinal_tract-sample-4.All
+2026-08-11 12:47:57,627 WARNING 254 sequences in semibin2-Gastrointestinal_tract-sample-4.All not found in the gold standard.
+2026-08-11 12:47:57,723 INFO Saving computed metrics
+2026-08-11 12:47:57,753 INFO Creating genome binning plots
+2026-08-11 12:48:01,755 INFO Creating HTML page
+2026-08-11 12:48:02,540 INFO AMBER finished successfully. All results have been saved to /mnt/ME5024_PA2/shared/groups/ZHANGLU/AMBER-CAMI2-Other-Datasets-Results/AMBER-Gastrointestinal_tract-sample-4
+AMBER completed Gastrointestinal_tract-sample-4; finished=Tue Aug 11 12:48:02 HKT 2026

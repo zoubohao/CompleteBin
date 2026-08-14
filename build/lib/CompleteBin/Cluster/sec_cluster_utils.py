@@ -1,19 +1,22 @@
+from collections import OrderedDict
+from copy import deepcopy
 import math
 import os
-from copy import deepcopy
+
 from typing import Dict, List, Set, Tuple
 
 import numpy as np
-from flspp.core import FLSpp
-from sklearn.metrics import silhouette_score
-from sklearn.mixture import GaussianMixture
 
+from CompleteBin.Cluster.polish_bin import compute_cohens_d, should_trigger_polish
+from CompleteBin.Cluster.polish_bin_improved import (
+    clean_bin_by_embedding as clean_bin_by_embedding_with_switch,
+)
 from CompleteBin.CallGenes.hmm_utils import process_subset
 from CompleteBin.IO import writeFasta, writePickle
 from CompleteBin.logger import get_logger
 from CompleteBin.Seqs.seq_info import calculateN50
+from CompleteBin.Cluster.first_cluster_utils import get_KNN_nodes_hnsw, run_leiden
 
-from .von_mises_fisher_mixture import VonMisesFisherMixture
 
 logger = get_logger()
 
@@ -66,15 +69,11 @@ def allocate(
 
 
 # original split
-def cluster_split(
+def cluster_split_no_learning(
     sub_contigName2seq: Dict[str, str],
     contigName2RepNormV,
     gene2contigNames: Dict[str, List[str]],
     contigName2_gene2num: Dict[str, Dict[str, int]],
-    no_learning_method = False,
-    gmm_flspp = "flspp",
-    min_contig_len: int = 768,
-    the_last_time = False,
 ) -> List[Dict[str, str]]:
     contigSeqPair = [(contigName, len(seq)) for contigName, seq in sub_contigName2seq.items()]
     if len(contigSeqPair) <= 3:
@@ -115,108 +114,143 @@ def cluster_split(
         return [notExistGeneContig2seq]
 
     # cluster part #
-    if no_learning_method:
-        totalN = len(existGene2contigNames)
-        filteredContigList = []
-        for i in range(len(splitContigSetList)):
-            curNumGenes = len(splitRecordGenes[i])
-            curSet = splitContigSetList[i].union(notExistGeneContig)
-            curContig2seq = {}
-            summedLength = 0.0
-            for contigName in curSet:
-                curContig2seq[contigName] = deepcopy(sub_contigName2seq[contigName])
-                summedLength += len(sub_contigName2seq[contigName])
-            ratio = curNumGenes / totalN + 0.0
-            score = curNumGenes / totalN + 0.0 + math.log(summedLength) / 20.0
-            if i == 0 or summedLength >= 25000:
-                filteredContigList.append((curContig2seq, ratio, score))
-        filteredContigList = sorted(filteredContigList, key=lambda x: x[-1], reverse=True)
-        return [infoPair[0] for i, infoPair in enumerate(filteredContigList)]
+    totalN = len(existGene2contigNames)
+    filteredContigList = []
+    for i in range(len(splitContigSetList)):
+        curNumGenes = len(splitRecordGenes[i])
+        curSet = splitContigSetList[i].union(notExistGeneContig)
+        curContig2seq = {}
+        summedLength = 0.0
+        for contigName in curSet:
+            curContig2seq[contigName] = deepcopy(sub_contigName2seq[contigName])
+            summedLength += len(sub_contigName2seq[contigName])
+        ratio = curNumGenes / totalN + 0.0
+        score = curNumGenes / totalN + 0.0 + math.log(summedLength) / 20.0
+        if i == 0 or summedLength >= 25000:
+            filteredContigList.append((curContig2seq, ratio, score))
+    filteredContigList = sorted(filteredContigList, key=lambda x: x[-1], reverse=True)
+    return [infoPair[0] for i, infoPair in enumerate(filteredContigList)]
 
+
+# original split
+def cluster_split(
+    sub_contigName2seq: Dict[str, str],
+    contigName2RepNormV,
+    seed_path,
+    tname2markerset,
+    bac_contigName2_gene2num,
+    arc_contigName2_gene2num,
+) -> List[Dict[str, str]]:
+    num_contigs = len(sub_contigName2seq)
     # cluster part #
     # build can not link paris and X array
-    X = []
-    div = np.log(min_contig_len + 0.)
+
     length_weights = []
-    contigName2index = {}
-    index2contigName = {}
-    for j, (contigName, repNormVec) in enumerate(existContig2RepNormV.items()):
-        X.append(repNormVec)
-        contigName2index[contigName] = j
-        index2contigName[j] = contigName
-        length_weights.append(np.log(len(sub_contigName2seq[contigName])) / div)
-        # length_weights.append(len(sub_contigName2seq[contigName]))
-    X = np.array(X, dtype=np.float64)
-    
-    bin_cluster_num_set = set()
-    for i in range(-2, 3):
-        cur_bin_cluster_num = bin_cluster_num + i
-        if len(X) <= cur_bin_cluster_num:
-            cur_bin_cluster_num = len(X) - 1
-        if cur_bin_cluster_num <= 1:
-            cur_bin_cluster_num = 2
-        bin_cluster_num_set.add(cur_bin_cluster_num)
-    bin_cluster_num_list = list(bin_cluster_num_set)
-    model_list = []
-    ss_score = True
-    if len(X) >= 90000:
-        ss_score = False
-    
-    run_von = False
-    if gmm_flspp == "mix":
-        if 150 <= len(X) <= 1850:
-            run_von = True
-    
-    not_flspp = True
-    if len(X) > 10000:
-        not_flspp = False
-    
-    for i, cur_bin_cluster_num in enumerate(bin_cluster_num_list):
-        if (gmm_flspp == "mix" and run_von) or (gmm_flspp =="von" and not_flspp):
-            # print(f"VonMiss has been applied {len(X)}")
-            cur_model = VonMisesFisherMixture(n_clusters=cur_bin_cluster_num, 
-                                              n_jobs=1, 
-                                              init="k-means++", 
-                                              random_state=3407, 
-                                              n_init=1)
-            cur_model = cur_model.fit(X)
-            if ss_score:
-                model_list.append((cur_model.labels_, cur_model.cluster_centers_, silhouette_score(X, cur_model.labels_)))
-            else:
-                model_list.append((cur_model.labels_, cur_model.cluster_centers_, -cur_model.inertia_))
-        else:
-            # print(f"FLSpp has been applied {len(X)}")
-            cur_model = FLSpp(n_clusters=cur_bin_cluster_num, 
-                        max_iter=600, 
-                        local_search_iterations=60, 
-                        random_state=3407)
-            cur_model = cur_model.fit(X, sample_weight=length_weights)
-            if ss_score:
-                model_list.append((cur_model.labels_, cur_model.cluster_centers_, silhouette_score(X, cur_model.labels_)))
-            else:
-                model_list.append((cur_model.labels_, cur_model.cluster_centers_, -cur_model.inertia_))
-    sorted_model_list = list(sorted(model_list, key = lambda x: x[-1], reverse=True))
-    labels_ = sorted_model_list[0][0]
-    
-    cluster_out = {}
-    for i, label in enumerate(labels_):
-        contigName = index2contigName[i]
-        if label not in cluster_out:
-            cur_name2seq = {}
-            cur_name2seq[contigName] = sub_contigName2seq[contigName]
-            cluster_out[label] = cur_name2seq
-        else:
-            cur_name2seq = cluster_out[label]
-            cur_name2seq[contigName] = sub_contigName2seq[contigName]
-    
+    contig_name_list = []
+    simclr_embMat = []
+    for j, (contig_name, seq) in enumerate(sub_contigName2seq.items()):
+        length_weights.append(len(seq))
+        contig_name_list.append(contig_name)
+        simclr_embMat.append(contigName2RepNormV[contig_name])
+
+    simclr_embMat = np.stack(simclr_embMat, axis=0)
+    contig_name_list = np.array(contig_name_list)
+
+    # transform
+    initial_list = []
+    contig2id = OrderedDict()
+    for i, contig_name in enumerate(contig_name_list):
+        contig2id[contig_name] = i
+        initial_list.append(i)
+
+    # fix seed
+    seed_list = []
+    with open(seed_path) as rh:
+        for line in rh:
+            if ">" + line.strip('\n') in contig2id:
+                seed_list.append(">" + line.strip('\n'))
+    seed_idx = set([contig2id[seed_name] for seed_name in seed_list if seed_name in contig2id])
+    is_membership_fixed = [i in seed_idx for i in initial_list]
+
+    parameter_list = [1, 3, 5]  # 1 3 5
+    space = "l2"
+    max_edges = 100
+    if num_contigs <= max_edges:
+        max_edges = num_contigs - 1
+    ann_neighbor_indices, ann_distances = get_KNN_nodes_hnsw(simclr_embMat, max_edges, space=space, num_workers=32, print_log=False)
+    partgraph_ratio = 100
+    bandwidth = 0.1
+
+    # start cluster
+    all_clu2contigs = []
+    for resolution in parameter_list:
+        output_file = 'Leiden_embMat0_maxedges_' + str(max_edges) + \
+            '_partgraphRatio_' + str(partgraph_ratio) + \
+            '_resolution_' + str(resolution) + \
+            "_bandwidth_" + str(bandwidth)
+        cur_clu2contigs = run_leiden(
+            0,
+            0,
+            output_file,
+            contig_name_list,
+            ann_neighbor_indices,
+            ann_distances,
+            length_weights,
+            max_edges,
+            simclr_embMat,
+            bandwidth,
+            space,
+            initial_list,
+            partgraph_ratio,
+            resolution,
+            is_membership_fixed,
+            -1,
+            False,
+        )
+        all_clu2contigs.append(cur_clu2contigs)
+
+    # eval each cluster result
+    clu_eval_stat_list = []
+    for cur_clu2contigs in all_clu2contigs:
+        # cur evaluation statistics
+        num_5010 = 0
+        num_7010 = 0
+        num_9010 = 0
+        num_505 = 0
+        num_705 = 0
+        num_905 = 0
+        for _, cluster_contignames in cur_clu2contigs.items():
+            _, _, _, comp, cont = determine_domain(
+                tname2markerset,
+                cluster_contignames,
+                bac_contigName2_gene2num,
+                arc_contigName2_gene2num,
+            )
+            if comp > 50 and cont < 10:
+                num_5010 += 1
+            if comp > 70 and cont < 10:
+                num_7010 += 1
+            if comp > 90 and cont < 10:
+                num_9010 += 1
+            if comp > 50 and cont < 5:
+                num_505 += 1
+            if comp > 70 and cont < 5:
+                num_705 += 1
+            if comp >= 90 and cont <= 5:
+                num_905 += 1
+        score_all = num_5010 * 0.6 + num_7010 * 1. + num_9010 * 2. + \
+            num_505 * 0.8 + num_705 * 1.5 + num_905 * 3.
+        clu_eval_stat_list.append((score_all, cur_clu2contigs))
+    best_clu2contigs = list(sorted(clu_eval_stat_list, key=lambda x: x[0], reverse=True))[0][1]
+
     # ##### result collection
     res = []
-    for _, name2seq in cluster_out.items():
-        res.append((name2seq, summedLengthCal(name2seq)))
-    res_ord = []
-    for name2seq, _ in list(sorted(res, key=lambda x: x[-1], reverse=True)):
-        res_ord.append(name2seq)
-    return res_ord
+    for _, cluster_contignames in best_clu2contigs.items():
+        cur_contigname2seq = {}
+        for name in cluster_contignames:
+            cur_contigname2seq[name] = sub_contigName2seq[name]
+        res.append(cur_contigname2seq)
+    return res
 
 
 def genomeCheck(contigName2_gene2num, markerSet: List[Set]):
@@ -249,6 +283,38 @@ def genomeCheck(contigName2_gene2num, markerSet: List[Set]):
     percComp = 100 * comp / len(markerSet)
     percCont = 100 * cont / len(markerSet)
     return percComp, percCont
+
+
+def genomeCheckCheckm1(contigName2_gene2num, markerSet):
+    """Calculate genome completeness and contamination with CheckM1 formula.
+
+    Differs from ``genomeCheck`` in using a global counting formula instead
+    of per-set averaging:
+
+        completeness = sum(present) / total_markers * 100
+        contamination = sum(extra_copies) / total_markers * 100
+
+    This matches CheckM1's ``checkm qa`` output format (``-o 2``).
+    """
+    gene2count = {}
+    for _, gene2num in contigName2_gene2num.items():
+        for gene, num in gene2num.items():
+            gene2count[gene] = gene2count.get(gene, 0) + num
+
+    total_markers = sum(len(ms) for ms in markerSet)
+    total_present = 0
+    total_extra = 0
+    for ms in markerSet:
+        for marker in ms:
+            count = gene2count.get(marker, 0)
+            if count > 0:
+                total_present += 1
+                if count > 1:
+                    total_extra += (count - 1)
+
+    comp = 100.0 * total_present / total_markers if total_markers > 0 else 0.0
+    cont = 100.0 * total_extra / total_markers if total_markers > 0 else 0.0
+    return comp, cont
 
 
 def determine_domain(
@@ -330,33 +396,38 @@ def re_cluster_procedure_for_one_method(
     bac_contigName2_gene2num: dict,
     arc_contigName2_gene2num: dict,
     gmm_flspp: str,
-    min_contig_len: int
+    min_contig_len: int,
+    mag_length_threshold: int,
+    seed_path,
+    coverage_profile_path=None,
 ):
     # start
     quality_record = {}
     index = 0
+    n_clusters = len(clu2contignames)
+    total_penalty = 0.0
     logger.info(f"--> Start current method: {c_file}. {cur_i} / {tol_n}.")
-    n_cluster = len(clu2contignames)
+    # n_cluster = len(clu2contignames)
     for i,  (_, first_cluster_contignames) in enumerate(clu2contignames.items()):
         # progressBar(i, n_cluster)
         first_cluster_contigName2seq = {}
         for contigName in first_cluster_contignames:
             first_cluster_contigName2seq[contigName] = contigname2seq[contigName]
-        first_dom, first_cluster_gene2contig_list, first_cluster_contigName2_gene2num, comp, cont = determine_domain(
+        first_dom, first_cluster_gene2contig_list, first_cluster_contigName2_gene2num, first_comp, first_cont = determine_domain(
             tname2markerset,
             first_cluster_contignames,
             bac_contigName2_gene2num,
             arc_contigName2_gene2num,
-            )
-        if cont > 10:
+        )
+        if first_cont > 12:
+            total_penalty += 1.0
             secd_cluster_contigname2seq_list = cluster_split(
                 first_cluster_contigName2seq,
                 contigname2repNormVector,
-                first_cluster_gene2contig_list,
-                first_cluster_contigName2_gene2num,
-                gmm_flspp=gmm_flspp,
-                min_contig_len = min_contig_len,
-                the_last_time=False
+                seed_path,
+                tname2markerset,
+                bac_contigName2_gene2num,
+                arc_contigName2_gene2num,
             )
             secd_cluster_bins_qualites = eval_qualities_for_cluster_split(
                 secd_cluster_contigname2seq_list,
@@ -364,54 +435,37 @@ def re_cluster_procedure_for_one_method(
                 bac_contigName2_gene2num,
                 arc_contigName2_gene2num,
             )
-            for secd_cluster_contigname2seq, secd_cluster_gene2contig_list, secd_cluster_contigName2_gene2num, \
-                    comp, cont in secd_cluster_bins_qualites:
-                if cont > 5:
-                    no_learn_method = True
-                    if cont > 10:
-                        no_learn_method = False
-                    third_cluster_contigname2seq_list = cluster_split(
-                        secd_cluster_contigname2seq,
-                        contigname2repNormVector,
-                        secd_cluster_gene2contig_list,
-                        secd_cluster_contigName2_gene2num,
-                        no_learn_method,
-                        gmm_flspp = gmm_flspp,
-                        min_contig_len=min_contig_len,
-                        the_last_time=True)
-                    third_cluster_bins_qualites = eval_qualities_for_cluster_split(
-                        third_cluster_contigname2seq_list,
-                        tname2markerset,
-                        bac_contigName2_gene2num,
-                        arc_contigName2_gene2num
-                    )
-                    for third_cluster_contigname2seq, _, _, comp, cont in third_cluster_bins_qualites:
-                        writeFasta(third_cluster_contigname2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
-                        size = summedLengthCal(third_cluster_contigname2seq)
-                        n50 = np.log(calculateN50(third_cluster_contigname2seq))
-                        quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
-                        index += 1
-                else:
+            for secd_cluster_contigname2seq, _, _, secd_comp, secd_cont in secd_cluster_bins_qualites:
+                size = summedLengthCal(secd_cluster_contigname2seq)
+                if size >= mag_length_threshold:
                     writeFasta(secd_cluster_contigname2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
-                    size = summedLengthCal(secd_cluster_contigname2seq)
                     n50 = np.log(calculateN50(secd_cluster_contigname2seq))
-                    quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
+                    quality_record[f"CompleteBin_cand_{index}.fasta"] = (secd_comp, secd_cont, n50, size)
                     index += 1
-        elif cont > 5:
-            secd_cluster_contigname2seq_list = cluster_split(
+        elif first_cont > 5.0:
+            # 明确污染：必定触发 + SCG 拆分
+            total_penalty += 0.5
+            index, quality_record = clean_bin_by_embedding_with_switch(
                 first_cluster_contigName2seq,
                 contigname2repNormVector,
                 first_cluster_gene2contig_list,
                 first_cluster_contigName2_gene2num,
-                True,
-                gmm_flspp=gmm_flspp,
-                min_contig_len=min_contig_len,
-                the_last_time=True
+                first_dom,
+                tname2markerset,
+                bac_contigName2_gene2num,
+                arc_contigName2_gene2num,
+                output_folder, index, quality_record,
+                mag_length_threshold,
+                coverage_profile_path=coverage_profile_path,
+            )
+            secd_cluster_contigname2seq_list = cluster_split_no_learning(
+                first_cluster_contigName2seq,
+                contigname2repNormVector,
+                first_cluster_gene2contig_list,
+                first_cluster_contigName2_gene2num
             )
             for secd_cluster_contigname2seq in secd_cluster_contigname2seq_list:
-                sub_split_contignames = []
-                for contigName in secd_cluster_contigname2seq.keys():
-                    sub_split_contignames.append(contigName)
+                sub_split_contignames = list(secd_cluster_contigname2seq.keys())
                 assert len(sub_split_contignames) != 0
                 _, _, _, comp, cont = determine_domain(
                     tname2markerset,
@@ -419,17 +473,61 @@ def re_cluster_procedure_for_one_method(
                     bac_contigName2_gene2num,
                     arc_contigName2_gene2num,
                     first_dom)
-                writeFasta(secd_cluster_contigname2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
                 size = summedLengthCal(secd_cluster_contigname2seq)
-                n50 = np.log(calculateN50(secd_cluster_contigname2seq))
-                quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
-                index += 1
-        # else:
-        writeFasta(first_cluster_contigName2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
+                if size >= mag_length_threshold:
+                    writeFasta(secd_cluster_contigname2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
+                    n50 = np.log(calculateN50(secd_cluster_contigname2seq))
+                    quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
+                    index += 1
+        else:
+            # SCG + 嵌入双信号判断（灰区 & 轻度污染）
+            d, _, _, _ = compute_cohens_d(
+                list(first_cluster_contigName2seq.keys()),
+                contigname2repNormVector,
+                first_cluster_contigName2_gene2num,
+                first_cluster_gene2contig_list,
+            )
+            should_trigger, zone = should_trigger_polish(first_cont, d)
+            if should_trigger:
+                total_penalty += 0.1
+                if zone == "gray":
+                    tolerance, trigger = 5.0, 2.0
+                elif zone == "light":
+                    tolerance, trigger = 7.0, 3.45
+                else:  # clear
+                    tolerance, trigger = 10.0, 5.0
+                index, quality_record = clean_bin_by_embedding_with_switch(
+                    first_cluster_contigName2seq,
+                    contigname2repNormVector,
+                    first_cluster_gene2contig_list,
+                    first_cluster_contigName2_gene2num,
+                    first_dom,
+                    tname2markerset,
+                    bac_contigName2_gene2num,
+                    arc_contigName2_gene2num,
+                    output_folder, index, quality_record,
+                    mag_length_threshold,
+                    contamination_trigger=trigger,
+                    completeness_drop_tolerance=tolerance,
+                    coverage_profile_path=coverage_profile_path,
+                )
+            else:
+                size = summedLengthCal(first_cluster_contigName2seq)
+                if size >= mag_length_threshold:
+                    writeFasta(first_cluster_contigName2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
+                    n50 = np.log(calculateN50(first_cluster_contigName2seq))
+                    quality_record[f"CompleteBin_cand_{index}.fasta"] = (first_comp, first_cont, n50, size)
+                    index += 1
         size = summedLengthCal(first_cluster_contigName2seq)
-        n50 = np.log(calculateN50(first_cluster_contigName2seq))
-        quality_record[f"CompleteBin_cand_{index}.fasta"] = (comp, cont, n50, size)
-        index += 1
+        if size >= mag_length_threshold:
+            writeFasta(first_cluster_contigName2seq, os.path.join(output_folder, f"CompleteBin_cand_{index}.fasta"))
+            n50 = np.log(calculateN50(first_cluster_contigName2seq))
+            quality_record[f"CompleteBin_cand_{index}.fasta"] = (first_comp, first_cont, n50, size)
+            index += 1
     logger.info(f"--> End of second cluster with current method: {c_file}. {cur_i} / {tol_n}")
     writePickle(os.path.join(temp_bin_folder_path, f"{c_file}_quality_record.pkl"), quality_record)
+    writePickle(
+        os.path.join(temp_bin_folder_path, f"{c_file}_penalty.pkl"),
+        {"total_penalty": total_penalty, "n_clusters": n_clusters}
+    )
     return c_file, quality_record

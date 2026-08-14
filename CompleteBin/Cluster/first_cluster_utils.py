@@ -20,7 +20,8 @@ def fit_hnsw_index(
     ef: int,
     M: int = 16,
     space: str = 'l2',
-    save_index_file: bool = False
+    save_index_file: bool = False,
+    print_log = True
 ) -> hnswlib.Index:
     time_start = time.time()
     num_elements = len(features)
@@ -40,7 +41,8 @@ def fit_hnsw_index(
     if save_index_file:
         p.save_index(save_index_file)
     time_end = time.time()
-    logger.info('--> HNSW index time cost:\t' + str(time_end - time_start) + "s")
+    if print_log:
+        logger.info(f"--> HNSW index time cost: {time_end - time_start:.2f}s")
     return p
 
 
@@ -48,15 +50,18 @@ def get_KNN_nodes_hnsw(
     embMat,
     max_edges,
     space,
-    num_workers
+    num_workers,
+    print_log = True
 ):
-    logger.info(f"--> Approximate KNN Nodes Method.")
-    p = fit_hnsw_index(logger, embMat, num_workers, ef=max_edges * 10, space=space)
+    if print_log:
+        logger.info(f"--> Approximate KNN Nodes Method.")
+    p = fit_hnsw_index(logger, embMat, num_workers, ef=max_edges * 10, space=space, print_log=print_log)
     time_start = time.time()
     ann_neighbor_indices, ann_distances = p.knn_query(embMat, max_edges + 1, num_threads=num_workers)
     # ann_distances is cosine distance's square
     time_end = time.time()
-    logger.info('--> knn query time cost:\t' + str(time_end - time_start) + "s")
+    if print_log:
+        logger.info(f"--> knn query time cost: {time_end - time_start:.2f}s")
     return ann_neighbor_indices, ann_distances
 
 
@@ -66,15 +71,15 @@ def get_KNN_nodes_scikit(
     num_workers = -1,
 ):
     max_edges += 1
-    logger.info(f"Exact KNN Nodes Method.")
+    logger.info(f"--> Exact KNN Nodes Method.")
     knn_obj = NearestNeighbors(n_neighbors=max_edges, n_jobs=num_workers)
     time_start = time.time()
     knn_obj = knn_obj.fit(emb_mat)
     time_med = time.time()
-    logger.info('--> knn index time cost:\t' + str(time_med - time_start) + "s")
+    logger.info(f"--> knn index time cost: {time_med - time_start:.2f}s")
     ann_distances, ann_neighbor_indices = knn_obj.kneighbors(emb_mat, max_edges, return_distance=True)
     time_end = time.time()
-    logger.info('--> knn query time cost:\t' + str(time_end - time_med) + "s")
+    logger.info(f"--> knn query time cost: {time_end - time_med:.2f}s")
     return ann_neighbor_indices, ann_distances
 
 
@@ -94,7 +99,8 @@ def run_leiden(
     partgraph_ratio: int = 50,
     resolution: float = 1.0,
     is_membership_fixed: List[bool] = None,
-    n_iterations=-1):
+    n_iterations=-1,
+    write_file = True):
     vcount = len(norm_embeddings)
     sources = np.repeat(np.arange(vcount), max_edges)
     targets_indices = ann_neighbor_indices[:, 1:]
@@ -120,11 +126,16 @@ def run_leiden(
     targets = targets[index]
     wei = wei[index]
     edgelist = list(zip(sources, targets))
-    method = os.path.split(output_file)[-1]
-    logger.info(f"-->  Start Leiden algorithm with: {vcount} nodes and {len(wei)} edges." +
-                f" max edges for each node: {max_edges}, part graph ratio: {partgraph_ratio}." +
-                f" output method is {method}. {cur_i} / {totol_n}")
+    if write_file:
+        method = os.path.split(output_file)[-1]
+    else:
+        method = output_file
+    if write_file:
+        logger.info(f"--> Start Leiden algorithm with: {vcount} nodes and {len(wei)} edges."
+                    f" max edges for each node: {max_edges}, part graph ratio: {partgraph_ratio}."
+                    f" output method is {method}. {cur_i} / {totol_n}")
     graph = Graph(vcount, edgelist, directed=False)
+    # graph.community_infomap()
     assert len(wei) == len(edgelist), ValueError(f"wei len is {len(wei)}, edgelist len is {len(edgelist)}.")
     partition = leidenalg.RBERVertexPartition(
         graph,
@@ -134,6 +145,7 @@ def run_leiden(
         resolution_parameter=resolution)
     optimiser = leidenalg.Optimiser()
     optimiser.optimise_partition(partition, n_iterations, is_membership_fixed)
+    
     # cluster res
     part = list(partition)
     contig_labels_dict = {}
@@ -144,8 +156,19 @@ def run_leiden(
         for id in part[ci]:
             contig_labels_dict[contig_name_list[id]] = 'group_' + str(ci)
     # output
-    logger.info(f"--> End Clustering with output path: {output_file}. {cur_i} / {totol_n}")
-    f = open(output_file, 'w')
+    if write_file:
+        logger.info(f"--> End Clustering with output path: {output_file}. {cur_i} / {totol_n}")
+        f = open(output_file, 'w')
+        for contigIdx in range(len(contig_labels_dict)):
+            f.write(contig_name_list[contigIdx] + "\t" + str(contig_labels_dict[contig_name_list[contigIdx]]) + "\n")
+        f.close()
+    
+    clu2contigs = {}
     for contigIdx in range(len(contig_labels_dict)):
-        f.write(contig_name_list[contigIdx] + "\t" + str(contig_labels_dict[contig_name_list[contigIdx]]) + "\n")
-    f.close()
+        cur_contig_name = contig_name_list[contigIdx]
+        cur_contig_group = str(contig_labels_dict[contig_name_list[contigIdx]])
+        if cur_contig_group not in clu2contigs:
+            clu2contigs[cur_contig_group] = set([cur_contig_name])
+        else:
+            clu2contigs[cur_contig_group].add(cur_contig_name)
+    return clu2contigs

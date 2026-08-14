@@ -11,7 +11,6 @@ from sklearn.cluster._kmeans import (KMeans, check_random_state,
                                      stable_cumsum)
 
 from CompleteBin.CallGenes.gene_utils import splitListEqually
-from CompleteBin.DataProcess.data_utils import split_seq_equally
 from CompleteBin.IO import writeFasta
 
 

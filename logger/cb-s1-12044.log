@@ -1,0 +1,116 @@
+==========================================
+Step 1 (Data Prep) started at: Wed Aug 12 06:52:48 PM HKT 2026
+Running on node: workernode4
+Job ID: 12044, Sample IDs: 8
+==========================================
+=== CompleteBin Split Runner ===
+Step: 1 (Data Preparation)
+Device: cpu 001100
+Samples (1): [8]
+===============================
+[1/1] sample-8 | step=1 | device=cpu
+2026-08-12 18:52:51 | INFO  | CompleteBin      | --> CompleteBin version: *** v1.2.3.2 ***. The random seed is 2048.
+2026-08-12 18:52:51 | INFO  | CompleteBin      | --> Total CPUs: 128. Number of 64 CPUs are applied.
+2026-08-12 18:52:51 | INFO  | CompleteBin      | --> Start to filter the space in contig name. Make sure the first string of contig name is unique in fasta file.
+2026-08-12 18:52:53 | INFO  | CompleteBin      | --> Start to read contigs.
+2026-08-12 18:52:54 | INFO  | CompleteBin      | --> R < r_threshold_lo, R: 0.7423124465151659, r_threshold_lo: 0.75, Auto min_contig_length: 850 -> 850 
+2026-08-12 18:52:55 | INFO  | CompleteBin      | --> The number of 105170 contigs are longer than 850.
+2026-08-12 18:52:55 | INFO  | CompleteBin      | --> We cover 106080 contigs for training.
+2026-08-12 18:52:55 | INFO  | CompleteBin      | --> Model Weight Path: /mnt/ME5024_PA1/home/csbhzou/softwares/CompleteBin-DB/CheckPoint/pretrain_weight_large_hidden_dim_768_layers_4.pth
+2026-08-12 18:52:55 | INFO  | CompleteBin      | --> N50: 884, training temperature: 0.145, cluster mode: leiden + leiden. reuse_contig: True
+2026-08-12 18:52:55 | INFO  | CompleteBin      | --> The min contigs length for training is: 845, for clustering is 850.
+2026-08-12 18:52:56 | INFO  | CompleteBin      | --> The number of 106284 contigs are longer than 845.
+2026-08-12 18:52:56 | INFO  | CompleteBin      | --> Start to calculate the base pair coverage for each contig from 10 bam file.
+2026-08-12 18:52:56 | INFO  | CompleteBin      | --> 2 Processes start to run.
+2026-08-12 18:52:57 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:52:57 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:52:58 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:52:58 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:53:41 | INFO  | CompleteBin      | --> BAM scan finished: 33,457,280 total reads, 18,317,953 counted (54.8%), 4,655,939 skipped (filtered contig), 10,483,388 unmapped, 43s elapsed
+2026-08-12 18:53:46 | INFO  | CompleteBin      | --> BAM scan finished: 33,457,104 total reads, 21,135,941 counted (63.2%), 4,853,818 skipped (filtered contig), 7,467,345 unmapped, 48s elapsed
+2026-08-12 18:53:46 | INFO  | CompleteBin      | --> 6903 / 106284 contigs have zero coverage (6.5%). These contigs will have no signal for binning.
+2026-08-12 18:53:51 | INFO  | CompleteBin      | --> 13225 / 106284 contigs have zero coverage (12.4%). These contigs will have no signal for binning.
+2026-08-12 18:53:54 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:53:54 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:53:58 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:53:58 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:54:40 | INFO  | CompleteBin      | --> BAM scan finished: 33,450,976 total reads, 20,401,128 counted (61.0%), 4,713,362 skipped (filtered contig), 8,336,486 unmapped, 46s elapsed
+2026-08-12 18:54:43 | INFO  | CompleteBin      | --> BAM scan finished: 33,454,614 total reads, 19,863,706 counted (59.4%), 5,128,450 skipped (filtered contig), 8,462,458 unmapped, 45s elapsed
+2026-08-12 18:54:45 | INFO  | CompleteBin      | --> 9003 / 106284 contigs have zero coverage (8.5%). These contigs will have no signal for binning.
+2026-08-12 18:54:49 | INFO  | CompleteBin      | --> 3662 / 106284 contigs have zero coverage (3.4%). These contigs will have no signal for binning.
+2026-08-12 18:54:52 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:54:52 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:54:56 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:54:56 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:55:40 | INFO  | CompleteBin      | --> BAM scan finished: 33,461,942 total reads, 21,369,174 counted (63.9%), 5,268,542 skipped (filtered contig), 6,824,226 unmapped, 48s elapsed
+2026-08-12 18:55:42 | INFO  | CompleteBin      | --> BAM scan finished: 33,466,726 total reads, 20,451,750 counted (61.1%), 5,402,995 skipped (filtered contig), 7,611,981 unmapped, 46s elapsed
+2026-08-12 18:55:46 | INFO  | CompleteBin      | --> 9744 / 106284 contigs have zero coverage (9.2%). These contigs will have no signal for binning.
+2026-08-12 18:55:47 | INFO  | CompleteBin      | --> 4447 / 106284 contigs have zero coverage (4.2%). These contigs will have no signal for binning.
+2026-08-12 18:55:52 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:55:52 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:55:56 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:55:56 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:56:39 | INFO  | CompleteBin      | --> BAM scan finished: 33,460,814 total reads, 19,845,651 counted (59.3%), 5,510,610 skipped (filtered contig), 8,104,553 unmapped, 47s elapsed
+2026-08-12 18:56:44 | INFO  | CompleteBin      | --> 3102 / 106284 contigs have zero coverage (2.9%). These contigs will have no signal for binning.
+2026-08-12 18:56:47 | INFO  | CompleteBin      | --> BAM scan finished: 33,458,088 total reads, 21,759,450 counted (65.0%), 5,106,232 skipped (filtered contig), 6,592,406 unmapped, 51s elapsed
+2026-08-12 18:56:50 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:56:50 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:56:52 | INFO  | CompleteBin      | --> 3695 / 106284 contigs have zero coverage (3.5%). These contigs will have no signal for binning.
+2026-08-12 18:57:00 | INFO  | CompleteBin      | --> Start to calculate coverage for each contig.
+2026-08-12 18:57:00 | INFO  | CompleteBin      | --> 106284 contigs to track (>= 845 bp).
+2026-08-12 18:57:42 | INFO  | CompleteBin      | --> BAM scan finished: 33,374,552 total reads, 22,733,806 counted (68.1%), 5,681,225 skipped (filtered contig), 4,959,521 unmapped, 52s elapsed
+2026-08-12 18:57:48 | INFO  | CompleteBin      | --> BAM scan finished: 33,485,574 total reads, 20,958,028 counted (62.6%), 5,770,700 skipped (filtered contig), 6,756,846 unmapped, 48s elapsed
+2026-08-12 18:57:48 | INFO  | CompleteBin      | --> 0 / 106284 contigs have zero coverage (0.0%). These contigs will have no signal for binning.
+2026-08-12 18:57:53 | INFO  | CompleteBin      | --> 2235 / 106284 contigs have zero coverage (2.1%). These contigs will have no signal for binning.
+2026-08-12 18:58:01 | INFO  | CompleteBin      | --> Start to read the coverage information from 10 bam files.
+2026-08-12 18:58:22 | INFO  | CompleteBin      | --> Start to collect the coverage information from 10 bam files.
+2026-08-12 19:00:12 | INFO  | CompleteBin      | --> Start to write coverage information
+2026-08-12 19:00:24 | INFO  | CompleteBin      | --> The max of coverage mean value is [3173.3667 2355.181  3844.7205 2109.464  1968.7051 1686.9048 2464.2073
+ 3396.2874 4591.9683 1725.5303].
+2026-08-12 19:00:24 | INFO  | CompleteBin      | --> The max coverage std value is [783.0338  451.17844 529.95197 408.50626 215.62326 257.6222  376.56647
+ 418.48843 568.4961  253.20671].
+2026-08-12 19:00:55 | INFO  | CompleteBin      | --> [clip] Total outlier candidates: 6 (mean=3, std=3)
+2026-08-12 19:00:55 | INFO  | CompleteBin      | --> [clip] Removing 3 short contigs (len < 2500)
+2026-08-12 19:00:55 | INFO  | CompleteBin      | --> [clip] Clipping 3 long contigs (per-base coverage)
+2026-08-12 19:00:55 | INFO  | CompleteBin      | --> [clip] Removed contigs:
+2026-08-12 19:00:55 | INFO  | CompleteBin      |     >k141_541557  len=2495  mean=[BAM0=3173.4, BAM1=1790.6, BAM2=2805.0, BAM3=1724.0, BAM4=571.3, BAM5=990.1, BAM6=885.8, BAM7=1829.2, BAM8=2449.2, BAM9=1056.7]  std=[BAM0=217.2, BAM1=136.7, BAM2=190.1, BAM3=122.8, BAM4=45.5, BAM5=71.6, BAM6=62.1, BAM7=140.1, BAM8=184.0, BAM9=75.8]
+2026-08-12 19:00:55 | INFO  | CompleteBin      |     >k141_541582  len=1714  mean=[BAM0=1905.8, BAM1=1795.3, BAM2=2134.8, BAM3=2109.5, BAM4=1397.0, BAM5=1686.9, BAM6=1492.1, BAM7=2135.9, BAM8=2236.3, BAM9=1104.8]  std=[BAM0=160.8, BAM1=148.0, BAM2=176.7, BAM3=188.9, BAM4=123.3, BAM5=137.0, BAM6=130.1, BAM7=176.8, BAM8=188.3, BAM9=100.2]
+2026-08-12 19:00:55 | INFO  | CompleteBin      |     >k141_313065  len=1347  mean=[BAM0=1101.1, BAM1=638.1, BAM2=749.5, BAM3=576.7, BAM4=195.0, BAM5=272.0, BAM6=270.9, BAM7=593.0, BAM8=804.5, BAM9=357.2]  std=[BAM0=783.0, BAM1=451.2, BAM2=530.0, BAM3=408.5, BAM4=139.2, BAM5=192.8, BAM6=192.4, BAM7=418.5, BAM8=568.5, BAM9=253.2]
+2026-08-12 19:01:14 | INFO  | CompleteBin      | --> [clip] Old max_cov_mean: [3173.3667 2355.181  3844.7205 2109.464  1968.7051 1686.9048 2464.2073
+ 3396.2874 4591.9683 1725.5303]  ->  New: [1904.4307  1792.1586  2800.3354  1049.9713  1395.254    989.13104
+ 1491.5773  2134.5261  2449.2175  1104.0997 ]
+2026-08-12 19:01:14 | INFO  | CompleteBin      | --> [clip] Old max_cov_std:  [783.0338  451.17844 529.95197 408.50626 215.62326 257.6222  376.56647
+ 418.48843 568.4961  253.20671]  ->  New: [187.95436 271.18436 290.48773 263.52585 215.62326 257.6222  376.56647
+ 239.82474 233.28607 202.42714]
+2026-08-12 19:01:14 | INFO  | CompleteBin      | --> [clip] Mean clip thresholds per BAM: [1905.7947998046875, 1795.288330078125, 2805.01025390625, 1049.9713134765625, 1396.9603271484375, 990.0865478515625, 1492.122802734375, 2135.908447265625, 2449.21875, 1104.7672119140625]
+2026-08-12 19:01:14 | INFO  | CompleteBin      | --> [clip] Std clip thresholds per BAM: [None, None, None, None, None, None, None, None, None, None]
+2026-08-12 19:01:28 | INFO  | CompleteBin      | --> [clip] Done. Removed=3, Clipped=3
+2026-08-12 19:01:28 | INFO  | CompleteBin      | --> Coverage outlier processing: removed=3, clipped=3, std_protected=0
+2026-08-12 19:01:29 | INFO  | CompleteBin      | --> exec cmd: run_FragGeneScan.pl -genome=/mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/filtered_contigs.fasta -out=/mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/seed_folder/contigs.frag -complete=0 -train=complete -thread=64
+/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/completebin/bin/FragGeneScan -s /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/filtered_contigs.fasta -o /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/seed_folder/contigs.frag -w 0 -t complete -p 64
+Using 64 threads.
+no. of seqs: 106281
+Clock time used (by 64 threads) = 180.8 sec
+Time elapsed: 0 hours 0 minutes and 32 seconds.
+2026-08-12 19:02:01 | INFO  | CompleteBin      | --> exec cmd: hmmsearch --domtblout /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/seed_folder/bacar_marker.hmmout --cut_tc --cpu 64 /mnt/ME5024_PA1/home/csbhzou/softwares/CompleteBin-DB/HMM/40_marker.hmm /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/seed_folder/contigs.frag.faa 1>/mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/seed_folder/bacar_marker.hmmout.out 2>/mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/seed_folder/bacar_marker.hmmout.err
+2026-08-12 19:02:11 | INFO  | CompleteBin      | --> exec cmd: /mnt/ME5024_PA1/home/csbhzou/softwares/CompleteBin-DB/HMM/get_40marker.pl /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/seed_folder/bacar_marker.hmmout /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/filtered_contigs.fasta 845 /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/seed_folder/bacar_marker.2quarter.seed
+2026-08-12 19:02:12 | INFO  | CompleteBin      | --> Dropout probability: 0.15, n-views: 6, base epoch is 35, batch size is 544, feature_dim: 100.
+2026-08-12 19:02:12 | INFO  | CompleteBin      | --> [FIXED] Loading contig sequences and coverage data.
+2026-08-12 19:02:19 | INFO  | CompleteBin      | --> [FIXED] Large dataset (106281 contigs): capping workers from 64 to 4 to limit pickle-buffer memory.
+2026-08-12 19:02:22 | INFO  | CompleteBin      | --> [FIXED] Wrote chunk 1/4 (26571 contigs) to /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/_temp_chunks/chunk_0000.pkl
+2026-08-12 19:02:25 | INFO  | CompleteBin      | --> [FIXED] Wrote chunk 2/4 (26571 contigs) to /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/_temp_chunks/chunk_0001.pkl
+2026-08-12 19:02:28 | INFO  | CompleteBin      | --> [FIXED] Wrote chunk 3/4 (26571 contigs) to /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/_temp_chunks/chunk_0002.pkl
+2026-08-12 19:02:31 | INFO  | CompleteBin      | --> [FIXED] Wrote chunk 4/4 (26568 contigs) to /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-8-temp/_temp_chunks/chunk_0003.pkl
+2026-08-12 19:02:31 | INFO  | CompleteBin      | --> [FIXED] Spawning 4 workers in 'spawn' mode (no COW inheritance).
+2026-08-12 19:02:54 | INFO  | CompleteBin      | --> [FIXED] Worker 1/4 finished: 26571 contigs processed.
+2026-08-12 19:02:54 | INFO  | CompleteBin      | --> [FIXED] Worker 2/4 finished: 26571 contigs processed.
+2026-08-12 19:02:54 | INFO  | CompleteBin      | --> [FIXED] Worker 3/4 finished: 26571 contigs processed.
+2026-08-12 19:02:55 | INFO  | CompleteBin      | --> [FIXED] Worker 4/4 finished: 26568 contigs processed.
+2026-08-12 19:02:55 | INFO  | CompleteBin      | --> [FIXED] Combining worker outputs into training_data.npy.
+2026-08-12 19:03:25 | INFO  | CompleteBin      | --> [FIXED] Saved training_data.npy with 106281 contigs.
+2026-08-12 19:03:25 | INFO  | CompleteBin      | --> [FIXED] Cleaning up temp files.
+2026-08-12 19:03:27 | INFO  | CompleteBin      | --> [FIXED] Data generation complete.
+2026-08-12 19:03:27 | INFO  | CompleteBin      | --> Step 1 is over.
+  -> sample-8 step 1 done.
+=== All 1 sample(s) step 1 completed ===
+Step 1 finished at: Wed Aug 12 07:03:30 PM HKT 2026

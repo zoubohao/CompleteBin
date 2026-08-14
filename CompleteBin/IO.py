@@ -9,6 +9,13 @@ from CompleteBin.logger import get_logger
 
 logger = get_logger()
 
+def readSeedFile(file_path):
+    seed_contig_names = set()
+    with open(file_path, "r") as rh:
+        for line in rh:
+            oneline = line.strip("\n")
+            seed_contig_names.add(">" + oneline)
+    return seed_contig_names
 
 def readVocab(vocab_path):
     res = {}

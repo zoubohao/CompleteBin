@@ -257,20 +257,9 @@ def getHMMModels(input_hmm_file: str):
     return hmmAcc2model
 
 
-def findSubHits(
-    contigName2seq: Dict[str, str],
-    contigName2hits: Dict
-):
-    sub_contigName2hits = {}
-    for contigName, _ in contigName2seq.items():
-        if contigName in contigName2hits:
-            sub_contigName2hits[contigName] = contigName2hits[contigName]
-    return sub_contigName2hits
-
-
 def processHits(
     sub_contigName2hits: Dict[str, List],
-    hmmAcc2model = None, 
+    hmmAcc2model = None,
     pfma_file_path = None,
     accs_set: set = None,
 ):
@@ -278,16 +267,46 @@ def processHits(
     contigName2_gene2num = {}
     markerHits = {}
 
+    # Step 1: Add ALL hits to markerHits (including non-marker clan members).
+    # This is critical: clan competition (filterHitsFromSameClan) needs all
+    # competing models to be present in markerHits so it can detect same-clan
+    # overlapping hits on the same ORF and eliminate spurious ones.
     for _, hits in sub_contigName2hits.items():
         for hit in hits:
             if accs_set is not None:
-                if hit.query_accession in set(accs_set):
+                if hit.query_accession in accs_set:
                     addHit(hit, markerHits, hmmAcc2model)
             else:
                 addHit(hit, markerHits, hmmAcc2model)
-    if pfma_file_path is not None:
+
+    # Step 2: PFAM clan filtering — only operates on markerHits which contains
+    # only the accs_set-filtered models. To enable proper clan competition,
+    # we also add competing (same-clan) hits that are NOT in accs_set:
+    if pfma_file_path is not None and accs_set is not None:
+        pfam = PFAM(pfma_file_path)
+        # Collect all PF accessions in accs_set that have clan info
+        clan_hits = {}
+        for _, hits in sub_contigName2hits.items():
+            for hit in hits:
+                if hit.query_accession not in accs_set:
+                    # Non-marker hit — may serve as clan competitor
+                    if hit.query_accession.startswith("PF"):
+                        if hit.query_accession not in clan_hits:
+                            clan_hits[hit.query_accession] = []
+                        clan_hits[hit.query_accession].append(hit)
+        # Add these clan-competitor hits to markerHits temporarily
+        for acc, hits in clan_hits.items():
+            for hit in hits:
+                addHit(hit, markerHits, hmmAcc2model)
+        # Run clan filtering with full competition
+        markerHits = pfam.filterHitsFromSameClan(markerHits)
+        # Remove non-marker hits after clan filtering
+        markerHits = {acc: hits for acc, hits in markerHits.items()
+                      if acc in accs_set}
+    elif pfma_file_path is not None:
         pfam = PFAM(pfma_file_path)
         markerHits = pfam.filterHitsFromSameClan(markerHits)
+
     identifyAdjacentMarkerGenes(markerHits)
 
     for query_accession, hitDoms in markerHits.items():

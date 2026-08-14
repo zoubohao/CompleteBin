@@ -5,20 +5,20 @@ import shutil
 import stat
 import subprocess
 import sys
-from multiprocessing import Process
+from concurrent.futures import ThreadPoolExecutor
 from subprocess import Popen
 from typing import List
 
 import numpy as np
 
-from CompleteBin.Dereplication.checkm_utils import CheckM_Profile
-from CompleteBin.IO import readMarkersetTSV, writePickle
+from CompleteBin.CallGenes.hmm_utils import getHMMModels, processHits
+from CompleteBin.IO import readHMMFileReturnDict, writePickle
 from CompleteBin.logger import get_logger
 
 logger = get_logger()
 
 
-def readFasta(fastaFile, trimHeader=True):
+def readFastaProdigal(fastaFile, trimHeader=True):
     '''Read sequences from FASTA file.'''
     try:
         openFile = gzip.open if fastaFile.endswith('.gz') else open
@@ -39,7 +39,7 @@ def readFasta(fastaFile, trimHeader=True):
     except Exception as e:
         print(e)
         logger = logging.getLogger('timestamp')
-        logger.error(f"Failed to process sequence file: {fastaFile}")
+        logger.error(f"--> Failed to process sequence file: {fastaFile}")
         sys.exit(1)
 
     return seqs
@@ -49,7 +49,7 @@ def checkFileExists(inputFile):
     """Check if file exists."""
     if not os.path.exists(inputFile):
         logger = logging.getLogger('timestamp')
-        logger.error(f'Input file does not exists: {inputFile}' + '\n')
+        logger.error(f"--> Input file does not exist: {inputFile}")
         sys.exit(1)
 
 
@@ -144,7 +144,7 @@ class ProdigalRunner():
         prodigal_input = query
 
         # gather statistics about query file
-        seqs = readFasta(prodigal_input)
+        seqs = readFastaProdigal(prodigal_input)
         totalBases = sum(len(seq) for seqId, seq in seqs.items())
         # call ORFs with different translation tables and select the one with the highest coding density
         tableCodingDensity = {}
@@ -239,21 +239,23 @@ def runProgidalFolder(bin_folder_path: str, output_faa_folder_path: str, num_cpu
         file for file in files if os.path.splitext(file)[-1][1:] == bin_suffix
     ]
     splited_files = splitListEqually(bin_files, num_cpu)
-    n = len(splited_files)
-    ps = []
-    for i in range(n):
-        p = Process(
-            target=subProcessProgidal,
-            args=(
+    # Use threads instead of forked processes: each thread launches prodigal
+    # as an external subprocess and blocks in os.system().  os.system()
+    # releases the GIL, so external prodigal processes run with full CPU
+    # parallelism.  Threads share the parent's address space → zero COW
+    # memory explosion, and zero spawn startup overhead.
+    with ThreadPoolExecutor(max_workers=len(splited_files)) as executor:
+        futures = [
+            executor.submit(
+                subProcessProgidal,
                 splited_files[i],
                 bin_folder_path,
                 output_faa_folder_path,
-            ),
-        )
-        ps.append(p)
-        p.start()
-    for p in ps:
-        p.join()
+            )
+            for i in range(len(splited_files))
+        ]
+        for fut in futures:
+            fut.result()
 
 
 def runHMMsearchSingle(faa_path: str, ouput_path: str, hmm_model_path, num_worker: int) -> None:
@@ -285,48 +287,60 @@ def runHMMsearchFolder(faa_folder_path: str, output_folder_path: str, hmm_model_
         file for file in files if os.path.splitext(file)[-1][1:] == faa_suffix
     ]
     splited_files = splitListEqually(faa_files, num_cpu)
-    n = len(splited_files)
-    ps = []
-    for i in range(n):
-        p = Process(
-            target=subProcessHMM,
-            args=(
+    # Use threads instead of forked processes (same rationale as
+    # runProgidalFolder above): each thread launches hmmsearch as an
+    # external subprocess; Popen.wait() releases the GIL, preserving
+    # full CPU parallelism without COW memory explosion.
+    with ThreadPoolExecutor(max_workers=len(splited_files)) as executor:
+        futures = [
+            executor.submit(
+                subProcessHMM,
                 hmm_model_path,
                 splited_files[i],
                 faa_folder_path,
                 output_folder_path,
-                num_cpu // len(splited_files)
-            ),
-        )
-        ps.append(p)
-        p.start()
-    for p in ps:
-        p.join()
+                num_cpu // len(splited_files),
+            )
+            for i in range(len(splited_files))
+        ]
+        for fut in futures:
+            fut.result()
 
 
-def callMarkerGenes(bin_folder_path: str, temp_folder_path: str, num_cpu: int, hmm_model_path: str, bin_suffix: str) -> None:
+def callMarkerGenesByHMM(
+    bin_folder_path: str,
+    temp_folder_path: str,
+    num_cpu: int,
+    hmm_model_path: str,
+    bin_suffix: str,
+    bac_acc_set: set,
+    arc_acc_set: set,
+    pfma_file_path: str,
+    output_folder: str,
+) -> None:
     if os.path.exists(temp_folder_path) is False:
         os.mkdir(temp_folder_path)
+    if os.path.exists(output_folder) is False:
+        os.mkdir(output_folder)
     logger.info("--> Running Prodigal...")
     runProgidalFolder(bin_folder_path, temp_folder_path, num_cpu, bin_suffix)
-    logger.info("--> Running Hmm-Search...")
+    logger.info("--> Running HMM-Search...")
     runHMMsearchFolder(temp_folder_path, temp_folder_path, hmm_model_path, num_cpu, "faa")
+    hmmAcc2model = getHMMModels(hmm_model_path)
+    contigname2hits = {}
+    # gene file build
+    for file in os.listdir(temp_folder_path):
+        _, suffix = os.path.splitext(file)
+        if suffix[1:] == "txt":
+            contigname2hits.update(
+                readHMMFileReturnDict(os.path.join(temp_folder_path, file))
+            )
+        elif suffix[1:] not in ["faa", "gff"]:
+            raise ValueError(f"ERROR in the output folder: {temp_folder_path}, the file is {file}, suffix is {suffix[1:]}")
+    bac_gene2contigNames, bac_contigName2_gene2num = processHits(contigname2hits, hmmAcc2model, pfma_file_path, bac_acc_set)
+    arc_gene2contigNames, arc_contigName2_gene2num = processHits(contigname2hits, hmmAcc2model, pfma_file_path, arc_acc_set)
+    writePickle(os.path.join(output_folder, "bac_gene_info.pkl"), (bac_gene2contigNames, bac_contigName2_gene2num))
+    writePickle(os.path.join(output_folder, "arc_gene_info.pkl"), (arc_gene2contigNames, arc_contigName2_gene2num))
+    
+    
 
-
-def callMarkerGenesByCheckm(
-    temp_folder_path,
-    bac_ms_path,
-    arc_ms_path,
-    input_bins_folder,
-    call_genes_folder,
-    db_path,
-    num_workers
-    ):
-    checkm_profile = CheckM_Profile(num_workers, bac_ms_path, arc_ms_path, db_path, bin_suffix="fasta")
-    checkm_profile.run(input_bins_folder, call_genes_folder)
-    bac_marker_set_path = os.path.join(call_genes_folder, "bac", "marker_gene_table.tsv")
-    arc_marker_set_path = os.path.join(call_genes_folder, "arc", "marker_gene_table.tsv")
-    bac_gene2contigNames, bac_contigName2_gene2num = readMarkersetTSV(bac_marker_set_path)
-    arc_gene2contigNames, arc_contigName2_gene2num = readMarkersetTSV(arc_marker_set_path)
-    writePickle(os.path.join(temp_folder_path, "bac_gene_info.pkl"), (bac_gene2contigNames, bac_contigName2_gene2num))
-    writePickle(os.path.join(temp_folder_path, "arc_gene_info.pkl"), (arc_gene2contigNames, arc_contigName2_gene2num))

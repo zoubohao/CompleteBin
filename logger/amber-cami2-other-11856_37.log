@@ -1,0 +1,37 @@
+AMBER sample=Skin-sample-19; binners=5; started=Tue Aug 11 12:48:52 HKT 2026
+2026-08-11 12:48:53,602 INFO Found @Version:0.9.1 in concoct-Skin-sample-19.All
+2026-08-11 12:48:53,603 INFO Found @SampleID:Skin-sample-19 in concoct-Skin-sample-19.All
+2026-08-11 12:48:53,604 INFO Found @Version:0.9.1 in metabat2-Skin-sample-19.All
+2026-08-11 12:48:53,604 INFO Found @SampleID:Skin-sample-19 in metabat2-Skin-sample-19.All
+2026-08-11 12:48:53,606 INFO Found @Version:0.9.1 in comebin-Skin-sample-19.All
+2026-08-11 12:48:53,609 INFO Found @SampleID:Skin-sample-19 in comebin-Skin-sample-19.All
+2026-08-11 12:48:53,608 INFO Found @Version:0.9.1 in completebin-Skin-sample-19.All
+2026-08-11 12:48:53,611 INFO Found @SampleID:Skin-sample-19 in completebin-Skin-sample-19.All
+2026-08-11 12:48:53,613 INFO Found @Version:0.9.1 in Gold standard
+2026-08-11 12:48:53,614 INFO Found @SampleID:Skin-sample-19 in Gold standard
+2026-08-11 12:48:53,616 INFO Found @Version:0.9.1 in semibin2-Skin-sample-19.All
+2026-08-11 12:48:53,619 INFO Found @SampleID:Skin-sample-19 in semibin2-Skin-sample-19.All
+2026-08-11 12:48:53,643 INFO Creating output directories
+2026-08-11 12:48:53,646 INFO Loading Skin-sample-19 of Gold standard
+2026-08-11 12:48:53,698 INFO Evaluating Gold standard, sample Skin-sample-19, genome binning
+2026-08-11 12:48:53,698 INFO Loading Skin-sample-19 of Gold standard
+2026-08-11 12:48:54,149 INFO Evaluating comebin-Skin-sample-19.All, sample Skin-sample-19, genome binning
+2026-08-11 12:48:54,150 INFO Loading Skin-sample-19 of comebin-Skin-sample-19.All
+2026-08-11 12:48:54,341 WARNING 18265 sequences in comebin-Skin-sample-19.All not found in the gold standard.
+2026-08-11 12:48:54,557 INFO Evaluating completebin-Skin-sample-19.All, sample Skin-sample-19, genome binning
+2026-08-11 12:48:54,557 INFO Loading Skin-sample-19 of completebin-Skin-sample-19.All
+2026-08-11 12:48:54,766 WARNING 33610 sequences in completebin-Skin-sample-19.All not found in the gold standard.
+2026-08-11 12:48:55,063 INFO Evaluating concoct-Skin-sample-19.All, sample Skin-sample-19, genome binning
+2026-08-11 12:48:55,063 INFO Loading Skin-sample-19 of concoct-Skin-sample-19.All
+2026-08-11 12:48:55,255 WARNING 22126 sequences in concoct-Skin-sample-19.All not found in the gold standard.
+2026-08-11 12:48:55,468 INFO Evaluating metabat2-Skin-sample-19.All, sample Skin-sample-19, genome binning
+2026-08-11 12:48:55,468 INFO Loading Skin-sample-19 of metabat2-Skin-sample-19.All
+2026-08-11 12:48:55,656 WARNING 5843 sequences in metabat2-Skin-sample-19.All not found in the gold standard.
+2026-08-11 12:48:55,869 INFO Evaluating semibin2-Skin-sample-19.All, sample Skin-sample-19, genome binning
+2026-08-11 12:48:55,869 INFO Loading Skin-sample-19 of semibin2-Skin-sample-19.All
+2026-08-11 12:48:56,044 WARNING 2220 sequences in semibin2-Skin-sample-19.All not found in the gold standard.
+2026-08-11 12:48:56,366 INFO Saving computed metrics
+2026-08-11 12:48:56,412 INFO Creating genome binning plots
+2026-08-11 12:49:00,703 INFO Creating HTML page
+2026-08-11 12:49:01,657 INFO AMBER finished successfully. All results have been saved to /mnt/ME5024_PA2/shared/groups/ZHANGLU/AMBER-CAMI2-Other-Datasets-Results/AMBER-Skin-sample-19
+AMBER completed Skin-sample-19; finished=Tue Aug 11 12:49:02 HKT 2026

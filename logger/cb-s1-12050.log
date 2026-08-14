@@ -1,0 +1,23 @@
+==========================================
+Step 1 (Data Prep) started at: Wed Aug 12 06:53:04 PM HKT 2026
+Running on node: workernode7
+Job ID: 12050, Sample IDs: 2
+==========================================
+=== CompleteBin Split Runner ===
+Step: 1 (Data Preparation)
+Device: cpu 001100
+Samples (1): [2]
+===============================
+[1/1] sample-2 | step=1 | device=cpu
+2026-08-12 18:53:07 | INFO  | CompleteBin      | --> CompleteBin version: *** v1.2.3.2 ***. The random seed is 2048.
+2026-08-12 18:53:07 | INFO  | CompleteBin      | --> Total CPUs: 128. Number of 64 CPUs are applied.
+2026-08-12 18:53:07 | INFO  | CompleteBin      | --> Start to filter the space in contig name. Make sure the first string of contig name is unique in fasta file.
+2026-08-12 18:53:07 | INFO  | CompleteBin      | --> Start to read contigs.
+2026-08-12 18:53:09 | INFO  | CompleteBin      | --> Auto min_contig_length: 850 -> 860 (R=0.764, n_850=117770, n_1000=89925, raise_ratio=0.068)
+2026-08-12 18:53:10 | INFO  | CompleteBin      | --> The number of 115498 contigs are longer than 860.
+2026-08-12 18:53:10 | INFO  | CompleteBin      | --> We cover 116416 contigs for training.
+2026-08-12 18:53:10 | INFO  | CompleteBin      | --> Dropout probability: 0.15, n-views: 6, base epoch is 35, batch size is 544, feature_dim: 100.
+2026-08-12 18:53:10 | INFO  | CompleteBin      | --> Step 1 is over.
+  -> sample-2 step 1 done.
+=== All 1 sample(s) step 1 completed ===
+Step 1 finished at: Wed Aug 12 06:53:10 PM HKT 2026

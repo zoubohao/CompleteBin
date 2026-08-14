@@ -80,28 +80,23 @@ class PFAM(object):
         for target_name, hits in hitsToORFs.items():
             # sort in ascending order of e-value followed by score
             hits.sort(key=lambda x: (x.full_e_value, x.i_evalue))
-
             filtered = set()
             for i in range(0, len(hits)):
                 if i in filtered:
                     continue
-
                 pfamIdI = hits[i].query_accession
                 pfamIdI = pfamIdI[0:pfamIdI.rfind('.')]
                 clanI = self.clan.get(pfamIdI, None)
                 startI = hits[i].ali_from
                 endI = hits[i].ali_to
-
                 for j in range(i + 1, len(hits)):
                     if j in filtered:
                         continue
-
                     pfamIdJ = hits[j].query_accession
                     pfamIdJ = pfamIdJ[0:pfamIdJ.rfind('.')]
                     clanJ = self.clan.get(pfamIdJ, None)
                     startJ = hits[j].ali_from
                     endJ = hits[j].ali_to
-
                     # check if hits are from the same clan
                     if pfamIdI != None and pfamIdJ != None and clanI == clanJ:
                         # check if hits overlap
@@ -111,14 +106,12 @@ class PFAM(object):
                                 # hits should be filtered as it is from the same clan, overlaps, and is not
                                 # nested with a pfam hit with a lower e-value
                                 filtered.add(j)
-
             # tabulate unfiltered hits
             for i in range(0, len(hits)):
                 if i in filtered:
                     continue
-
+                
                 filteredMarkers[hits[i].query_accession].append(hits[i])
-
         return filteredMarkers
 
     def genesInSameClan(self, genes):

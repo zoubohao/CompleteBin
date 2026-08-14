@@ -1,0 +1,37 @@
+AMBER sample=Airways-sample-10; binners=5; started=Tue Aug 11 12:47:22 HKT 2026
+2026-08-11 12:47:26,003 INFO Found @Version:0.9.1 in semibin2-Airways-sample-10.All
+2026-08-11 12:47:26,003 INFO Found @SampleID:Airways-sample-10 in semibin2-Airways-sample-10.All
+2026-08-11 12:47:26,003 INFO Found @Version:0.9.1 in metabat2-Airways-sample-10.All
+2026-08-11 12:47:26,003 INFO Found @SampleID:Airways-sample-10 in metabat2-Airways-sample-10.All
+2026-08-11 12:47:26,003 INFO Found @Version:0.9.1 in comebin-Airways-sample-10.All
+2026-08-11 12:47:26,003 INFO Found @SampleID:Airways-sample-10 in comebin-Airways-sample-10.All
+2026-08-11 12:47:26,003 INFO Found @Version:0.9.1 in Gold standard
+2026-08-11 12:47:26,004 INFO Found @SampleID:Airways-sample-10 in Gold standard
+2026-08-11 12:47:26,004 INFO Found @Version:0.9.1 in concoct-Airways-sample-10.All
+2026-08-11 12:47:26,004 INFO Found @Version:0.9.1 in completebin-Airways-sample-10.All
+2026-08-11 12:47:26,005 INFO Found @SampleID:Airways-sample-10 in concoct-Airways-sample-10.All
+2026-08-11 12:47:26,006 INFO Found @SampleID:Airways-sample-10 in completebin-Airways-sample-10.All
+2026-08-11 12:47:26,014 INFO Creating output directories
+2026-08-11 12:47:26,029 INFO Loading Airways-sample-10 of Gold standard
+2026-08-11 12:47:26,049 INFO Evaluating Gold standard, sample Airways-sample-10, genome binning
+2026-08-11 12:47:26,049 INFO Loading Airways-sample-10 of Gold standard
+2026-08-11 12:47:26,272 INFO Evaluating comebin-Airways-sample-10.All, sample Airways-sample-10, genome binning
+2026-08-11 12:47:26,272 INFO Loading Airways-sample-10 of comebin-Airways-sample-10.All
+2026-08-11 12:47:26,325 WARNING 5371 sequences in comebin-Airways-sample-10.All not found in the gold standard.
+2026-08-11 12:47:26,473 INFO Evaluating completebin-Airways-sample-10.All, sample Airways-sample-10, genome binning
+2026-08-11 12:47:26,473 INFO Loading Airways-sample-10 of completebin-Airways-sample-10.All
+2026-08-11 12:47:26,529 WARNING 9004 sequences in completebin-Airways-sample-10.All not found in the gold standard.
+2026-08-11 12:47:26,745 INFO Evaluating concoct-Airways-sample-10.All, sample Airways-sample-10, genome binning
+2026-08-11 12:47:26,746 INFO Loading Airways-sample-10 of concoct-Airways-sample-10.All
+2026-08-11 12:47:26,798 WARNING 5445 sequences in concoct-Airways-sample-10.All not found in the gold standard.
+2026-08-11 12:47:26,944 INFO Evaluating metabat2-Airways-sample-10.All, sample Airways-sample-10, genome binning
+2026-08-11 12:47:26,944 INFO Loading Airways-sample-10 of metabat2-Airways-sample-10.All
+2026-08-11 12:47:26,991 WARNING 638 sequences in metabat2-Airways-sample-10.All not found in the gold standard.
+2026-08-11 12:47:27,135 INFO Evaluating semibin2-Airways-sample-10.All, sample Airways-sample-10, genome binning
+2026-08-11 12:47:27,135 INFO Loading Airways-sample-10 of semibin2-Airways-sample-10.All
+2026-08-11 12:47:27,182 WARNING 410 sequences in semibin2-Airways-sample-10.All not found in the gold standard.
+2026-08-11 12:47:27,342 INFO Saving computed metrics
+2026-08-11 12:47:27,382 INFO Creating genome binning plots
+2026-08-11 12:47:31,502 INFO Creating HTML page
+2026-08-11 12:47:32,311 INFO AMBER finished successfully. All results have been saved to /mnt/ME5024_PA2/shared/groups/ZHANGLU/AMBER-CAMI2-Other-Datasets-Results/AMBER-Airways-sample-10
+AMBER completed Airways-sample-10; finished=Tue Aug 11 12:47:32 HKT 2026

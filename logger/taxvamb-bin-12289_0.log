@@ -1,0 +1,20 @@
+TaxVAMB: sample=Airways-2017.12.04_18.56.22_sample_10, threads=32, started=Thu Aug 13 13:42:06 HKT 2026
+Traceback (most recent call last):
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/bin/vamb", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/lib/python3.11/site-packages/vamb/__main__.py", line 2368, in main
+    opt = BinTaxVambOptions.from_args(args)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/lib/python3.11/site-packages/vamb/__main__.py", line 754, in from_args
+    common = BinnerCommonOptions.from_args(args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/lib/python3.11/site-packages/vamb/__main__.py", line 709, in from_args
+    GeneralOptions.from_args(args),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/lib/python3.11/site-packages/vamb/__main__.py", line 329, in from_args
+    return cls(
+           ^^^^
+  File "/mnt/ME5024_PA1/home/csbhzou/miniconda3/envs/taxvamb/lib/python3.11/site-packages/vamb/__main__.py", line 354, in __init__
+    raise NotADirectoryError(parent_dir)
+NotADirectoryError: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Results_of_CAMI2_Other_datasets_other_binning_tools/TaxVAMB/Airways

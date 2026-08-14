@@ -10,8 +10,11 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from CompleteBin.IO import writePickle
+from CompleteBin.Trainer.optimized_debiased_loss import debiased_info_nce_loss_optimized
+
+
 from CompleteBin.logger import get_logger
-from CompleteBin.Trainer.loss import info_nce_loss, info_nce_loss_for_loop
+from CompleteBin.Trainer.debiased_loss import build_same_genome_mask
 
 logger = get_logger()
 
@@ -24,8 +27,8 @@ logger = get_logger()
 # latents for the other side of positive pairs
 
 # Alignment & Uniformity, the lower the better
-def align_loss(x, y, alpha=2):
-    return (x - y).norm(p=2, dim=1).pow(alpha).mean()
+def align_loss(x, y, alpha=1):
+    return (x - y).norm(dim=1).pow(alpha).mean()
 
 
 def uniform_loss(x, t=2):
@@ -82,16 +85,17 @@ class Trainer(object):
                  n_views: int,
                  batch_size: int,
                  dropout: float,
-                 max_cov_mean = (100., 100.),
+                 max_cov_mean,
                  temperature_simclr=0.123,
                  log_every_n_steps: int = 10,
-                 multi_contrast = False
+                 seq_length=7,
+                 use_pretrained: bool = True,
                  ):
         self.device = device
         self.dropout = dropout
         self.model = model.to(device)
         self.optimizer = optimizer
-        self.multi_contrast = multi_contrast
+        self.seq_length = seq_length
         # self.optimizer2 = optimizer2
         self.scheduler = scheduler
         self.epochs = epochs
@@ -99,121 +103,110 @@ class Trainer(object):
         self.log_every_n_steps = log_every_n_steps
         self.n_views = n_views
         self.batch_size = batch_size
-        self.max_cov_mean = torch.tensor(max_cov_mean[0], dtype=torch.float32)[None, :].to(self.device)
-        self.max_cov_var = torch.tensor(max_cov_mean[1], dtype=torch.float32)[None, :].to(self.device)
-        logger.info(f"--> The max of coverage mean value is {self.max_cov_mean}.")
-        logger.info(f"--> The max of coverage std value is {self.max_cov_var}.")
+        # self.max_cov_mean = torch.tensor(max_cov_mean[0], dtype=torch.float32)[None, :, None].to(self.device)
+        self.max_cov_mean_1 = torch.tensor(max_cov_mean[1], dtype=torch.float32)[None, None, :].to(self.device)  # 1, 1, bam_files
+        self.max_cov_mean_2 = torch.tensor(max_cov_mean[0], dtype=torch.float32)[None, :, None].to(self.device)  # 1, bam_files, 1
+        self.max_cov_var = torch.tensor(max_cov_mean[2], dtype=torch.float32)[None, None, :].to(self.device)  # 1, 1, bam_files
+        logger.info(f"--> The max of coverage mean value of whole contig 1 is {self.max_cov_mean_1} shape {self.max_cov_mean_1.shape}..")
+        logger.info(f"--> The max of coverage mean value of whole contig 2 is {self.max_cov_mean_2} shape {self.max_cov_mean_2.shape}..")
+        logger.info(f"--> The max of coverage std value of whole contig is {self.max_cov_var} shape {self.max_cov_var.shape}..")
         self.temperature_simclr = temperature_simclr
         self.temperature_schedule = schedule_of_temperature(temperature_simclr, epochs)
         self.criterion = nn.CrossEntropyLoss().to(self.device)
+        self.scaler = torch.amp.GradScaler()
+        self.use_pretrained = use_pretrained
 
     def get_model_inputs(self, n_views_tuple_list):
-        seq_tokens_n_views = []
-        mean_n_views = []
-        var_n_views = []
+        seq_rad_tokens_n_views = []
+        mean_tokens_n_views = []
+        var_tokens_n_views = []
         whole_bp_cov_tnf_array_n_views = []
-        for i, (seq_tokens, cov_mean, cov_var_sqrt, whole_bp_cov_tnf_array) in enumerate(n_views_tuple_list):
-            seq_tokens_n_views.append(seq_tokens)
-            mean_n_views.append(cov_mean)
-            var_n_views.append(cov_var_sqrt)
-            whole_bp_cov_tnf_array_n_views.append(whole_bp_cov_tnf_array)
-        seq_tokens_inputs = torch.cat(seq_tokens_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True)
+        for i, (cur_seq_rad_tokens, cur_mean_tokens, cur_std_tokens, cur_whole_bp_cov_tnf_array) in enumerate(n_views_tuple_list):
+            seq_rad_tokens_n_views.append(cur_seq_rad_tokens)  # [bs, views]
+            mean_tokens_n_views.append(cur_mean_tokens)
+            var_tokens_n_views.append(cur_std_tokens)
+            whole_bp_cov_tnf_array_n_views.append(cur_whole_bp_cov_tnf_array)
+        seq_rad_tokens_n_views = torch.cat(seq_rad_tokens_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True)
+        mean_tokens_n_views = torch.cat(mean_tokens_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True)
+        var_tokens_n_views = torch.cat(var_tokens_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True)
         whole_bp_cov_tnf_inputs = torch.cat(whole_bp_cov_tnf_array_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True)
-        ## [b * nviews, L, C] max_cov_mean: [1, L]
-        # print("before", whole_bp_cov_tnf_inputs)
-        # print(self.max_cov_mean[..., None].shape)
-        whole_bp_cov_tnf_inputs /= self.max_cov_mean[..., None]
-        # print("after", whole_bp_cov_tnf_inputs, whole_bp_cov_tnf_inputs.shape)
-        mean_inputs = torch.cat(mean_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / self.max_cov_mean # max_cov_mean: [1, L]
-        var_inputs = torch.cat(var_n_views, dim=0).to(torch.float32).to(self.device, non_blocking=True) / self.max_cov_var # max_cov_mean: [1, L]
-        if len(mean_inputs.shape) == 1:
-            mean_inputs.unsqueeze(1)
-        if len(var_inputs.shape) == 1:
-            var_inputs.unsqueeze(1)
-        assert len(mean_inputs.shape) == 2 and len(var_inputs.shape) == 2, \
-            ValueError(f"The dim mean_input is {mean_inputs.shape}, The dim var_inputs is {var_inputs.shape}. One of them not equal with 2.")
-        return seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs
+        ##################
+        ## Changed Here ##
+        ##################
+        # mean_tokens_n_views = torch.log(mean_tokens_n_views + 1.)
+        # var_tokens_n_views = torch.log(var_tokens_n_views + 1.)
+        # whole_bp_cov_tnf_inputs = torch.log(whole_bp_cov_tnf_inputs + 1.)
 
-    def train(self, train_loader: DataLoader, valid_loader: DataLoader = None, model_weight_path = None):
+        mean_tokens_n_views /= self.max_cov_mean_1  # n*b, l, bam_files
+        var_tokens_n_views /= self.max_cov_var  # n*b, l, bam_files
+        whole_bp_cov_tnf_inputs /= self.max_cov_mean_2  # b, bam_files, dim_L
+
+        assert len(mean_tokens_n_views.shape) == 3 and len(var_tokens_n_views.shape) == 3, \
+            ValueError(
+                f"The dim mean_input is {mean_tokens_n_views.shape}, The dim var_inputs is {var_tokens_n_views.shape}. One of them not equal with 2.")
+        return seq_rad_tokens_n_views, mean_tokens_n_views, var_tokens_n_views, whole_bp_cov_tnf_inputs
+
+    def train(self, train_loader: DataLoader, valid_loader: DataLoader = None, model_weight_path=None):
         logger.info(f"--> Start self-supervised training with {self.epochs} epochs.")
-        logger.info(f"--> Training with {self.device} device.")
+        logger.info(f"--> Training with {self.device} device. info_nce_loss_for_loop")
         loss_record = {}
         if model_weight_path is not None:
             self.model.load_state_dict(torch.load(model_weight_path, map_location=self.device))
-            logger.info(f"--> Model weight has been load.")
+            logger.info(f"--> Model weight has been loaded.")
         for epoch_counter in range(1, self.epochs + 1):
             n_iter = 0.
+            total_iters = len(train_loader)
             self.model.train()
             for n_views_tuple_list in tqdm(train_loader):
                 n_views = len(n_views_tuple_list)
-                assert n_views == self.n_views + 2, ValueError("Views number is not equal with each other.")
-                seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs = self.get_model_inputs(n_views_tuple_list)
+                assert n_views == self.n_views, ValueError(f"Views number is not equal with each other. {n_views}, {self.n_views}")
+                seq_rad_tokens_n_views, mean_tokens_n_views, var_tokens_n_views, whole_bp_cov_tnf_inputs = \
+                    self.get_model_inputs(n_views_tuple_list)
                 # ============ multi-res forward passes ... ============
                 self.optimizer.zero_grad()
-                simclr_emb_contrast, seq_emb, _= self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs)
-                ### SimCLR loss ## changed here
-                loss_simclr, logits, labels = info_nce_loss_for_loop(simclr_emb_contrast[0: -self.batch_size * 2], 
-                                                            self.batch_size, 
-                                                            self.n_views,
-                                                            self.temperature_schedule[epoch_counter - 1], 
-                                                            self.device, 
-                                                            self.criterion)
-                if self.multi_contrast:
-                    loss_simclr_seq, logits_seq, labels_seq = info_nce_loss_for_loop(seq_emb[0: -self.batch_size * 2], 
-                                                            self.batch_size, 
-                                                            self.n_views,
-                                                            self.temperature_schedule[epoch_counter - 1], 
-                                                            self.device, 
-                                                            self.criterion)
-                else:
-                    loss_simclr_seq = 0.
-                    logits_seq, labels_seq = None, None
-                
-                ### SimCSE loss
-                cat_two_view = torch.cat([simclr_emb_contrast[0: self.batch_size], 
-                                          simclr_emb_contrast[-self.batch_size * 2: -self.batch_size],
-                                          simclr_emb_contrast[-self.batch_size:]], dim=0)
-                loss_simcse, logits_simces, labels_simces = info_nce_loss(cat_two_view, 
-                                                            self.batch_size, 
-                                                            3,
-                                                            self.temperature_schedule[epoch_counter - 1], 
-                                                            self.device, 
-                                                            self.criterion)
-                ### AE loss
-                loss_simclr *= 2.0 ## changed here
-                loss_simcse *= 1.0
-                loss_simclr_seq *= 0.5
-                loss = loss_simclr + loss_simcse + loss_simclr_seq
-                loss.backward()
-                self.optimizer.step()
+                with torch.amp.autocast("cuda"):
+                    simclr_emb_contrast, _, seq_taxon_enc = self.model.forward(
+                        seq_rad_tokens_n_views,
+                        mean_tokens_n_views,
+                        var_tokens_n_views,
+                        whole_bp_cov_tnf_inputs,
+                        n_views)
+
+                    sg_mask = build_same_genome_mask(
+                        seq_taxon_enc[:self.batch_size],
+                        self.model.pretrain_model.out_linear if self.use_pretrained else None,
+                        epoch=epoch_counter,
+                        n_iter=int(n_iter),
+                        total_iters=total_iters,
+                        enable_mask=self.use_pretrained,
+                    )
+
+                    loss_simclr, logits, labels = debiased_info_nce_loss_optimized(
+                        simclr_emb_contrast,
+                        self.batch_size,
+                        self.n_views,
+                        self.temperature_schedule[epoch_counter - 1],
+                        self.device, self.criterion, sg_mask,
+                    )
+                    loss = loss_simclr
+
+                self.scaler.scale(loss).backward()
+                self.scaler.step(self.optimizer)
+                self.scaler.update()
+
                 # logger
                 if n_iter % self.log_every_n_steps == 0:
                     acc1 = accuracy(logits, labels)[0]
-                    acc1_cse = accuracy(logits_simces, labels_simces)[0]
-                    if self.multi_contrast:
-                        loss_simclr_seq_dis = loss_simclr_seq.item()
-                        acc1_seq = accuracy(logits_seq, labels_seq)[0].item()
-                    else:
-                        loss_simclr_seq_dis = 0.
-                        acc1_seq = 0.
-                    
-                    if self.multi_contrast:
-                        logger.info(f"-->Epoch:{epoch_counter}/{self.epochs}" +
-                                    f"|LossNViews:{loss_simclr.item():.2f}" +
-                                    f"|LossNViews_seq:{loss_simclr_seq_dis:.2f}" +
-                                    f"|LossMask:{loss_simcse.item():.2f}" + 
-                                    f"|NViews_Acc1:{acc1.item():.2f}" +
-                                    f"|Mask_Acc1:{acc1_seq:.2f}" +
-                                    f"|LR:{self.optimizer.param_groups[0]['lr']:.8f}" + 
-                                    f"|Temp:{self.temperature_schedule[epoch_counter - 1]}")
-                    else:
-                        logger.info(f"-->Epoch:{epoch_counter}/{self.epochs}|LossSum:{loss.item():.3f}" +
-                                    f"|LossNViews:{loss_simclr.item():.3f}" +
-                                    f"|LossMask:{loss_simcse.item():.3f}" + 
-                                    f"|NViews_Acc1:{acc1.item():.2f}" +
-                                    f"|Mask_Acc1:{acc1_cse.item():.2f}" +
-                                    f"|LR:{self.optimizer.param_groups[0]['lr']:.8f}" + 
-                                    f"|Temp: {self.temperature_schedule[epoch_counter - 1]}")
+                    active_mask = sg_mask.sum() / max(self.batch_size * self.batch_size - self.batch_size, 1)
+                    logger.info(
+                        f"-->Epoch:{epoch_counter}/{self.epochs}"
+                        f"|LossSum:{loss.item():.2f}"
+                        f"|LossSimCLR:{loss_simclr.item():.2f}"
+                        f"|NViewsAcc1:{acc1.item():.2f}"
+                        f"|Mask:{active_mask:.6f}"
+                        f"|LR:{self.optimizer.param_groups[0]['lr']:.8f}"
+                        f"|Temp:{self.temperature_schedule[epoch_counter - 1]}"
+                    )
                 n_iter += 1
             self.scheduler.step()
             self.model.eval()
@@ -232,22 +225,31 @@ class Trainer(object):
         logger.info(f"--> Valid with {self.device} device.")
         self.model.eval()
         loss = 0.
+        align_loss_f = 0.
+        uni_loss_f = 0.
         n_iter = 0.
         combined_x_o = []
         combined_x_p1 = []
         combined_x_p2 = []
         i = 1
         with torch.no_grad():
-            for n_views_tuple_list, _  in tqdm(valid_loader):
+            for n_views_tuple_list, _ in tqdm(valid_loader):
                 n_views = len(n_views_tuple_list)
-                assert n_views == 3, ValueError("Views number is not equal with each other.")
-                seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs = self.get_model_inputs(n_views_tuple_list)
+                seq_rad_tokens_n_views, mean_tokens_n_views, var_tokens_n_views, whole_bp_cov_tnf_inputs = \
+                    self.get_model_inputs(n_views_tuple_list)
                 # ============ multi-res forward passes ... ============
-                simclr_emb_contrast, _, _ = self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs)
-                # align loss
-                x_o = simclr_emb_contrast[0: self.batch_size]
-                x_p1 = simclr_emb_contrast[self.batch_size: self.batch_size * 2]
-                x_p2 = simclr_emb_contrast[self.batch_size * 2: self.batch_size * 3]
+                simclr_emb_contrast, _, _ = self.model.forward(seq_rad_tokens_n_views,
+                                                               mean_tokens_n_views, var_tokens_n_views, whole_bp_cov_tnf_inputs, n_views)
+                # Take only token 0 (fused k-mer+coverage): first n_views*bs rows
+                # Model output layout: [n_views * seq_length * bs, feature_dim]
+                #   [: n_views*bs]        = token 0 (fused k-mer+coverage)
+                #   [n_views*bs:2*...]    = token 1 (pure_cov)
+                #   [2*n_views*bs:]       = token 2 (g_kmer)
+                token0 = simclr_emb_contrast[: n_views * self.batch_size]
+                token0 = token0.view(n_views, self.batch_size, -1)
+                x_o = token0[0]   # ori_view token 0
+                x_p1 = token0[1]  # generated_view token 0
+                x_p2 = token0[2]  # ori_view token 0 (same as x_o)
                 combined_x_o.append(x_o)
                 combined_x_p1.append(x_p1)
                 combined_x_p2.append(x_p2)
@@ -255,10 +257,14 @@ class Trainer(object):
                     combined_x_o = torch.cat(combined_x_o, dim=0)
                     combined_x_p1 = torch.cat(combined_x_p1, dim=0)
                     combined_x_p2 = torch.cat(combined_x_p2, dim=0)
-                    loss_align = (align_loss(combined_x_o, combined_x_p1) + align_loss(combined_x_o, combined_x_p2) + \
-                        align_loss(combined_x_p1, combined_x_p2)) / 3.
+                    loss_align = (align_loss(combined_x_o, combined_x_p1) + align_loss(combined_x_o, combined_x_p2) +
+                                  align_loss(combined_x_p1, combined_x_p2)) / 3.
+                    align_loss_f += loss_align
+                    # print("loss_align", loss_align)
                     # uniform loss
                     loss_uni = (uniform_loss(combined_x_o) + uniform_loss(combined_x_p1) + uniform_loss(combined_x_p2)) / 3.
+                    # print("loss_uni", loss_uni)
+                    uni_loss_f += loss_uni
                     cur_loss = loss_align + loss_uni
                     loss += cur_loss
                     n_iter += 1.
@@ -270,10 +276,12 @@ class Trainer(object):
             combined_x_o = torch.cat(combined_x_o, dim=0)
             combined_x_p1 = torch.cat(combined_x_p1, dim=0)
             combined_x_p2 = torch.cat(combined_x_p2, dim=0)
-            loss_align = (align_loss(combined_x_o, combined_x_p1) + align_loss(combined_x_o, combined_x_p2) + \
-                align_loss(combined_x_p1, combined_x_p2)) / 3.
+            loss_align = (align_loss(combined_x_o, combined_x_p1) + align_loss(combined_x_o, combined_x_p2) +
+                          align_loss(combined_x_p1, combined_x_p2)) / 3.
+            align_loss_f += loss_align
             # uniform loss
             loss_uni = (uniform_loss(combined_x_o) + uniform_loss(combined_x_p1) + uniform_loss(combined_x_p2)) / 3.
+            uni_loss_f += loss_uni
             cur_loss = loss_align + loss_uni
             loss += cur_loss
             n_iter += 1.
@@ -281,6 +289,7 @@ class Trainer(object):
             combined_x_p1 = []
             combined_x_p2 = []
         self.model.train()
+        logger.info(f"--> align loss is {align_loss_f / n_iter}, unif loss is {uni_loss_f / n_iter}")
         logger.info(f"--> The validation loss is {loss / n_iter}. Validation has finished.")
         return loss / n_iter
 
@@ -294,9 +303,12 @@ class Trainer(object):
         simclr_contigname2emb_norm_ndarray = {}
         with torch.no_grad():
             for n_views_tuple_list, contigname_file_list in tqdm(infer_loader):
-                seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs = self.get_model_inputs(n_views_tuple_list)
+                seq_rad_tokens_n_views, mean_tokens_n_views, var_tokens_n_views, whole_bp_cov_tnf_inputs = \
+                    self.get_model_inputs(n_views_tuple_list)
                 # ============ multi-res forward passes ... ============
-                simclr_emb, _, _ = self.model.forward(seq_tokens_inputs, mean_inputs, var_inputs, whole_bp_cov_tnf_inputs)
+                simclr_emb, bs, _ = self.model.forward(seq_rad_tokens_n_views,
+                                                       mean_tokens_n_views, var_tokens_n_views, whole_bp_cov_tnf_inputs, 1)
+                simclr_emb = simclr_emb[0: bs]
                 for i in range(len(contigname_file_list)):
                     prefix, suffix = os.path.splitext(contigname_file_list[i])
                     if suffix == ".pkl":
@@ -330,14 +342,13 @@ class PretrainTrainer(object):
         self.batch_size = batch_size
         self.criterion = nn.CrossEntropyLoss(label_smoothing=0.0).to(self.device)
 
-
-    def train(self, train_loader: DataLoader, valid_loader: DataLoader,  model_weight_path = None):
+    def train(self, train_loader: DataLoader, valid_loader: DataLoader,  model_weight_path=None):
         logger.info(f"--> Start self-supervised training with {self.epochs} epochs.")
         logger.info(f"--> Training with {self.device} device.")
         loss_record = {}
         if model_weight_path is not None:
             self.model.load_state_dict(torch.load(model_weight_path, map_location=self.device))
-            logger.info(f"--> Model weight has been load.")
+            logger.info(f"--> Model weight has been loaded.")
         for epoch_counter in range(1, self.epochs + 1):
             n_iter = 0.
             self.model.train()
@@ -356,7 +367,7 @@ class PretrainTrainer(object):
                 if n_iter % self.log_every_n_steps == 0:
                     acc1_taxon = accuracy(genom_seq_fea, batch_taxon_labels)[0]
                     logger.info(f"--> Epoch: {epoch_counter} / {self.epochs} LossSum:{loss.item():.4f}" +
-                                f"|LossTaxon: {loss_taxon:.3f}" + 
+                                f"|LossTaxon: {loss_taxon:.3f}" +
                                 f"|Taxon_Acc_1: {acc1_taxon.item():.2f}" +
                                 f"|LR: {self.optimizer.param_groups[0]['lr']:.8f}")
                 n_iter += 1
@@ -372,7 +383,6 @@ class PretrainTrainer(object):
         logger.info("--> Training has finished.")
         return loss_record
 
-
     def valid(self, valid_loader):
         losses = 0.
         self.model.eval()
@@ -380,7 +390,7 @@ class PretrainTrainer(object):
         acc_store = []
         with torch.no_grad():
             index = 0
-            for  batch_genome_seq_tokens, batch_taxon_labels in tqdm(valid_loader):
+            for batch_genome_seq_tokens, batch_taxon_labels in tqdm(valid_loader):
                 batch_genome_seq_tokens = batch_genome_seq_tokens.to(torch.float32).to(self.device, non_blocking=True)
                 batch_taxon_labels = batch_taxon_labels.to(self.device, non_blocking=True)
                 # ============ multi-res forward passes ... ============
@@ -427,13 +437,13 @@ class PretrainVQVAETrainer(object):
         # print(y_true, y_true.sum(dim=-1))
         return self.criteria(y_pred, y_true)
 
-    def train(self, train_loader: DataLoader, valid_loader: DataLoader,  model_weight_path = None):
+    def train(self, train_loader: DataLoader, valid_loader: DataLoader,  model_weight_path=None):
         logger.info(f"--> Start VQ-VAE training with {self.epochs} epochs. Cross entropy loss. 1024.")
         logger.info(f"--> Training with {self.device} device.")
         loss_record = {}
         if model_weight_path is not None:
             self.model.load_state_dict(torch.load(model_weight_path, map_location=self.device))
-            logger.info(f"--> Model weight has been load.")
+            logger.info(f"--> Model weight has been loaded.")
         for epoch_counter in range(1, self.epochs + 1):
             n_iter = 0.
             self.model.train()
@@ -451,16 +461,11 @@ class PretrainVQVAETrainer(object):
                 # logger
                 if n_iter % self.log_every_n_steps == 0:
                     logger.info(f"--> Epoch: {epoch_counter} / {self.epochs} LossSum:{loss.item():.4f}" +
-                                f"|Rec Loss: {rec_loss.item():.4f}" + 
-                                f"|Commit Loss: {commit_loss.item():.4f}" + 
+                                f"|Rec Loss: {rec_loss.item():.4f}" +
+                                f"|Commit Loss: {commit_loss.item():.4f}" +
                                 f"|LR: {self.optimizer.param_groups[0]['lr']:.8f}")
                 n_iter += 1
             self.scheduler.step()
-            print("#######")
-            print(batch_genome_seq_tokens)
-            print(x_hat)
-            print(indices)
-            print("#######")
             self.model.eval()
             losses_valid = self.valid(valid_loader)
             self.model.train()
@@ -472,14 +477,13 @@ class PretrainVQVAETrainer(object):
         logger.info("--> Training has finished.")
         return loss_record
 
-
     def valid(self, valid_loader):
         losses = 0.
         self.model.eval()
         self.optimizer.zero_grad()
         with torch.no_grad():
             index = 0
-            for  batch_genome_seq_tokens, _, seq_len in tqdm(valid_loader):
+            for batch_genome_seq_tokens, _, seq_len in tqdm(valid_loader):
                 batch_genome_seq_tokens = batch_genome_seq_tokens.to(torch.float32).to(self.device, non_blocking=True)
                 # ============ multi-res forward passes ... ============
                 x_hat, commit_loss, indices, logit = self.model(batch_genome_seq_tokens)

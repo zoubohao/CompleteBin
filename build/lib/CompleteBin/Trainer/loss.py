@@ -189,76 +189,9 @@ def info_nce_loss_mix_up(
     return loss_mix, logits_cat, labels_cat
 
 
-### useless
-@torch.no_grad()
-def distributed_sinkhorn(
-        out,
-        epsilon,
-        sinkhorn_iterations):
-    Q = torch.exp(out / epsilon).t()  # Q is K-by-B for consistency with notations from our paper
-    B = Q.shape[1]  # number of samples to assign
-    K = Q.shape[0]  # how many prototypes
-    # make the matrix sums to 1
-    sum_Q = torch.sum(Q)
-    Q /= sum_Q
-    for it in range(sinkhorn_iterations):
-        # normalize each row: total weight per prototype must be 1/K
-        sum_of_rows = torch.sum(Q, dim=1, keepdim=True)
-        Q /= sum_of_rows
-        Q /= K
-        # normalize each column: total weight per sample must be 1/B
-        Q /= torch.sum(Q, dim=0, keepdim=True)
-        Q /= B
-    Q *= B  # the colomns must sum to 1 so that Q is an assignment
-    return Q.t()
-
-def swav_loss(
-    prototypes_output,
-    n_views,
-    batch_size,
-    temperature
-):
-    loss_swav = 0
-    for crop_id in range(n_views):
-        with torch.no_grad():
-            out = prototypes_output[batch_size * crop_id: batch_size * (crop_id + 1)].detach()
-            # get assignments
-            q = distributed_sinkhorn(out, 0.05, 3)[-batch_size:]
-        # cluster assignment prediction
-        subloss = 0
-        for v in np.delete(np.arange(n_views), crop_id):
-            x = prototypes_output[batch_size * v: batch_size * (v + 1)] / temperature
-            subloss -= torch.mean(torch.sum(q * F.log_softmax(x, dim=1), dim=1))
-        loss_swav += subloss / (n_views - 1)
-    loss_swav /= n_views
-    return loss_swav
-
-
 def off_diagonal(x):
     n, m = x.shape
     assert n == m
     return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
 
 
-def vecreg_loss(
-    features_x_view,
-    features_y_view,
-    batch_size,
-    sim_coeff=25.,
-    std_coeff=25.,
-    cov_coeff=1.,
-):
-    num_features = features_x_view.size(-1)
-    x = features_x_view
-    y = features_y_view
-    repr_loss = F.mse_loss(x, y)
-    x = x - x.mean(dim=0)
-    y = y - y.mean(dim=0)
-    std_x = torch.sqrt(x.var(dim=0) + 0.0001)
-    std_y = torch.sqrt(y.var(dim=0) + 0.0001)
-    std_loss = torch.mean(F.relu(1 - std_x)) / 2 + torch.mean(F.relu(1 - std_y)) / 2
-    cov_x = (x.T @ x) / (batch_size - 1)
-    cov_y = (y.T @ y) / (batch_size - 1)
-    cov_loss = off_diagonal(cov_x).pow_(2).sum().div(num_features) + off_diagonal(cov_y).pow_(2).sum().div(num_features)
-    loss = sim_coeff * repr_loss + std_coeff * std_loss + cov_coeff * cov_loss
-    return loss

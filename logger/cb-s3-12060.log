@@ -1,0 +1,894 @@
+==========================================
+Step 3 (Clustering) started at: Wed Aug 12 09:28:06 PM HKT 2026
+Running on node: workernode5
+Job ID: 12060, Sample IDs: 5
+==========================================
+=== CompleteBin Split Runner ===
+Step: 3 (Clustering)
+Device: cpu 001100
+Samples (1): [5]
+===============================
+[1/1] sample-5 | step=3 | device=cpu
+2026-08-12 21:28:09 | INFO  | CompleteBin      | --> CompleteBin version: *** v1.2.3.2 ***. The random seed is 2048.
+2026-08-12 21:28:09 | INFO  | CompleteBin      | --> Total CPUs: 128. Number of 64 CPUs are applied.
+2026-08-12 21:28:09 | INFO  | CompleteBin      | --> Start to filter the space in contig name. Make sure the first string of contig name is unique in fasta file.
+2026-08-12 21:28:09 | INFO  | CompleteBin      | --> Start to read contigs.
+2026-08-12 21:28:10 | INFO  | CompleteBin      | --> Auto min_contig_length: 850 -> 857 (R=0.760, n_850=75358, n_1000=57237, raise_ratio=0.048)
+2026-08-12 21:28:11 | INFO  | CompleteBin      | --> The number of 74311 contigs are longer than 857.
+2026-08-12 21:28:11 | INFO  | CompleteBin      | --> We cover 75072 contigs for training.
+2026-08-12 21:28:11 | INFO  | CompleteBin      | --> Dropout probability: 0.15, n-views: 6, base epoch is 35, batch size is 544, feature_dim: 100.
+2026-08-12 21:28:11 | INFO  | CompleteBin      | --> Step 1 is over.
+2026-08-12 21:28:11 | INFO  | CompleteBin      | --> Step 2 is over.
+2026-08-12 21:28:11 | INFO  | CompleteBin      | --> There are 75073 contigs for training and 74308 for clustering.
+2026-08-12 21:28:11 | INFO  | CompleteBin      | --> Running kmeans to get initial split. Bin number: 85
+2026-08-12 21:28:18 | INFO  | CompleteBin      | --> End of Running kmeans.
+2026-08-12 21:28:18 | INFO  | CompleteBin      | --> Running Prodigal...
+2026-08-12 21:28:56 | INFO  | CompleteBin      | --> Running HMM-Search...
+2026-08-12 21:30:29 | INFO  | CompleteBin      | --> Improved polish coverage profile ready: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/contigname2coverage_profile.pkl
+2026-08-12 21:30:29 | INFO  | CompleteBin      | --> The minimum contig length setting is 857 bps.
+2026-08-12 21:30:30 | INFO  | CompleteBin      | --> Start clustering.
+2026-08-12 21:30:30 | INFO  | CompleteBin      | --> Fix 56 contigs. seed_index is {1418, 33037, 22287, 24336, 61457, 47763, 14740, 32792, 46235, 20507, 57759, 4642, 64300, 63993, 23215, 24496, 13489, 11059, 31413, 57398, 1594, 5952, 66881, 11716, 43720, 38219, 60747, 60238, 20302, 48081, 52692, 58838, 23895, 32216, 69975, 37210, 14936, 38882, 49636, 65893, 10727, 54760, 24168, 8937, 31592, 29672, 4332, 52975, 62447, 65267, 20853, 67958, 67447, 66297, 39294, 6271}
+2026-08-12 21:30:30 | INFO  | CompleteBin      | --> Leiden mode: accurate (n_iter=-1, used only in accurate mode).
+2026-08-12 21:30:30 | INFO  | CompleteBin      | --> Num_workers: 64.
+2026-08-12 21:30:30 | INFO  | CompleteBin      | --> Start to calculate KNN graph with max_edges: 100 and space: l2.
+2026-08-12 21:30:30 | INFO  | CompleteBin      | --> Approximate KNN Nodes Method.
+2026-08-12 21:30:31 | INFO  | CompleteBin      | --> HNSW index time cost: 1.35s
+2026-08-12 21:30:32 | INFO  | CompleteBin      | --> knn query time cost: 1.34s
+2026-08-12 21:30:50 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.05.tsv. 0 / 105
+2026-08-12 21:30:51 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.05.tsv. 1 / 105
+2026-08-12 21:30:51 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.05.tsv. 4 / 105
+2026-08-12 21:30:51 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.05.tsv. 2 / 105
+2026-08-12 21:30:51 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.05.tsv. 3 / 105
+2026-08-12 21:30:52 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.05.tsv. 5 / 105
+2026-08-12 21:30:52 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.05.tsv. 7 / 105
+2026-08-12 21:30:52 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.05.tsv. 6 / 105
+2026-08-12 21:30:52 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.05.tsv. 8 / 105
+2026-08-12 21:30:52 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.05.tsv. 9 / 105
+2026-08-12 21:30:52 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.05.tsv. 10 / 105
+2026-08-12 21:30:53 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.05.tsv. 14 / 105
+2026-08-12 21:30:53 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.05.tsv. 11 / 105
+2026-08-12 21:30:53 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.05.tsv. 12 / 105
+2026-08-12 21:30:53 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.05.tsv. 13 / 105
+2026-08-12 21:30:53 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.05.tsv. 15 / 105
+2026-08-12 21:30:53 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.05.tsv. 16 / 105
+2026-08-12 21:30:54 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.05.tsv. 17 / 105
+2026-08-12 21:30:54 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.05.tsv. 18 / 105
+2026-08-12 21:30:54 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.05.tsv. 19 / 105
+2026-08-12 21:30:54 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.05.tsv. 20 / 105
+2026-08-12 21:30:56 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1.tsv. 21 / 105
+2026-08-12 21:30:56 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1.tsv. 23 / 105
+2026-08-12 21:30:56 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.1.tsv. 22 / 105
+2026-08-12 21:30:57 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.1.tsv. 24 / 105
+2026-08-12 21:30:57 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.1.tsv. 25 / 105
+2026-08-12 21:30:57 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.1.tsv. 26 / 105
+2026-08-12 21:30:57 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.1.tsv. 28 / 105
+2026-08-12 21:30:57 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.1.tsv. 27 / 105
+2026-08-12 21:30:57 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.1.tsv. 29 / 105
+2026-08-12 21:30:58 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.1.tsv. 30 / 105
+2026-08-12 21:30:58 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.1.tsv. 31 / 105
+2026-08-12 21:30:59 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.1.tsv. 32 / 105
+2026-08-12 21:30:59 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1.tsv. 35 / 105
+2026-08-12 21:30:59 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.1.tsv. 33 / 105
+2026-08-12 21:30:59 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.1.tsv. 36 / 105
+2026-08-12 21:30:59 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.1.tsv. 34 / 105
+2026-08-12 21:31:00 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.1.tsv. 37 / 105
+2026-08-12 21:31:00 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.1.tsv. 38 / 105
+2026-08-12 21:31:00 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1.tsv. 39 / 105
+2026-08-12 21:31:01 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1.tsv. 40 / 105
+2026-08-12 21:31:01 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.1.tsv. 41 / 105
+2026-08-12 21:31:03 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15.tsv. 42 / 105
+2026-08-12 21:31:03 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15.tsv. 43 / 105
+2026-08-12 21:31:03 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15.tsv. 45 / 105
+2026-08-12 21:31:03 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15.tsv. 44 / 105
+2026-08-12 21:31:04 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15.tsv. 46 / 105
+2026-08-12 21:31:04 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15.tsv. 47 / 105
+2026-08-12 21:31:04 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.15.tsv. 49 / 105
+2026-08-12 21:31:05 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.15.tsv. 48 / 105
+2026-08-12 21:31:05 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.15.tsv. 50 / 105
+2026-08-12 21:31:05 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.15.tsv. 51 / 105
+2026-08-12 21:31:05 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.15.tsv. 52 / 105
+2026-08-12 21:31:06 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.15.tsv. 53 / 105
+2026-08-12 21:31:06 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.15.tsv. 54 / 105
+2026-08-12 21:31:06 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15.tsv. 56 / 105
+2026-08-12 21:31:06 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15.tsv. 57 / 105
+2026-08-12 21:31:06 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.15.tsv. 55 / 105
+2026-08-12 21:31:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15.tsv. 58 / 105
+2026-08-12 21:31:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15.tsv. 59 / 105
+2026-08-12 21:31:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.15.tsv. 60 / 105
+2026-08-12 21:31:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15.tsv. 61 / 105
+2026-08-12 21:31:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.15.tsv. 62 / 105
+2026-08-12 21:31:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.2.tsv. 63 / 105
+2026-08-12 21:32:12 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=236107.1303, time=65.7s, n_iterations=-1
+2026-08-12 21:32:12 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15.tsv. 56 / 105
+2026-08-12 21:32:16 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.2.tsv. 64 / 105
+2026-08-12 21:32:25 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=247461.5087, time=80.8s, n_iterations=-1
+2026-08-12 21:32:25 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.15.tsv. 49 / 105
+2026-08-12 21:32:27 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=221695.1305, time=80.7s, n_iterations=-1
+2026-08-12 21:32:28 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15.tsv. 58 / 105
+2026-08-12 21:32:29 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.2.tsv. 65 / 105
+2026-08-12 21:32:31 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2.tsv. 66 / 105
+2026-08-12 21:32:34 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=234002.9825, time=90.4s, n_iterations=-1
+2026-08-12 21:32:34 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15.tsv. 44 / 105
+2026-08-12 21:32:37 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=441205.5570, time=86.6s, n_iterations=-1
+2026-08-12 21:32:37 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.2.tsv. 63 / 105
+2026-08-12 21:32:37 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.2.tsv. 67 / 105
+2026-08-12 21:32:40 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2.tsv. 68 / 105
+2026-08-12 21:32:41 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=228682.3493, time=94.2s, n_iterations=-1
+2026-08-12 21:32:41 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15.tsv. 57 / 105
+2026-08-12 21:32:44 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.2.tsv. 69 / 105
+2026-08-12 21:32:54 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=121194.6691, time=114.9s, n_iterations=-1
+2026-08-12 21:32:54 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1.tsv. 35 / 105
+2026-08-12 21:32:55 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=239510.6367, time=110.0s, n_iterations=-1
+2026-08-12 21:32:55 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.15.tsv. 50 / 105
+2026-08-12 21:32:57 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.2.tsv. 70 / 105
+2026-08-12 21:32:58 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.2.tsv. 71 / 105
+2026-08-12 21:33:31 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=122140.7867, time=155.3s, n_iterations=-1
+2026-08-12 21:33:31 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1.tsv. 21 / 105
+2026-08-12 21:33:35 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.2.tsv. 72 / 105
+2026-08-12 21:33:37 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=232024.8047, time=152.1s, n_iterations=-1
+2026-08-12 21:33:37 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.15.tsv. 51 / 105
+2026-08-12 21:33:40 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=122042.1260, time=162.6s, n_iterations=-1
+2026-08-12 21:33:40 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.1.tsv. 28 / 105
+2026-08-12 21:33:40 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.2.tsv. 73 / 105
+2026-08-12 21:33:43 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.2.tsv. 74 / 105
+2026-08-12 21:33:43 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=211888.7007, time=156.2s, n_iterations=-1
+2026-08-12 21:33:44 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15.tsv. 59 / 105
+2026-08-12 21:33:44 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=412740.5747, time=74.8s, n_iterations=-1
+2026-08-12 21:33:44 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.2.tsv. 65 / 105
+2026-08-12 21:33:47 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.2.tsv. 75 / 105
+2026-08-12 21:33:47 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.2.tsv. 76 / 105
+2026-08-12 21:33:59 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=249751.7583, time=176.2s, n_iterations=-1
+2026-08-12 21:33:59 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15.tsv. 42 / 105
+2026-08-12 21:34:01 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.2.tsv. 77 / 105
+2026-08-12 21:34:06 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=426422.3918, time=110.4s, n_iterations=-1
+2026-08-12 21:34:06 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.2.tsv. 64 / 105
+2026-08-12 21:34:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2.tsv. 78 / 105
+2026-08-12 21:34:11 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=221381.9539, time=185.4s, n_iterations=-1
+2026-08-12 21:34:11 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.15.tsv. 52 / 105
+2026-08-12 21:34:12 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=205854.5010, time=184.0s, n_iterations=-1
+2026-08-12 21:34:12 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.15.tsv. 60 / 105
+2026-08-12 21:34:12 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=241690.1433, time=189.1s, n_iterations=-1
+2026-08-12 21:34:12 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15.tsv. 43 / 105
+2026-08-12 21:34:13 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.2.tsv. 79 / 105
+2026-08-12 21:34:14 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2.tsv. 80 / 105
+2026-08-12 21:34:15 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2.tsv. 81 / 105
+2026-08-12 21:34:15 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=430317.3210, time=77.7s, n_iterations=-1
+2026-08-12 21:34:15 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.2.tsv. 70 / 105
+2026-08-12 21:34:17 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.2.tsv. 82 / 105
+2026-08-12 21:34:37 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=416273.4953, time=98.7s, n_iterations=-1
+2026-08-12 21:34:37 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.2.tsv. 71 / 105
+2026-08-12 21:34:39 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.2.tsv. 83 / 105
+2026-08-12 21:34:41 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=193726.2100, time=213.2s, n_iterations=-1
+2026-08-12 21:34:41 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15.tsv. 61 / 105
+2026-08-12 21:34:45 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.25.tsv. 84 / 105
+2026-08-12 21:34:57 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=118569.7296, time=241.4s, n_iterations=-1
+2026-08-12 21:34:58 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.1.tsv. 22 / 105
+2026-08-12 21:35:01 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.25.tsv. 85 / 105
+2026-08-12 21:35:13 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=393193.6325, time=161.9s, n_iterations=-1
+2026-08-12 21:35:13 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2.tsv. 66 / 105
+2026-08-12 21:35:15 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=117755.4563, time=255.5s, n_iterations=-1
+2026-08-12 21:35:15 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.1.tsv. 36 / 105
+2026-08-12 21:35:17 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.25.tsv. 86 / 105
+2026-08-12 21:35:18 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.25.tsv. 87 / 105
+2026-08-12 21:35:32 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=388537.4436, time=91.2s, n_iterations=-1
+2026-08-12 21:35:33 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.2.tsv. 77 / 105
+2026-08-12 21:35:34 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=375935.4951, time=85.9s, n_iterations=-1
+2026-08-12 21:35:34 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=203111.9966, time=270.2s, n_iterations=-1
+2026-08-12 21:35:34 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2.tsv. 78 / 105
+2026-08-12 21:35:34 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15.tsv. 47 / 105
+2026-08-12 21:35:35 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=677373.5472, time=50.0s, n_iterations=-1
+2026-08-12 21:35:35 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.25.tsv. 84 / 105
+2026-08-12 21:35:36 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.25.tsv. 88 / 105
+2026-08-12 21:35:38 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.25.tsv. 89 / 105
+2026-08-12 21:35:38 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.25.tsv. 91 / 105
+2026-08-12 21:35:38 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 3714135 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.25.tsv. 90 / 105
+2026-08-12 21:35:40 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=364259.4546, time=86.4s, n_iterations=-1
+2026-08-12 21:35:40 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.2.tsv. 79 / 105
+2026-08-12 21:35:43 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.25.tsv. 92 / 105
+2026-08-12 21:35:45 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=316138.2998, time=88.3s, n_iterations=-1
+2026-08-12 21:35:46 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.2.tsv. 82 / 105
+2026-08-12 21:35:47 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=347508.1262, time=92.7s, n_iterations=-1
+2026-08-12 21:35:47 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2.tsv. 80 / 105
+2026-08-12 21:35:49 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.25.tsv. 93 / 105
+2026-08-12 21:35:50 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.25.tsv. 94 / 105
+2026-08-12 21:35:50 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=384081.8974, time=130.1s, n_iterations=-1
+2026-08-12 21:35:51 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.2.tsv. 73 / 105
+2026-08-12 21:35:54 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.25.tsv. 95 / 105
+2026-08-12 21:35:58 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=381759.7362, time=200.7s, n_iterations=-1
+2026-08-12 21:35:58 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.2.tsv. 67 / 105
+2026-08-12 21:35:59 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=183973.0917, time=291.0s, n_iterations=-1
+2026-08-12 21:36:00 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.15.tsv. 62 / 105
+2026-08-12 21:36:01 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.25.tsv. 96 / 105
+2026-08-12 21:36:02 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=403044.4491, time=147.4s, n_iterations=-1
+2026-08-12 21:36:02 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.2.tsv. 72 / 105
+2026-08-12 21:36:03 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 2972058 edges, max_edges=100, partgraph_ratio=80, method=Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.25.tsv. 97 / 105
+2026-08-12 21:36:03 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=357043.2980, time=202.3s, n_iterations=-1
+2026-08-12 21:36:03 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2.tsv. 68 / 105
+2026-08-12 21:36:05 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.25.tsv. 98 / 105
+2026-08-12 21:36:05 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.25.tsv. 99 / 105
+2026-08-12 21:36:12 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=223242.0062, time=308.9s, n_iterations=-1
+2026-08-12 21:36:12 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15.tsv. 45 / 105
+2026-08-12 21:36:14 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.25.tsv. 100 / 105
+2026-08-12 21:36:15 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=373011.5382, time=151.6s, n_iterations=-1
+2026-08-12 21:36:15 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.2.tsv. 74 / 105
+2026-08-12 21:36:15 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=337148.8629, time=120.3s, n_iterations=-1
+2026-08-12 21:36:15 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2.tsv. 81 / 105
+2026-08-12 21:36:17 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.25.tsv. 101 / 105
+2026-08-12 21:36:18 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.25.tsv. 102 / 105
+2026-08-12 21:36:33 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=604350.0808, time=75.0s, n_iterations=-1
+2026-08-12 21:36:34 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.25.tsv. 87 / 105
+2026-08-12 21:36:36 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.25.tsv. 103 / 105
+2026-08-12 21:36:39 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=653979.1019, time=97.8s, n_iterations=-1
+2026-08-12 21:36:39 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=587549.6974, time=62.8s, n_iterations=-1
+2026-08-12 21:36:39 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.25.tsv. 85 / 105
+2026-08-12 21:36:39 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.25.tsv. 88 / 105
+2026-08-12 21:36:41 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 74308 nodes, 1857748 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.25.tsv. 104 / 105
+2026-08-12 21:36:44 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=632610.0407, time=87.4s, n_iterations=-1
+2026-08-12 21:36:45 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.25.tsv. 86 / 105
+2026-08-12 21:36:45 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=336513.9142, time=240.4s, n_iterations=-1
+2026-08-12 21:36:45 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.2.tsv. 69 / 105
+2026-08-12 21:36:49 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=215033.5024, time=343.3s, n_iterations=-1
+2026-08-12 21:36:49 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.15.tsv. 53 / 105
+2026-08-12 21:36:50 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=349184.0491, time=183.0s, n_iterations=-1
+2026-08-12 21:36:50 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.2.tsv. 75 / 105
+2026-08-12 21:36:50 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=216695.6984, time=346.3s, n_iterations=-1
+2026-08-12 21:36:50 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15.tsv. 46 / 105
+2026-08-12 21:36:51 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=201567.9534, time=345.0s, n_iterations=-1
+2026-08-12 21:36:51 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.15.tsv. 54 / 105
+2026-08-12 21:37:04 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=549873.6637, time=86.3s, n_iterations=-1
+2026-08-12 21:37:04 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.25.tsv. 89 / 105
+2026-08-12 21:37:09 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=580636.2264, time=79.4s, n_iterations=-1
+2026-08-12 21:37:09 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.25.tsv. 94 / 105
+2026-08-12 21:37:17 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=328577.4393, time=210.4s, n_iterations=-1
+2026-08-12 21:37:18 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.2.tsv. 76 / 105
+2026-08-12 21:37:18 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=627859.2074, time=95.4s, n_iterations=-1
+2026-08-12 21:37:19 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.25.tsv. 92 / 105
+2026-08-12 21:37:20 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=110803.1803, time=380.4s, n_iterations=-1
+2026-08-12 21:37:20 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.1.tsv. 38 / 105
+2026-08-12 21:37:22 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=118479.6079, time=384.2s, n_iterations=-1
+2026-08-12 21:37:22 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.1.tsv. 29 / 105
+2026-08-12 21:37:24 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=607898.5323, time=95.8s, n_iterations=-1
+2026-08-12 21:37:25 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.25.tsv. 93 / 105
+2026-08-12 21:37:30 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=539821.6549, time=84.8s, n_iterations=-1
+2026-08-12 21:37:30 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.25.tsv. 99 / 105
+2026-08-12 21:37:30 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=649498.0402, time=112.2s, n_iterations=-1
+2026-08-12 21:37:30 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.25.tsv. 91 / 105
+2026-08-12 21:37:31 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=557895.2163, time=86.5s, n_iterations=-1
+2026-08-12 21:37:31 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.25.tsv. 98 / 105
+2026-08-12 21:37:37 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=190948.1987, time=390.2s, n_iterations=-1
+2026-08-12 21:37:37 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.15.tsv. 55 / 105
+2026-08-12 21:37:48 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=564703.3937, time=114.3s, n_iterations=-1
+2026-08-12 21:37:48 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.25.tsv. 95 / 105
+2026-08-12 21:37:58 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=485118.1550, time=100.2s, n_iterations=-1
+2026-08-12 21:37:58 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.25.tsv. 102 / 105
+2026-08-12 21:38:03 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=498855.7013, time=105.7s, n_iterations=-1
+2026-08-12 21:38:03 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.25.tsv. 101 / 105
+2026-08-12 21:38:04 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=522836.3023, time=109.9s, n_iterations=-1
+2026-08-12 21:38:05 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.25.tsv. 100 / 105
+2026-08-12 21:38:09 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=298923.7901, time=209.8s, n_iterations=-1
+2026-08-12 21:38:09 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.2.tsv. 83 / 105
+2026-08-12 21:38:12 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=528614.7069, time=130.7s, n_iterations=-1
+2026-08-12 21:38:12 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.25.tsv. 96 / 105
+2026-08-12 21:38:22 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=428904.6672, time=100.7s, n_iterations=-1
+2026-08-12 21:38:22 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.25.tsv. 104 / 105
+2026-08-12 21:38:43 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=498805.6099, time=160.1s, n_iterations=-1
+2026-08-12 21:38:43 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.25.tsv. 97 / 105
+2026-08-12 21:38:56 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=454733.9612, time=140.2s, n_iterations=-1
+2026-08-12 21:38:56 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.25.tsv. 103 / 105
+2026-08-12 21:38:57 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=115457.3437, time=480.9s, n_iterations=-1
+2026-08-12 21:38:57 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1.tsv. 23 / 105
+2026-08-12 21:39:00 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=192428.9376, time=475.3s, n_iterations=-1
+2026-08-12 21:39:00 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.15.tsv. 48 / 105
+2026-08-12 21:39:14 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=518491.1419, time=216.3s, n_iterations=-1
+2026-08-12 21:39:15 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.25.tsv. 90 / 105
+2026-08-12 21:40:05 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=115388.7404, time=547.4s, n_iterations=-1
+2026-08-12 21:40:05 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.1.tsv. 30 / 105
+2026-08-12 21:40:25 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=111315.2166, time=568.3s, n_iterations=-1
+2026-08-12 21:40:25 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.1.tsv. 24 / 105
+2026-08-12 21:40:36 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=114766.0655, time=576.9s, n_iterations=-1
+2026-08-12 21:40:37 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.1.tsv. 37 / 105
+2026-08-12 21:40:37 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=108418.2554, time=577.5s, n_iterations=-1
+2026-08-12 21:40:38 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1.tsv. 39 / 105
+2026-08-12 21:40:52 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=103285.9109, time=591.6s, n_iterations=-1
+2026-08-12 21:40:52 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1.tsv. 40 / 105
+2026-08-12 21:41:36 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=47975.4773, time=642.1s, n_iterations=-1
+2026-08-12 21:41:36 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.05.tsv. 18 / 105
+2026-08-12 21:42:29 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=99175.7853, time=687.9s, n_iterations=-1
+2026-08-12 21:42:29 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.1.tsv. 41 / 105
+2026-08-12 21:42:30 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=99475.5339, time=690.5s, n_iterations=-1
+2026-08-12 21:42:30 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.1.tsv. 34 / 105
+2026-08-12 21:42:52 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=48579.8563, time=718.1s, n_iterations=-1
+2026-08-12 21:42:52 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.05.tsv. 17 / 105
+2026-08-12 21:43:45 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=45320.7673, time=770.4s, n_iterations=-1
+2026-08-12 21:43:45 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.05.tsv. 20 / 105
+2026-08-12 21:44:11 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=46617.2234, time=796.7s, n_iterations=-1
+2026-08-12 21:44:11 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.05.tsv. 19 / 105
+2026-08-12 21:44:54 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=111299.5078, time=835.7s, n_iterations=-1
+2026-08-12 21:44:54 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.1.tsv. 31 / 105
+2026-08-12 21:44:57 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=108840.6561, time=838.9s, n_iterations=-1
+2026-08-12 21:44:58 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.1.tsv. 32 / 105
+2026-08-12 21:45:03 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=99491.9424, time=845.3s, n_iterations=-1
+2026-08-12 21:45:03 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.1.tsv. 27 / 105
+2026-08-12 21:45:08 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=49638.4257, time=854.4s, n_iterations=-1
+2026-08-12 21:45:08 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.05.tsv. 16 / 105
+2026-08-12 21:46:00 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=108946.0504, time=903.6s, n_iterations=-1
+2026-08-12 21:46:01 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.1.tsv. 25 / 105
+2026-08-12 21:46:08 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=50416.2392, time=915.3s, n_iterations=-1
+2026-08-12 21:46:09 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.05.tsv. 15 / 105
+2026-08-12 21:47:11 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=103522.1138, time=972.0s, n_iterations=-1
+2026-08-12 21:47:11 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.1.tsv. 33 / 105
+2026-08-12 21:47:16 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=51297.3295, time=983.7s, n_iterations=-1
+2026-08-12 21:47:16 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.05.tsv. 14 / 105
+2026-08-12 21:47:49 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=103671.0417, time=1012.0s, n_iterations=-1
+2026-08-12 21:47:49 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.1.tsv. 26 / 105
+2026-08-12 21:50:30 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=45382.5165, time=1176.6s, n_iterations=-1
+2026-08-12 21:50:30 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.05.tsv. 13 / 105
+2026-08-12 21:50:40 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=49641.3480, time=1187.4s, n_iterations=-1
+2026-08-12 21:50:40 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.05.tsv. 9 / 105
+2026-08-12 21:51:03 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=47979.9691, time=1211.8s, n_iterations=-1
+2026-08-12 21:51:03 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.05.tsv. 4 / 105
+2026-08-12 21:51:26 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=48563.0477, time=1233.1s, n_iterations=-1
+2026-08-12 21:51:26 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.05.tsv. 10 / 105
+2026-08-12 21:54:02 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=47978.3160, time=1389.5s, n_iterations=-1
+2026-08-12 21:54:02 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.05.tsv. 11 / 105
+2026-08-12 21:54:19 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=50416.6291, time=1407.5s, n_iterations=-1
+2026-08-12 21:54:19 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.05.tsv. 8 / 105
+2026-08-12 21:54:24 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=45380.8437, time=1411.8s, n_iterations=-1
+2026-08-12 21:54:24 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.05.tsv. 6 / 105
+2026-08-12 21:55:39 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=46593.2301, time=1486.5s, n_iterations=-1
+2026-08-12 21:55:40 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.05.tsv. 12 / 105
+2026-08-12 21:55:40 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=51297.6402, time=1488.4s, n_iterations=-1
+2026-08-12 21:55:40 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.05.tsv. 7 / 105
+2026-08-12 21:55:55 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=50415.6742, time=1503.9s, n_iterations=-1
+2026-08-12 21:55:55 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.05.tsv. 1 / 105
+2026-08-12 21:56:59 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=51297.1077, time=1569.1s, n_iterations=-1
+2026-08-12 21:57:00 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.05.tsv. 0 / 105
+2026-08-12 21:57:32 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=49647.6082, time=1600.7s, n_iterations=-1
+2026-08-12 21:57:32 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.05.tsv. 2 / 105
+2026-08-12 21:57:50 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=48584.8414, time=1618.6s, n_iterations=-1
+2026-08-12 21:57:50 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.05.tsv. 3 / 105
+2026-08-12 22:03:06 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=46626.2507, time=1934.0s, n_iterations=-1
+2026-08-12 22:03:06 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.05.tsv. 5 / 105
+2026-08-12 22:03:07 | INFO  | CompleteBin      | --> First Clustering Done.
+2026-08-12 22:03:07 | INFO  | CompleteBin      | --> Start to re-cluster with 64 num_workers.
+2026-08-12 22:03:23 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.1. 0 / 105.
+2026-08-12 22:03:24 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.25. 1 / 105.
+2026-08-12 22:03:24 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.2. 2 / 105.
+2026-08-12 22:03:25 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2. 3 / 105.
+2026-08-12 22:03:26 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.2. 4 / 105.
+2026-08-12 22:03:26 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.25. 5 / 105.
+2026-08-12 22:03:27 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2. 6 / 105.
+2026-08-12 22:03:27 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.1. 7 / 105.
+2026-08-12 22:03:28 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.25. 8 / 105.
+2026-08-12 22:03:29 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.1. 9 / 105.
+2026-08-12 22:03:29 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.1. 0 / 105
+2026-08-12 22:03:29 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.05. 10 / 105.
+2026-08-12 22:03:30 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.2. 11 / 105.
+2026-08-12 22:03:31 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.05. 12 / 105.
+2026-08-12 22:03:31 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.25. 13 / 105.
+2026-08-12 22:03:32 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.05. 10 / 105
+2026-08-12 22:03:32 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.1. 7 / 105
+2026-08-12 22:03:32 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.15. 14 / 105.
+2026-08-12 22:03:32 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.1. 9 / 105
+2026-08-12 22:03:32 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.05. 15 / 105.
+2026-08-12 22:03:33 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.05. 12 / 105
+2026-08-12 22:03:33 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.05. 16 / 105.
+2026-08-12 22:03:34 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.1. 17 / 105.
+2026-08-12 22:03:34 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1. 18 / 105.
+2026-08-12 22:03:34 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.05. 15 / 105
+2026-08-12 22:03:35 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2. 19 / 105.
+2026-08-12 22:03:35 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.05. 16 / 105
+2026-08-12 22:03:35 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.25. 1 / 105
+2026-08-12 22:03:36 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.2. 2 / 105
+2026-08-12 22:03:36 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.1. 20 / 105.
+2026-08-12 22:03:36 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.15. 21 / 105.
+2026-08-12 22:03:36 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.2. 11 / 105
+2026-08-12 22:03:36 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.15. 14 / 105
+2026-08-12 22:03:37 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2. 3 / 105
+2026-08-12 22:03:37 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.05. 22 / 105.
+2026-08-12 22:03:38 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.25. 23 / 105.
+2026-08-12 22:03:38 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.25. 5 / 105
+2026-08-12 22:03:38 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.1. 17 / 105
+2026-08-12 22:03:38 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.2. 24 / 105.
+2026-08-12 22:03:38 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1. 18 / 105
+2026-08-12 22:03:39 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.2. 25 / 105.
+2026-08-12 22:03:39 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15. 26 / 105.
+2026-08-12 22:03:40 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.25. 8 / 105
+2026-08-12 22:03:40 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.05. 22 / 105
+2026-08-12 22:03:40 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15. 27 / 105.
+2026-08-12 22:03:40 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.25. 28 / 105.
+2026-08-12 22:03:40 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.15. 21 / 105
+2026-08-12 22:03:41 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.15. 29 / 105.
+2026-08-12 22:03:41 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2. 19 / 105
+2026-08-12 22:03:42 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.2. 30 / 105.
+2026-08-12 22:03:42 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.1. 31 / 105.
+2026-08-12 22:03:43 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15. 32 / 105.
+2026-08-12 22:03:43 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.25. 13 / 105
+2026-08-12 22:03:43 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.1. 33 / 105.
+2026-08-12 22:03:43 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2. 6 / 105
+2026-08-12 22:03:44 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.15. 34 / 105.
+2026-08-12 22:03:44 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.05. 35 / 105.
+2026-08-12 22:03:45 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15. 26 / 105
+2026-08-12 22:03:45 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.25. 28 / 105
+2026-08-12 22:03:45 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.2. 36 / 105.
+2026-08-12 22:03:46 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.25. 37 / 105.
+2026-08-12 22:03:46 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.05. 38 / 105.
+2026-08-12 22:03:47 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.05. 35 / 105
+2026-08-12 22:03:47 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.1. 39 / 105.
+2026-08-12 22:03:47 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.1. 33 / 105
+2026-08-12 22:03:47 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.1. 40 / 105.
+2026-08-12 22:03:48 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.25. 41 / 105.
+2026-08-12 22:03:48 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.1. 31 / 105
+2026-08-12 22:03:49 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15. 42 / 105.
+2026-08-12 22:03:49 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.05. 38 / 105
+2026-08-12 22:03:49 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1. 43 / 105.
+2026-08-12 22:03:49 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.2. 4 / 105
+2026-08-12 22:03:50 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.1. 44 / 105.
+2026-08-12 22:03:50 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.1. 20 / 105
+2026-08-12 22:03:50 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.25. 45 / 105.
+2026-08-12 22:03:51 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.2. 24 / 105
+2026-08-12 22:03:51 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.1. 46 / 105.
+2026-08-12 22:03:51 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2. 47 / 105.
+2026-08-12 22:03:52 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.2. 36 / 105
+2026-08-12 22:03:52 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.1. 40 / 105
+2026-08-12 22:03:52 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1. 48 / 105.
+2026-08-12 22:03:53 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.25. 37 / 105
+2026-08-12 22:03:53 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15. 27 / 105
+2026-08-12 22:03:53 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.1. 49 / 105.
+2026-08-12 22:03:53 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15. 32 / 105
+2026-08-12 22:03:53 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.1. 39 / 105
+2026-08-12 22:03:53 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.05. 50 / 105.
+2026-08-12 22:03:54 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.15. 29 / 105
+2026-08-12 22:03:54 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.2. 51 / 105.
+2026-08-12 22:03:54 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.2. 25 / 105
+2026-08-12 22:03:55 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.2. 52 / 105.
+2026-08-12 22:03:55 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.1. 46 / 105
+2026-08-12 22:03:55 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.1. 44 / 105
+2026-08-12 22:03:55 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1. 53 / 105.
+2026-08-12 22:03:56 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.25. 54 / 105.
+2026-08-12 22:03:56 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.05. 50 / 105
+2026-08-12 22:03:56 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.15. 55 / 105.
+2026-08-12 22:03:56 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1. 48 / 105
+2026-08-12 22:03:56 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.15. 34 / 105
+2026-08-12 22:03:57 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.25. 56 / 105.
+2026-08-12 22:03:57 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.1. 49 / 105
+2026-08-12 22:03:57 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2. 47 / 105
+2026-08-12 22:03:57 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.2. 57 / 105.
+2026-08-12 22:03:58 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1. 58 / 105.
+2026-08-12 22:03:58 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.15. 59 / 105.
+2026-08-12 22:03:59 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1. 43 / 105
+2026-08-12 22:03:59 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.2. 60 / 105.
+2026-08-12 22:04:00 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1. 53 / 105
+2026-08-12 22:04:00 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.15. 61 / 105.
+2026-08-12 22:04:00 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.2. 52 / 105
+2026-08-12 22:04:00 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.05. 62 / 105.
+2026-08-12 22:04:01 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15. 63 / 105.
+2026-08-12 22:04:02 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.15. 64 / 105.
+2026-08-12 22:04:02 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.25. 23 / 105
+2026-08-12 22:04:02 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15. 65 / 105.
+2026-08-12 22:04:03 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.15. 55 / 105
+2026-08-12 22:04:03 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.05. 66 / 105.
+2026-08-12 22:04:04 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.05. 67 / 105.
+2026-08-12 22:04:04 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.05. 62 / 105
+2026-08-12 22:04:04 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.15. 61 / 105
+2026-08-12 22:04:04 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.25. 68 / 105.
+2026-08-12 22:04:05 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.05. 69 / 105.
+2026-08-12 22:04:05 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15. 42 / 105
+2026-08-12 22:04:05 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.05. 66 / 105
+2026-08-12 22:04:05 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.25. 70 / 105.
+2026-08-12 22:04:06 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.15. 64 / 105
+2026-08-12 22:04:06 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.05. 67 / 105
+2026-08-12 22:04:06 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.25. 71 / 105.
+2026-08-12 22:04:06 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15. 65 / 105
+2026-08-12 22:04:06 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.05. 72 / 105.
+2026-08-12 22:04:07 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.05. 69 / 105
+2026-08-12 22:04:07 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.1. 73 / 105.
+2026-08-12 22:04:07 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.2. 30 / 105
+2026-08-12 22:04:08 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.25. 56 / 105
+2026-08-12 22:04:08 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.25. 74 / 105.
+2026-08-12 22:04:08 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.2. 51 / 105
+2026-08-12 22:04:08 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.25. 41 / 105
+2026-08-12 22:04:08 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.2. 75 / 105.
+2026-08-12 22:04:08 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.2. 57 / 105
+2026-08-12 22:04:08 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.05. 72 / 105
+2026-08-12 22:04:09 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.05. 76 / 105.
+2026-08-12 22:04:09 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.25. 68 / 105
+2026-08-12 22:04:09 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.15. 77 / 105.
+2026-08-12 22:04:10 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.25. 54 / 105
+2026-08-12 22:04:10 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1. 58 / 105
+2026-08-12 22:04:10 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.05. 78 / 105.
+2026-08-12 22:04:10 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.1. 73 / 105
+2026-08-12 22:04:11 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.05. 76 / 105
+2026-08-12 22:04:11 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.25. 79 / 105.
+2026-08-12 22:04:11 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.05. 80 / 105.
+2026-08-12 22:04:12 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.05. 78 / 105
+2026-08-12 22:04:12 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.25. 45 / 105
+2026-08-12 22:04:12 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.25. 81 / 105.
+2026-08-12 22:04:13 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.1. 82 / 105.
+2026-08-12 22:04:13 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.05. 80 / 105
+2026-08-12 22:04:13 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.25. 83 / 105.
+2026-08-12 22:04:14 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2. 84 / 105.
+2026-08-12 22:04:15 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15. 85 / 105.
+2026-08-12 22:04:15 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.1. 86 / 105.
+2026-08-12 22:04:16 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.1. 82 / 105
+2026-08-12 22:04:16 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.15. 77 / 105
+2026-08-12 22:04:16 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15. 87 / 105.
+2026-08-12 22:04:16 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.15. 88 / 105.
+2026-08-12 22:04:16 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.25. 71 / 105
+2026-08-12 22:04:17 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15. 89 / 105.
+2026-08-12 22:04:18 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.1. 90 / 105.
+2026-08-12 22:04:18 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.2. 91 / 105.
+2026-08-12 22:04:19 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.25. 74 / 105
+2026-08-12 22:04:19 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15. 85 / 105
+2026-08-12 22:04:19 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15. 92 / 105.
+2026-08-12 22:04:20 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.25. 93 / 105.
+2026-08-12 22:04:20 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.1. 86 / 105
+2026-08-12 22:04:20 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.15. 59 / 105
+2026-08-12 22:04:20 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.2. 94 / 105.
+2026-08-12 22:04:21 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.05. 95 / 105.
+2026-08-12 22:04:21 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.1. 90 / 105
+2026-08-12 22:04:21 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.2. 96 / 105.
+2026-08-12 22:04:22 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.15. 88 / 105
+2026-08-12 22:04:22 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15. 87 / 105
+2026-08-12 22:04:22 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.05. 97 / 105.
+2026-08-12 22:04:23 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.05. 95 / 105
+2026-08-12 22:04:23 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.05. 98 / 105.
+2026-08-12 22:04:23 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.05. 99 / 105.
+2026-08-12 22:04:24 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2. 84 / 105
+2026-08-12 22:04:24 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.05. 97 / 105
+2026-08-12 22:04:24 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.05. 100 / 105.
+2026-08-12 22:04:25 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15. 63 / 105
+2026-08-12 22:04:25 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.05. 98 / 105
+2026-08-12 22:04:25 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.25. 101 / 105.
+2026-08-12 22:04:25 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.05. 99 / 105
+2026-08-12 22:04:25 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.25. 102 / 105.
+2026-08-12 22:04:26 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.05. 100 / 105
+2026-08-12 22:04:26 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.25. 81 / 105
+2026-08-12 22:04:26 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.2. 103 / 105.
+2026-08-12 22:04:26 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15. 104 / 105.
+2026-08-12 22:04:28 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.2. 96 / 105
+2026-08-12 22:04:28 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.2. 75 / 105
+2026-08-12 22:04:30 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.2. 103 / 105
+2026-08-12 22:04:30 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15. 89 / 105
+2026-08-12 22:04:32 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.25. 101 / 105
+2026-08-12 22:04:32 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.25. 70 / 105
+2026-08-12 22:04:33 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.25. 102 / 105
+2026-08-12 22:04:33 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15. 104 / 105
+2026-08-12 22:04:34 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.2. 94 / 105
+2026-08-12 22:04:36 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15. 92 / 105
+2026-08-12 22:04:42 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.25. 93 / 105
+2026-08-12 22:04:42 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.2. 91 / 105
+2026-08-12 22:04:49 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.25. 79 / 105
+2026-08-12 22:04:57 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.2. 60 / 105
+2026-08-12 22:05:37 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.25. 83 / 105
+2026-08-12 22:05:38 | INFO  | CompleteBin      | --> Start to select results.
+2026-08-12 22:05:38 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15, Num_905: 50, Num_all_sum: 490, Adj_NC: 49.58, Adj_AS: 489.17, Penalty_rate: 0.0832
+2026-08-12 22:05:38 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15, Num_905: 37, Num_all_sum: 435, Adj_NC: 36.87, Adj_AS: 434.73, Penalty_rate: 0.0267
+2026-08-12 22:05:38 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_10_bandwidth_0.15, Num_905: 37, Num_all_sum: 431, Adj_NC: 36.86, Adj_AS: 430.73, Penalty_rate: 0.0272
+2026-08-12 22:05:38 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2, Num_905: 38, Num_all_sum: 442, Adj_NC: 37.72, Adj_AS: 441.44, Penalty_rate: 0.0562
+2026-08-12 22:05:38 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_1_bandwidth_0.15, Num_905: 51, Num_all_sum: 492, Adj_NC: 50.44, Adj_AS: 490.88, Penalty_rate: 0.1117
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1, Num_905: 35, Num_all_sum: 342, Adj_NC: 34.97, Adj_AS: 341.94, Penalty_rate: 0.0057
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2, Num_905: 32, Num_all_sum: 412, Adj_NC: 31.84, Adj_AS: 411.68, Penalty_rate: 0.0319
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15, Num_905: 51, Num_all_sum: 476, Adj_NC: 50.72, Adj_AS: 475.44, Penalty_rate: 0.0565
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_5_bandwidth_0.15, Num_905: 46, Num_all_sum: 458, Adj_NC: 45.72, Adj_AS: 457.44, Penalty_rate: 0.0556
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2, Num_905: 28, Num_all_sum: 387, Adj_NC: 27.88, Adj_AS: 386.75, Penalty_rate: 0.0246
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.15, Num_905: 30, Num_all_sum: 362, Adj_NC: 29.93, Adj_AS: 361.86, Penalty_rate: 0.0141
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_15_bandwidth_0.2, Num_905: 25, Num_all_sum: 372, Adj_NC: 24.88, Adj_AS: 371.77, Penalty_rate: 0.0235
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15, Num_905: 29, Num_all_sum: 350, Adj_NC: 28.95, Adj_AS: 349.89, Penalty_rate: 0.0109
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.25, Num_905: 25, Num_all_sum: 354, Adj_NC: 24.89, Adj_AS: 353.79, Penalty_rate: 0.0211
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_8_bandwidth_0.15, Num_905: 38, Num_all_sum: 442, Adj_NC: 37.82, Adj_AS: 441.63, Penalty_rate: 0.0366
+2026-08-12 22:05:39 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.15, Num_905: 22, Num_all_sum: 317, Adj_NC: 21.94, Adj_AS: 316.88, Penalty_rate: 0.0120
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_20_bandwidth_0.25, Num_905: 17, Num_all_sum: 331, Adj_NC: 16.91, Adj_AS: 330.82, Penalty_rate: 0.0178
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15, Num_905: 40, Num_all_sum: 425, Adj_NC: 39.87, Adj_AS: 424.74, Penalty_rate: 0.0265
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2, Num_905: 38, Num_all_sum: 426, Adj_NC: 37.80, Adj_AS: 425.60, Penalty_rate: 0.0396
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.15, Num_905: 22, Num_all_sum: 300, Adj_NC: 21.95, Adj_AS: 299.91, Penalty_rate: 0.0094
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_20_bandwidth_0.2, Num_905: 22, Num_all_sum: 317, Adj_NC: 21.95, Adj_AS: 316.89, Penalty_rate: 0.0108
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1, Num_905: 51, Num_all_sum: 487, Adj_NC: 50.77, Adj_AS: 486.54, Penalty_rate: 0.0464
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15, Num_905: 51, Num_all_sum: 490, Adj_NC: 50.52, Adj_AS: 489.03, Penalty_rate: 0.0968
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15, Num_905: 46, Num_all_sum: 450, Adj_NC: 45.78, Adj_AS: 449.56, Penalty_rate: 0.0444
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1, Num_905: 42, Num_all_sum: 412, Adj_NC: 41.94, Adj_AS: 411.88, Penalty_rate: 0.0121
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15, Num_905: 42, Num_all_sum: 442, Adj_NC: 41.68, Adj_AS: 441.36, Penalty_rate: 0.0635
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_3_bandwidth_0.15, Num_905: 51, Num_all_sum: 476, Adj_NC: 50.65, Adj_AS: 475.29, Penalty_rate: 0.0709
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.15, Num_905: 21, Num_all_sum: 303, Adj_NC: 20.94, Adj_AS: 302.89, Penalty_rate: 0.0111
+2026-08-12 22:05:40 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_80_resolution_20_bandwidth_0.25, Num_905: 16, Num_all_sum: 318, Adj_NC: 15.92, Adj_AS: 317.84, Penalty_rate: 0.0161
+2026-08-12 22:05:41 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1, Num_905: 51, Num_all_sum: 491, Adj_NC: 50.72, Adj_AS: 490.43, Penalty_rate: 0.0568
+2026-08-12 22:05:41 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15, Num_905: 51, Num_all_sum: 497, Adj_NC: 50.29, Adj_AS: 495.59, Penalty_rate: 0.1413
+2026-08-12 22:05:41 | INFO  | CompleteBin      | --> Auto-selected anchor params: pg=(50, 100) res=(1.0, 3.0, 5.0) bw=(0.1, 0.15) | best_res=1.00 best_bw=0.10 (Q=0.996 adj_NC=50.72 adj_AS=490.43)
+2026-08-12 22:05:41 | INFO  | CompleteBin      | --> Galah input order (after reorder_ensemble_for_galah):
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   --- ANCHOR (Tier 0) ---
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  0] pg= 50 res= 1.00 bw=0.10  div=+0.587  bins= 275  NC= 51
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  1] pg= 50 res= 3.00 bw=0.15  div=+0.453  bins= 290  NC= 51
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  2] pg= 50 res= 5.00 bw=0.15  div=+0.408  bins= 314  NC= 46
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  3] pg=100 res= 1.00 bw=0.10  div=+0.487  bins= 275  NC= 51
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  4] pg= 50 res= 1.00 bw=0.15  div=+0.547  bins= 269  NC= 51
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  5] pg=100 res= 1.00 bw=0.15  div=+0.447  bins= 240  NC= 51
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  6] pg=100 res= 3.00 bw=0.15  div=+0.103  bins= 261  NC= 50
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  7] pg=100 res= 5.00 bw=0.10  div=+0.097  bins= 378  NC= 42
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  8] pg=100 res= 5.00 bw=0.15  div=+0.057  bins= 296  NC= 42
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   --- DIVERSITY (Tier 1) ---
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [  9] pg= 80 res= 1.00 bw=0.15  div=+0.587  bins= 247  NC= 51
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [ 10] pg= 50 res=15.00 bw=0.25  div=+0.493  bins= 465  NC= 25
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [ 11] pg= 50 res=20.00 bw=0.20  div=+0.477  bins= 510  NC= 22
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   ...  (12 more in this tier)
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [ 25] pg=100 res=20.00 bw=0.25  div=+0.165  bins= 526  NC= 17
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [ 26] pg= 80 res= 8.00 bw=0.15  div=+0.155  bins= 325  NC= 38
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   --- GAP FILLER (Tier 2) ---
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [ 27] pg=100 res=15.00 bw=0.20  div=+0.105  bins= 420  NC= 28
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [ 28] pg=100 res=20.00 bw=0.15  div=+0.087  bins= 499  NC= 22
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [ 29] pg=100 res= 8.00 bw=0.20  div=+0.055  bins= 319  NC= 38
+2026-08-12 22:05:41 | INFO  | CompleteBin      |   [ 30] pg=100 res=10.00 bw=0.15  div=+0.034  bins= 348  NC= 37
+2026-08-12 22:05:41 | INFO  | CompleteBin      | --> Start to Use Galah to Ensemble the Results.
+[2026-08-12T14:05:41Z INFO  bird_tool_utils::clap_utils] galah version 0.4.1
+[2026-08-12T14:05:41Z INFO  bird_tool_utils::external_command_checker] Found fastANI version 1.34 
+[2026-08-12T14:05:41Z WARN  galah::cluster_argument_parsing] Since CheckM input is missing, genomes are not being ordered by quality. Instead the order of their input is being used
+[2026-08-12T14:05:41Z INFO  galah::cluster_argument_parsing] Clustering 11725 genomes ..
+[2026-08-12T14:05:41Z INFO  galah::clusterer] Preclustering with skani and clustering with skani
+[2026-08-12T14:05:41Z INFO  galah::clusterer] Preclustering and clustering methods are the same, so reusing ANI values
+[2026-08-12T14:05:46Z INFO  galah::skani] Calculating ANI from skani sketches ..
+[2026-08-12T14:06:21Z INFO  galah::clusterer] Preclustering ..
+[2026-08-12T14:06:28Z INFO  galah::clusterer] Found 45 preclusters. The largest contained 6778 genomes
+[2026-08-12T14:06:28Z INFO  galah::clusterer] Finding representative genomes and assigning all genomes to these ..
+[2026-08-12T14:06:29Z INFO  galah::cluster_argument_parsing] Found 137 genome clusters
+[2026-08-12T14:06:29Z INFO  galah::cluster_argument_parsing] Finished printing genome clusters
+2026-08-12 22:06:29 | INFO  | CompleteBin      | --> Start to Process Galah Results.
+2026-08-12 22:06:31 | INFO  | CompleteBin      | --> Start contig-level deduplication across final bins.
+2026-08-12 22:06:31 | INFO  | CompleteBin      | --> Post-Galah dedup: 137 bins in output folder
+2026-08-12 22:06:32 | INFO  | CompleteBin      |   Selected: 105 low-completeness bins (comp < 90%, >= 100000 bp)
+2026-08-12 22:06:32 | INFO  | CompleteBin      | --> Post-Galah dedup: 105 bins, computing containment ...
+2026-08-12 22:06:32 | INFO  | CompleteBin      |   bin dedup: 105 -> 102 bins (3 redundant removed)
+2026-08-12 22:06:32 | INFO  | CompleteBin      | --> Post-Galah dedup complete: 134 final bins
+2026-08-12 22:06:49 | INFO  | CompleteBin      | --> All contigs: 75073, 33212 contigs will be used for next clustering.
+2026-08-12 22:06:49 | INFO  | CompleteBin      | --> The minimum contig length setting is 857 bps.
+2026-08-12 22:06:49 | INFO  | CompleteBin      | --> Start clustering.
+2026-08-12 22:06:50 | INFO  | CompleteBin      | --> Fix 17 contigs. seed_index is {30240, 2818, 7203, 22818, 23270, 27240, 28842, 14543, 16572, 17107, 9492, 5685, 25172, 14588, 17848, 6777, 5532}
+2026-08-12 22:06:50 | INFO  | CompleteBin      | --> Leiden mode: accurate (n_iter=-1, used only in accurate mode).
+2026-08-12 22:06:50 | INFO  | CompleteBin      | --> Num_workers: 64.
+2026-08-12 22:06:50 | INFO  | CompleteBin      | --> Start to calculate KNN graph with max_edges: 100 and space: l2.
+2026-08-12 22:06:50 | INFO  | CompleteBin      | --> Approximate KNN Nodes Method.
+2026-08-12 22:06:50 | INFO  | CompleteBin      | --> HNSW index time cost: 0.49s
+2026-08-12 22:06:50 | INFO  | CompleteBin      | --> knn query time cost: 0.37s
+2026-08-12 22:07:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.1.tsv. 1 / 36
+2026-08-12 22:07:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1.tsv. 0 / 36
+2026-08-12 22:07:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1.tsv. 2 / 36
+2026-08-12 22:07:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1.tsv. 6 / 36
+2026-08-12 22:07:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.1.tsv. 7 / 36
+2026-08-12 22:07:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.1.tsv. 8 / 36
+2026-08-12 22:07:07 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.1.tsv. 3 / 36
+2026-08-12 22:07:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.1.tsv. 4 / 36
+2026-08-12 22:07:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1.tsv. 10 / 36
+2026-08-12 22:07:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.1.tsv. 9 / 36
+2026-08-12 22:07:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.1.tsv. 5 / 36
+2026-08-12 22:07:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1.tsv. 11 / 36
+2026-08-12 22:07:08 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15.tsv. 12 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15.tsv. 18 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15.tsv. 13 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15.tsv. 15 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15.tsv. 19 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15.tsv. 14 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15.tsv. 16 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15.tsv. 20 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15.tsv. 21 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.15.tsv. 22 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15.tsv. 17 / 36
+2026-08-12 22:07:09 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15.tsv. 23 / 36
+2026-08-12 22:07:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.2.tsv. 24 / 36
+2026-08-12 22:07:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.2.tsv. 25 / 36
+2026-08-12 22:07:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.2.tsv. 26 / 36
+2026-08-12 22:07:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.2.tsv. 30 / 36
+2026-08-12 22:07:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2.tsv. 27 / 36
+2026-08-12 22:07:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2.tsv. 31 / 36
+2026-08-12 22:07:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.2.tsv. 28 / 36
+2026-08-12 22:07:10 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.2.tsv. 32 / 36
+2026-08-12 22:07:11 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2.tsv. 33 / 36
+2026-08-12 22:07:11 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2.tsv. 34 / 36
+2026-08-12 22:07:11 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 1623616 edges, max_edges=100, partgraph_ratio=100, method=Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2.tsv. 29 / 36
+2026-08-12 22:07:11 | INFO  | CompleteBin      | --> Start Leiden (accurate mode, n_iter=-1): 32447 nodes, 811679 edges, max_edges=100, partgraph_ratio=50, method=Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.2.tsv. 35 / 36
+2026-08-12 22:07:20 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=74277.4562, time=10.2s, n_iterations=-1
+2026-08-12 22:07:21 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.2.tsv. 30 / 36
+2026-08-12 22:07:27 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=29969.5373, time=18.3s, n_iterations=-1
+2026-08-12 22:07:27 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15.tsv. 19 / 36
+2026-08-12 22:07:32 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7290.4327, time=24.9s, n_iterations=-1
+2026-08-12 22:07:33 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.1.tsv. 8 / 36
+2026-08-12 22:07:36 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7802.7069, time=28.9s, n_iterations=-1
+2026-08-12 22:07:36 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1.tsv. 6 / 36
+2026-08-12 22:07:36 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=70961.9775, time=26.1s, n_iterations=-1
+2026-08-12 22:07:37 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2.tsv. 31 / 36
+2026-08-12 22:07:37 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=67975.3554, time=26.9s, n_iterations=-1
+2026-08-12 22:07:38 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.2.tsv. 32 / 36
+2026-08-12 22:07:41 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=31324.9763, time=32.5s, n_iterations=-1
+2026-08-12 22:07:41 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15.tsv. 18 / 36
+2026-08-12 22:07:42 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=28774.1815, time=32.8s, n_iterations=-1
+2026-08-12 22:07:42 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15.tsv. 20 / 36
+2026-08-12 22:07:44 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=64232.2850, time=33.8s, n_iterations=-1
+2026-08-12 22:07:45 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2.tsv. 33 / 36
+2026-08-12 22:07:46 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=88728.8483, time=36.1s, n_iterations=-1
+2026-08-12 22:07:46 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.2.tsv. 24 / 36
+2026-08-12 22:07:48 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=62099.3446, time=37.5s, n_iterations=-1
+2026-08-12 22:07:48 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2.tsv. 34 / 36
+2026-08-12 22:07:48 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=33027.2232, time=39.7s, n_iterations=-1
+2026-08-12 22:07:48 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15.tsv. 13 / 36
+2026-08-12 22:07:49 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=34647.2941, time=40.3s, n_iterations=-1
+2026-08-12 22:07:49 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15.tsv. 12 / 36
+2026-08-12 22:07:52 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=27365.1356, time=43.1s, n_iterations=-1
+2026-08-12 22:07:52 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15.tsv. 21 / 36
+2026-08-12 22:07:54 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=84248.3121, time=44.3s, n_iterations=-1
+2026-08-12 22:07:55 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.2.tsv. 25 / 36
+2026-08-12 22:07:55 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=26633.1703, time=45.8s, n_iterations=-1
+2026-08-12 22:07:55 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.15.tsv. 22 / 36
+2026-08-12 22:07:57 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=28853.9542, time=48.0s, n_iterations=-1
+2026-08-12 22:07:57 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15.tsv. 16 / 36
+2026-08-12 22:07:58 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=58075.7429, time=47.5s, n_iterations=-1
+2026-08-12 22:07:58 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.2.tsv. 35 / 36
+2026-08-12 22:07:59 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7508.4229, time=51.2s, n_iterations=-1
+2026-08-12 22:07:59 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.1.tsv. 7 / 36
+2026-08-12 22:08:00 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=31588.9278, time=51.7s, n_iterations=-1
+2026-08-12 22:08:01 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15.tsv. 14 / 36
+2026-08-12 22:08:06 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7078.3762, time=58.2s, n_iterations=-1
+2026-08-12 22:08:06 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=72244.8587, time=55.4s, n_iterations=-1
+2026-08-12 22:08:06 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.1.tsv. 9 / 36
+2026-08-12 22:08:06 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.2.tsv. 28 / 36
+2026-08-12 22:08:07 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=80309.8303, time=56.3s, n_iterations=-1
+2026-08-12 22:08:07 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.2.tsv. 26 / 36
+2026-08-12 22:08:12 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=75202.8756, time=61.8s, n_iterations=-1
+2026-08-12 22:08:12 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2.tsv. 27 / 36
+2026-08-12 22:08:14 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=25175.8663, time=65.1s, n_iterations=-1
+2026-08-12 22:08:15 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15.tsv. 23 / 36
+2026-08-12 22:08:17 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7982.0585, time=70.3s, n_iterations=-1
+2026-08-12 22:08:17 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1.tsv. 0 / 36
+2026-08-12 22:08:20 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7661.4442, time=72.9s, n_iterations=-1
+2026-08-12 22:08:20 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.1.tsv. 1 / 36
+2026-08-12 22:08:27 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=29802.7999, time=78.5s, n_iterations=-1
+2026-08-12 22:08:27 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15.tsv. 15 / 36
+2026-08-12 22:08:47 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=6966.9798, time=99.9s, n_iterations=-1
+2026-08-12 22:08:48 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1.tsv. 10 / 36
+2026-08-12 22:08:53 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=66660.2847, time=102.3s, n_iterations=-1
+2026-08-12 22:08:53 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2.tsv. 29 / 36
+2026-08-12 22:08:53 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=27030.4308, time=104.1s, n_iterations=-1
+2026-08-12 22:08:53 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15.tsv. 17 / 36
+2026-08-12 22:08:57 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7423.7413, time=110.2s, n_iterations=-1
+2026-08-12 22:08:57 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1.tsv. 2 / 36
+2026-08-12 22:09:12 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7189.7202, time=124.9s, n_iterations=-1
+2026-08-12 22:09:12 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.1.tsv. 3 / 36
+2026-08-12 22:09:17 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=6749.6957, time=129.5s, n_iterations=-1
+2026-08-12 22:09:17 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1.tsv. 11 / 36
+2026-08-12 22:09:54 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=7068.0482, time=166.7s, n_iterations=-1
+2026-08-12 22:09:54 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.1.tsv. 4 / 36
+2026-08-12 22:11:00 | INFO  | CompleteBin      | --> [accurate] Leiden done: improvement=6827.9080, time=232.5s, n_iterations=-1
+2026-08-12 22:11:00 | INFO  | CompleteBin      | --> End Clustering with output path: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_temp/leiden_cluster_results/Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.1.tsv. 5 / 36
+2026-08-12 22:11:01 | INFO  | CompleteBin      | --> First Clustering Done.
+2026-08-12 22:11:01 | INFO  | CompleteBin      | --> Start to re-cluster with 64 num_workers.
+2026-08-12 22:11:16 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1. 0 / 36.
+2026-08-12 22:11:16 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15. 1 / 36.
+2026-08-12 22:11:16 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1. 0 / 36
+2026-08-12 22:11:16 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.2. 2 / 36.
+2026-08-12 22:11:17 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1. 3 / 36.
+2026-08-12 22:11:17 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15. 1 / 36
+2026-08-12 22:11:17 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.2. 2 / 36
+2026-08-12 22:11:17 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15. 4 / 36.
+2026-08-12 22:11:17 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1. 3 / 36
+2026-08-12 22:11:17 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2. 5 / 36.
+2026-08-12 22:11:18 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2. 6 / 36.
+2026-08-12 22:11:18 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15. 4 / 36
+2026-08-12 22:11:18 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2. 5 / 36
+2026-08-12 22:11:18 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15. 7 / 36.
+2026-08-12 22:11:18 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1. 8 / 36.
+2026-08-12 22:11:18 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2. 6 / 36
+2026-08-12 22:11:19 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.1. 9 / 36.
+2026-08-12 22:11:19 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15. 7 / 36
+2026-08-12 22:11:19 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.15. 10 / 36.
+2026-08-12 22:11:19 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1. 8 / 36
+2026-08-12 22:11:19 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15. 11 / 36.
+2026-08-12 22:11:19 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.1. 9 / 36
+2026-08-12 22:11:20 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.15. 10 / 36
+2026-08-12 22:11:20 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.2. 12 / 36.
+2026-08-12 22:11:20 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15. 13 / 36.
+2026-08-12 22:11:20 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.15. 11 / 36
+2026-08-12 22:11:20 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15. 14 / 36.
+2026-08-12 22:11:21 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.1. 15 / 36.
+2026-08-12 22:11:21 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.15. 13 / 36
+2026-08-12 22:11:21 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.2. 12 / 36
+2026-08-12 22:11:21 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.1. 16 / 36.
+2026-08-12 22:11:21 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1. 17 / 36.
+2026-08-12 22:11:21 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.1. 15 / 36
+2026-08-12 22:11:22 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.2. 18 / 36.
+2026-08-12 22:11:22 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.1. 16 / 36
+2026-08-12 22:11:22 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.15. 14 / 36
+2026-08-12 22:11:22 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15. 19 / 36.
+2026-08-12 22:11:22 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2. 20 / 36.
+2026-08-12 22:11:22 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1. 17 / 36
+2026-08-12 22:11:23 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.1. 21 / 36.
+2026-08-12 22:11:23 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.15. 19 / 36
+2026-08-12 22:11:23 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15. 22 / 36.
+2026-08-12 22:11:23 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.2. 20 / 36
+2026-08-12 22:11:23 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.2. 18 / 36
+2026-08-12 22:11:23 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15. 23 / 36.
+2026-08-12 22:11:23 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.1. 21 / 36
+2026-08-12 22:11:23 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15. 24 / 36.
+2026-08-12 22:11:24 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.15. 22 / 36
+2026-08-12 22:11:24 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1. 25 / 36.
+2026-08-12 22:11:24 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15. 23 / 36
+2026-08-12 22:11:24 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.1. 26 / 36.
+2026-08-12 22:11:24 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15. 24 / 36
+2026-08-12 22:11:24 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2. 27 / 36.
+2026-08-12 22:11:24 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1. 25 / 36
+2026-08-12 22:11:25 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15. 28 / 36.
+2026-08-12 22:11:25 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.1. 26 / 36
+2026-08-12 22:11:25 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.2. 29 / 36.
+2026-08-12 22:11:25 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2. 30 / 36.
+2026-08-12 22:11:26 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.2. 27 / 36
+2026-08-12 22:11:26 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.1. 31 / 36.
+2026-08-12 22:11:26 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.2. 29 / 36
+2026-08-12 22:11:26 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.2. 32 / 36.
+2026-08-12 22:11:26 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.15. 28 / 36
+2026-08-12 22:11:26 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.2. 30 / 36
+2026-08-12 22:11:26 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.2. 33 / 36.
+2026-08-12 22:11:26 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.1. 31 / 36
+2026-08-12 22:11:27 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.1. 34 / 36.
+2026-08-12 22:11:27 | INFO  | CompleteBin      | --> Start current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.2. 35 / 36.
+2026-08-12 22:11:27 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.2. 32 / 36
+2026-08-12 22:11:27 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.1. 34 / 36
+2026-08-12 22:11:27 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.2. 33 / 36
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> End of second cluster with current method: Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.2. 35 / 36
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> Start to select results.
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_10_bandwidth_0.1, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_8_bandwidth_0.15, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_3_bandwidth_0.15, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_15_bandwidth_0.1, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_15_bandwidth_0.15, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_8_bandwidth_0.2, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:28 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_3_bandwidth_0.2, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:29 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_5_bandwidth_0.15, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:29 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_5_bandwidth_0.1, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:29 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_50_resolution_1_bandwidth_0.1, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:29 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_1_bandwidth_0.1, Num_905: 0, Num_all_sum: 0, Adj_NC: -0.00, Adj_AS: -0.01, Penalty_rate: 0.0006
+2026-08-12 22:11:29 | INFO  | CompleteBin      | --> Current parameters are Leiden_embMat0_maxedges_100_partgraphRatio_100_resolution_10_bandwidth_0.15, Num_905: 0, Num_all_sum: 0, Adj_NC: 0.00, Adj_AS: 0.00, Penalty_rate: 0.0000
+2026-08-12 22:11:29 | INFO  | CompleteBin      | --> Auto-selected anchor params: pg=(50, 100) res=(3.0, 8.0, 10.0) bw=(0.1, 0.15) | best_res=10.00 best_bw=0.10 (Q=0.004 adj_NC=0.00 adj_AS=0.00)
+2026-08-12 22:11:29 | INFO  | CompleteBin      | --> Galah input order (after reorder_ensemble_for_galah):
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   --- ANCHOR (Tier 0) ---
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  0] pg= 50 res=10.00 bw=0.10  div=+0.409  bins= 242  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  1] pg=100 res= 8.00 bw=0.15  div=+0.000  bins= 172  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  2] pg=100 res= 3.00 bw=0.15  div=+0.083  bins= 140  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  3] pg=100 res=10.00 bw=0.15  div=+0.019  bins= 188  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  4] pg= 50 res= 1.00 bw=0.10  div=+0.567  bins= 140  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   --- DIVERSITY (Tier 1) ---
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  5] pg= 50 res= 3.00 bw=0.20  div=+0.473  bins= 140  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  6] pg=100 res= 1.00 bw=0.10  div=+0.467  bins= 136  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  7] pg= 50 res=15.00 bw=0.10  div=+0.443  bins= 262  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  8] pg= 50 res= 8.00 bw=0.20  div=+0.390  bins= 166  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [  9] pg= 50 res= 5.00 bw=0.15  div=+0.390  bins= 160  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   --- GAP FILLER (Tier 2) ---
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [ 10] pg=100 res= 5.00 bw=0.10  div=+0.080  bins= 178  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      |   [ 11] pg=100 res=15.00 bw=0.15  div=+0.053  bins= 222  NC=  0
+2026-08-12 22:11:29 | INFO  | CompleteBin      | --> Start to Use Galah to Ensemble the Results.
+[2026-08-12T14:11:29Z INFO  bird_tool_utils::clap_utils] galah version 0.4.1
+[2026-08-12T14:11:29Z INFO  bird_tool_utils::external_command_checker] Found fastANI version 1.34 
+[2026-08-12T14:11:29Z WARN  galah::cluster_argument_parsing] Since CheckM input is missing, genomes are not being ordered by quality. Instead the order of their input is being used
+[2026-08-12T14:11:29Z INFO  galah::cluster_argument_parsing] Clustering 2146 genomes ..
+[2026-08-12T14:11:29Z INFO  galah::clusterer] Preclustering with skani and clustering with skani
+[2026-08-12T14:11:29Z INFO  galah::clusterer] Preclustering and clustering methods are the same, so reusing ANI values
+[2026-08-12T14:11:29Z INFO  galah::skani] Calculating ANI from skani sketches ..
+[2026-08-12T14:11:30Z INFO  galah::clusterer] Preclustering ..
+[2026-08-12T14:11:30Z INFO  galah::clusterer] Found 62 preclusters. The largest contained 146 genomes
+[2026-08-12T14:11:30Z INFO  galah::clusterer] Finding representative genomes and assigning all genomes to these ..
+[2026-08-12T14:11:30Z INFO  galah::cluster_argument_parsing] Found 133 genome clusters
+[2026-08-12T14:11:30Z INFO  galah::cluster_argument_parsing] Finished printing genome clusters
+2026-08-12 22:11:30 | INFO  | CompleteBin      | --> Start to Process Galah Results.
+2026-08-12 22:11:30 | INFO  | CompleteBin      | --> Start contig-level deduplication across final bins.
+2026-08-12 22:11:30 | INFO  | CompleteBin      | --> Post-Galah dedup: 133 bins in output folder
+2026-08-12 22:11:31 | INFO  | CompleteBin      |   Selected: 133 low-completeness bins (comp < 90%, >= 100000 bp)
+2026-08-12 22:11:31 | INFO  | CompleteBin      | --> Post-Galah dedup: 133 bins, computing containment ...
+2026-08-12 22:11:31 | INFO  | CompleteBin      |   bin dedup: 133 -> 95 bins (38 redundant removed)
+2026-08-12 22:11:31 | INFO  | CompleteBin      | --> Post-Galah dedup complete: 95 final bins
+2026-08-12 22:11:33 | INFO  | CompleteBin      | --> All contigs: 33212, 33212 contigs will be used for next clustering.
+2026-08-12 22:11:33 | INFO  | CompleteBin      | --> SCG count distribution across 104 SCGs: min=1, p10=6.0, median=12.0, max=23 -> SCG-based k=6
+2026-08-12 22:11:33 | INFO  | CompleteBin      | --> Read MetaInfo: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/first_clustering_bins/MetaInfo.tsv -> HQ=30, MQ=25
+2026-08-12 22:11:33 | INFO  | CompleteBin      | --> Read MetaInfo: /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Marine-Assembled-Multi-sample/marine-5-temp/second_clustering_bins/MetaInfo.tsv -> HQ=0, MQ=0
+2026-08-12 22:11:33 | INFO  | CompleteBin      | --> Total HQ + MQ from previous rounds: 55, min_k_ratio: 0.1, computed min_k: 6
+2026-08-12 22:11:33 | INFO  | CompleteBin      | --> Final k = max(SCG_median=6, min_k=6) = 6
+2026-08-12 22:11:33 | INFO  | CompleteBin      | --> Collected 6 seed contigs from 724 SCG-carrying contigs (across 104 SCGs).
+2026-08-12 22:11:33 | INFO  | CompleteBin      | --> Start K-Means: k=6, seeds=6, n_init=10 (partial_seed_init).
+2026-08-12 22:11:36 | INFO  | CompleteBin      | --> K-Means converged in 51 iterations, inertia=37449.69.
+2026-08-12 22:11:36 | INFO  | CompleteBin      | --> K-Means v2 finished: 6 clusters, 6 bins written (length >= 0).
+  -> sample-5 step 3 done.
+=== All 1 sample(s) step 3 completed ===
+Step 3 finished at: Wed Aug 12 10:11:38 PM HKT 2026

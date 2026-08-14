@@ -1,0 +1,22 @@
+============================================
+CAMI2-other minimap2 mapping
+Job ID       : 11803
+Sample       : Gastrointestinal_tract-2017.12.04_18.45.54_sample_3
+Contigs      : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Gastrointestinal_tract-2017.12.04_18.45.54_sample_3.contigs.fasta
+Reference    : /mnt/ME5024_PA2/shared/groups/ZHANGLU/reference_genomes_fasta_collect/Gastrointestinal_tract_ref_genomes.fasta
+Preset       : asm5
+Threads      : 24
+Output       : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Others-Datasets-Minimap2/Gastrointestinal_tract-2017.12.04_18.45.54_sample_3/Gastrointestinal_tract-2017.12.04_18.45.54_sample_3.to.Gastrointestinal_tract_ref_genomes.paf
+Started      : Mon Aug 10 02:44:31 PM HKT 2026
+============================================
+[M::mm_idx_gen::25.805*1.34] collected minimizers
+[M::mm_idx_gen::27.103*2.08] sorted minimizers
+[M::main::27.103*2.08] loaded/built the index for 1132 target sequence(s)
+[M::mm_mapopt_update::28.664*2.02] mid_occ = 90
+[M::mm_idx_stat] kmer size: 19; skip: 19; is_hpc: 0; #seq: 1132
+[M::mm_idx_stat::29.889*1.98] distinct minimizers: 124606515 (72.58% are singletons); average occurrences: 2.456; average spacing: 9.998; total length: 3059701951
+[M::worker_pipeline::32.526*3.46] mapped 110790 sequences
+[M::main] Version: 2.31-r1302
+[M::main] CMD: minimap2 -x asm5 --secondary=no -t 24 /mnt/ME5024_PA2/shared/groups/ZHANGLU/reference_genomes_fasta_collect/Gastrointestinal_tract_ref_genomes.fasta /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Gastrointestinal_tract-2017.12.04_18.45.54_sample_3.contigs.fasta
+[M::main] Real time: 33.011 sec; CPU: 112.942 sec; Peak RSS: 12.838 GB
+Finished: Mon Aug 10 02:45:05 PM HKT 2026

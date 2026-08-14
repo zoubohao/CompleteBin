@@ -1,0 +1,22 @@
+============================================
+CAMI2-other minimap2 mapping
+Job ID       : 11791
+Sample       : Airways-2017.12.04_18.56.22_sample_26
+Contigs      : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Airways-2017.12.04_18.56.22_sample_26.contigs.fasta
+Reference    : /mnt/ME5024_PA2/shared/groups/ZHANGLU/reference_genomes_fasta_collect/Airways_ref_genomes.fasta
+Preset       : asm5
+Threads      : 24
+Output       : /mnt/ME5024_PA2/shared/groups/ZHANGLU/Result-CAMI2-Others-Datasets-Minimap2/Airways-2017.12.04_18.56.22_sample_26/Airways-2017.12.04_18.56.22_sample_26.to.Airways_ref_genomes.paf
+Started      : Mon Aug 10 02:42:34 PM HKT 2026
+============================================
+[M::mm_idx_gen::34.914*1.32] collected minimizers
+[M::mm_idx_gen::36.362*2.03] sorted minimizers
+[M::main::36.362*2.03] loaded/built the index for 1433 target sequence(s)
+[M::mm_mapopt_update::38.204*1.98] mid_occ = 133
+[M::mm_idx_stat] kmer size: 19; skip: 19; is_hpc: 0; #seq: 1433
+[M::mm_idx_stat::39.323*1.95] distinct minimizers: 176257152 (73.06% are singletons); average occurrences: 2.359; average spacing: 9.999; total length: 4157641544
+[M::worker_pipeline::43.391*3.78] mapped 172438 sequences
+[M::main] Version: 2.31-r1302
+[M::main] CMD: minimap2 -x asm5 --secondary=no -t 24 /mnt/ME5024_PA2/shared/groups/ZHANGLU/reference_genomes_fasta_collect/Airways_ref_genomes.fasta /mnt/ME5024_PA2/shared/groups/ZHANGLU/Data-CAMI2-others-datasets/Airways-2017.12.04_18.56.22_sample_26.contigs.fasta
+[M::main] Real time: 43.873 sec; CPU: 164.372 sec; Peak RSS: 15.686 GB
+Finished: Mon Aug 10 02:43:18 PM HKT 2026

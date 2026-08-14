@@ -1,0 +1,37 @@
+AMBER sample=Gastrointestinal_tract-sample-10; binners=5; started=Tue Aug 11 12:47:46 HKT 2026
+2026-08-11 12:47:47,556 INFO Found @Version:0.9.1 in semibin2-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,556 INFO Found @SampleID:Gastrointestinal_tract-sample-10 in semibin2-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,556 INFO Found @Version:0.9.1 in Gold standard
+2026-08-11 12:47:47,556 INFO Found @Version:0.9.1 in metabat2-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,556 INFO Found @SampleID:Gastrointestinal_tract-sample-10 in metabat2-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,556 INFO Found @SampleID:Gastrointestinal_tract-sample-10 in Gold standard
+2026-08-11 12:47:47,556 INFO Found @Version:0.9.1 in comebin-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,557 INFO Found @SampleID:Gastrointestinal_tract-sample-10 in comebin-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,557 INFO Found @Version:0.9.1 in concoct-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,560 INFO Found @SampleID:Gastrointestinal_tract-sample-10 in concoct-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,557 INFO Found @Version:0.9.1 in completebin-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,561 INFO Found @SampleID:Gastrointestinal_tract-sample-10 in completebin-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,584 INFO Creating output directories
+2026-08-11 12:47:47,586 INFO Loading Gastrointestinal_tract-sample-10 of Gold standard
+2026-08-11 12:47:47,623 INFO Evaluating Gold standard, sample Gastrointestinal_tract-sample-10, genome binning
+2026-08-11 12:47:47,623 INFO Loading Gastrointestinal_tract-sample-10 of Gold standard
+2026-08-11 12:47:47,859 INFO Evaluating comebin-Gastrointestinal_tract-sample-10.All, sample Gastrointestinal_tract-sample-10, genome binning
+2026-08-11 12:47:47,859 INFO Loading Gastrointestinal_tract-sample-10 of comebin-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:47,979 WARNING 7810 sequences in comebin-Gastrointestinal_tract-sample-10.All not found in the gold standard.
+2026-08-11 12:47:48,079 INFO Evaluating completebin-Gastrointestinal_tract-sample-10.All, sample Gastrointestinal_tract-sample-10, genome binning
+2026-08-11 12:47:48,079 INFO Loading Gastrointestinal_tract-sample-10 of completebin-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:48,203 WARNING 11149 sequences in completebin-Gastrointestinal_tract-sample-10.All not found in the gold standard.
+2026-08-11 12:47:48,305 INFO Evaluating concoct-Gastrointestinal_tract-sample-10.All, sample Gastrointestinal_tract-sample-10, genome binning
+2026-08-11 12:47:48,305 INFO Loading Gastrointestinal_tract-sample-10 of concoct-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:48,429 WARNING 9832 sequences in concoct-Gastrointestinal_tract-sample-10.All not found in the gold standard.
+2026-08-11 12:47:48,527 INFO Evaluating metabat2-Gastrointestinal_tract-sample-10.All, sample Gastrointestinal_tract-sample-10, genome binning
+2026-08-11 12:47:48,527 INFO Loading Gastrointestinal_tract-sample-10 of metabat2-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:48,643 WARNING 4210 sequences in metabat2-Gastrointestinal_tract-sample-10.All not found in the gold standard.
+2026-08-11 12:47:48,737 INFO Evaluating semibin2-Gastrointestinal_tract-sample-10.All, sample Gastrointestinal_tract-sample-10, genome binning
+2026-08-11 12:47:48,737 INFO Loading Gastrointestinal_tract-sample-10 of semibin2-Gastrointestinal_tract-sample-10.All
+2026-08-11 12:47:48,846 WARNING 1382 sequences in semibin2-Gastrointestinal_tract-sample-10.All not found in the gold standard.
+2026-08-11 12:47:48,952 INFO Saving computed metrics
+2026-08-11 12:47:48,984 INFO Creating genome binning plots
+2026-08-11 12:47:53,070 INFO Creating HTML page
+2026-08-11 12:47:53,849 INFO AMBER finished successfully. All results have been saved to /mnt/ME5024_PA2/shared/groups/ZHANGLU/AMBER-CAMI2-Other-Datasets-Results/AMBER-Gastrointestinal_tract-sample-10
+AMBER completed Gastrointestinal_tract-sample-10; finished=Tue Aug 11 12:47:54 HKT 2026
