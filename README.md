@@ -1,8 +1,6 @@
 # CompleteBin
-<<<<<<< HEAD
-=======
+
 **Paper --> CompleteBin: A transformer-based framework unlocks microbial dark matter through improved short contig binning**
->>>>>>> 47b4c6457bf2ba3cc34ed7bfd9f0da21a7c52da7
 
 CompleteBin is a metagenomic binning workflow that recovers
 metagenome-assembled genomes (MAGs) from a contig FASTA and one or more
@@ -220,16 +218,8 @@ This file contains the following columns:
 - RAM: > 180 GB
 - GPU: The GPU memory must be equal to or greater than 24 GB.
 
-## Our System Config
-- System: NVIDIA DGX Server Version 5.5.1 (GNU/Linux 5.4.0-131-generic x86_64)
-- CPU: AMD EPYC 7742 64-Core Processor (2 Sockets)
-- RAM: 1TB
-- GPU: 8 GPUs (A100-40GB)
-
 ## Repo Contents
-- [CompleteBin-DB](./CompleteBin-DB): The model weights and other necessary files for running CompleteBin. (Model weights need to be downloaded from the above link.)
 - [CompleteBin](./CompleteBin): The main code (Python) of CompleteBin.
->>>>>>> 47b4c6457bf2ba3cc34ed7bfd9f0da21a7c52da7
 
 ## Outputs
 
