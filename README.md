@@ -200,17 +200,18 @@ binning_with_all_steps(
 
 See the docstring of `binning_with_all_steps` for the full Python API,
 including training and split-workflow parameters.
+
 =======
 ## Files in the output directory
 - #### The binned MAGs.
-
 - #### MetaInfo.tsv
 This file contains the following columns: 
 
-1. MAG name (first column), 
-2. completeness of MAG (third column), 
-3. contamination of MAG (fourth column), 
-4. MAG quality (fifth column),
+1. MAG name 
+2. MAG quality （Only using Bac and Arc SCGs to do the evaluation）
+3. completeness of MAG 
+4. contamination of MAG 
+5. MAG quality 
 
 ## Minimum System Requirements for Running CompleteBin
 - System: Linux
