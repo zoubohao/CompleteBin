@@ -217,7 +217,7 @@ This file contains the following columns:
 - System: Linux
 - CPU: No restriction.
 - RAM: > 180 GB
-- GPU: The GPU memory must be equal to or greater than 24 GB.
+- GPU: The GPU memory must be equal to or greater than 12 GB.
 
 ## Repo Contents
 - [CompleteBin](./CompleteBin): The main code (Python) of CompleteBin.
