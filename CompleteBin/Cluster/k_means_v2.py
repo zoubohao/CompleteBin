@@ -27,6 +27,8 @@ def get_min_k_from_previous_rounds(
     from the first two clustering rounds.
 
     Args:
+        max_clusters: Optional upper bound, applied after the marker-based
+                      lower bound. None preserves the existing behavior.
         first_metainfo_path: Path to MetaInfo.tsv from the first clustering round.
         second_metainfo_path: Path to MetaInfo.tsv from the second clustering round.
         min_k_ratio: The ratio of (HQ + MQ) count to use as minimum k.
@@ -64,6 +66,7 @@ def cluster_kmeans_for_low_v2(
     second_metainfo_path: str = None,
     min_k_ratio: float = 0.15,
     percentile: float = 10,
+    max_clusters: int = None,
 ) -> None:
     """
     K-means clustering for contigs from low-quality MAGs (third round).
@@ -102,6 +105,8 @@ def cluster_kmeans_for_low_v2(
                     estimate the number of clusters (k). Defaults to 10,
                     giving a conservative k that is lower than the median.
     """
+    if max_clusters is not None and max_clusters < 1:
+        raise ValueError("max_clusters must be positive")
     os.makedirs(bin_output_folder_path, exist_ok=True)
 
     contigSeqPair = [
@@ -159,9 +164,11 @@ def cluster_kmeans_for_low_v2(
     )
 
     # ---- Decide final k: apply only the lower bound (min_k). ----
-    # No upper bound — the SCG-median estimate can grow freely;
-    # only constrained by the number of available contigs.
+    # Optional output-reduction cap; existing callers have no upper bound.
     final_k = max(scg_based_cluster_num, min_k)
+
+    if max_clusters is not None:
+        final_k = min(final_k, max_clusters)
 
     n_samples = len(existContig2RepNormV)
     if final_k > n_samples:
@@ -172,8 +179,8 @@ def cluster_kmeans_for_low_v2(
         final_k = n_samples
 
     logger.info(
-        f"--> Final k = max(SCG_median={scg_based_cluster_num}, "
-        f"min_k={min_k}) = {final_k}"
+        f"--> Final k: SCG estimate={scg_based_cluster_num}, "
+        f"min_k={min_k}, max_clusters={max_clusters}, effective_k={final_k}"
     )
 
     # ---- Build feature matrix X ----

@@ -1,51 +1,12 @@
-"""
-Leiden 自适应优化模块 — 提供两种模式的速度/精度权衡。
+"""Leiden clustering with independent ``accurate`` and ``fast`` modes.
 
-模式说明
---------
-- 'fast':     自适应早停。逐轮运行 optimise_partition(n_iterations=1)，
-              追踪每轮 improvement 衰减，当 improvement 降至首轮的
-              early_stop_threshold 以下时自动停止。上限 hard_cap 轮。
-              大幅节省时间（中等数据集可加速 5-15x），捕获 >99.9% 的
-              总 quality improvement。
+``accurate`` preserves the original full-convergence behaviour.
+``fast`` runs one Leiden iteration at a time and stops only after a sustained
+plateau, or when a conservative iteration/time safety limit is reached.
 
-- 'accurate': 完全收敛模式。等价于原版 n_iterations=-1，让 leidenalg
-              内部跑满直到没有任何改进。精度最高，但耗时不可预测。
-
-用法示例
---------
-    # 替换原有 run_leiden 调用
-    from CompleteBin.Cluster.leiden_adaptive import run_leiden_adaptive
-
-    # 快速模式（默认）
-    clu2contigs = run_leiden_adaptive(
-        cur_i, total_n, output_file, contig_name_list,
-        ann_neighbor_indices, ann_distances, length_weight,
-        max_edges, norm_embeddings,
-        bandwidth=0.1, lmode='l2', resolution=1.0,
-        mode='fast',            # 自适应早停
-        early_stop_threshold=0.001,  # 0.1% 阈值
-        hard_cap=35,            # 最多 35 轮
-    )
-
-    # 精确模式
-    clu2contigs = run_leiden_adaptive(
-        ..., mode='accurate',
-    )
-
-集成方式
---------
-在 first_cluster.py 中，将:
-    from CompleteBin.Cluster.first_cluster_utils import run_leiden
-替换为:
-    from CompleteBin.Cluster.leiden_adaptive import run_leiden_adaptive as run_leiden
-
-并在调用处传入 mode 参数即可。原有 run_leiden 的其他调用者不受影响。
-
-参数调优
---------
-若需针对特定数据集调优阈值，可先以 mode='fast' + verbose=True 运行，
-观察日志中每轮的 improvement 衰减曲线，调整 early_stop_threshold。
+随机性：leidenalg 的 ``Optimiser`` 有自己的随机数发生器，``seed_everything``
+管不到它。这里所有 ``Optimiser`` 都通过 ``set_rng_seed`` 显式固定，
+种子来自 ``leiden_seed`` 参数（与训练用的全局 ``seed`` 是两个独立参数）。
 """
 
 import os
@@ -56,23 +17,54 @@ import leidenalg
 import numpy as np
 from igraph import Graph
 
+from CompleteBin.Cluster.first_cluster_utils import (
+    build_undirected_weighted_edges,
+    canonicalize_undirected_edges,
+)
 from CompleteBin.logger import get_logger
 
 logger = get_logger()
+
+# fast 模式默认每跑一轮 Leiden 都打一行日志；105 个网格点 × 约 20 轮 ≈ 2000+ 行，
+# 属于噪声。设 COMPLETEBIN_LEIDEN_VERBOSE=1 可以重新打开（降级/恢复只影响日志级别，
+# 不影响任何计算结果）。
+_LEIDEN_VERBOSE = os.environ.get(
+    "COMPLETEBIN_LEIDEN_VERBOSE", ""
+).strip().lower() not in ("", "0", "false", "no")
+
+
+def _iter_log(message: str) -> None:
+    """逐轮迭代日志：默认只进 debug，设了环境变量则进 info。"""
+    if _LEIDEN_VERBOSE:
+        logger.info(message)
+    else:
+        logger.debug(message)
+
+
+def _make_optimiser(rng_seed: int) -> "leidenalg.Optimiser":
+    """创建并固定随机种子的 Optimiser。
+
+    leidenalg 的随机性体现在节点访问顺序等内部决策上，
+    不调用 set_rng_seed 时同一份输入每次都会给出不同的分区。
+    """
+    optimiser = leidenalg.Optimiser()
+    optimiser.set_rng_seed(int(rng_seed))
+    return optimiser
 
 
 # ============================================================
 # 优化核心
 # ============================================================
 
-def _optimise_partition_accurate(partition, is_membership_fixed, n_iterations):
+def _optimise_partition_accurate(partition, is_membership_fixed, n_iterations,
+                                 rng_seed: int = 2048):
     """
     精确模式：完全等同于原版 optimise_partition 行为。
 
     当 n_iterations=-1 时跑满直到 leidenalg 内部判定收敛；
     当 n_iterations>0 时跑固定轮数。
     """
-    optimiser = leidenalg.Optimiser()
+    optimiser = _make_optimiser(rng_seed)
     t0 = time.time()
     improvement = optimiser.optimise_partition(
         partition,
@@ -82,7 +74,7 @@ def _optimise_partition_accurate(partition, is_membership_fixed, n_iterations):
     elapsed = time.time() - t0
     logger.info(
         f"--> [accurate] Leiden done: improvement={improvement:.4f}, "
-        f"time={elapsed:.1f}s, n_iterations={n_iterations}"
+        f"time={elapsed:.1f}s, n_iterations={n_iterations}, rng_seed={rng_seed}"
     )
     return improvement
 
@@ -92,80 +84,142 @@ def _optimise_partition_fast(
     is_membership_fixed,
     early_stop_threshold,
     hard_cap,
+    min_iterations,
+    patience,
+    window_size,
+    quality_threshold,
+    max_seconds,
+    rng_seed: int = 2048,
 ):
-    """
-    快速模式：逐轮运行 optimise_partition(n_iterations=1)，
-    当 improvement 衰减到首轮的 early_stop_threshold 以下时早停。
+    """Optimise one iteration at a time until a sustained plateau.
 
-    参数
-    ----
-    early_stop_threshold : float
-        相对阈值。当 imp / first_imp < threshold 时停止。
-        例如 0.001 表示 improvement 降至首轮 0.1% 时停止。
-    hard_cap : int
-        最多迭代轮数（安全兜底）。
+    ``partition.quality()`` is evaluated once before optimisation. Subsequent
+    quality values are derived from the improvements returned by leidenalg,
+    avoiding an additional full graph scan after every iteration.
 
-    返回
-    ----
-    (total_improvement, n_iters_run) : (float, int)
+    The first iteration is treated as warm-up and is excluded from the
+    ``recent_rel`` ratio (both its sliding window and its reference total).
+    Otherwise the very first iteration, which typically contributes well over
+    99% of the total improvement, would sit in ``recent_rel``'s denominator
+    forever and make the ratio collapse as soon as the warm-up iteration
+    leaves the sliding window. ``total_improvement`` (and therefore the
+    quality estimate) still includes the warm-up iteration.
     """
-    optimiser = leidenalg.Optimiser()
+    if min_iterations < 1:
+        raise ValueError("min_iterations must be >= 1")
+    if patience < 1:
+        raise ValueError("patience must be >= 1")
+    if window_size < 1:
+        raise ValueError("window_size must be >= 1")
+    if hard_cap < min_iterations:
+        raise ValueError("hard_cap must be >= min_iterations")
+    if early_stop_threshold < 0 or quality_threshold < 0:
+        raise ValueError("fast-mode convergence thresholds must be >= 0")
+    if max_seconds is not None and max_seconds <= 0:
+        raise ValueError("max_seconds must be > 0 or None")
+
+    optimiser = _make_optimiser(rng_seed)
+    initial_quality = float(partition.quality())
     total_improvement = 0.0
-    first_improvement = None
+    # 第 1 轮（warm-up）之后的累计提升，只用于 recent_rel 的分母
+    post_warmup_improvement = 0.0
+    improvement_history = []
     n_iters_run = 0
+    plateau_count = 0
+    stop_reason = "hard_cap"
+    eps = np.finfo(float).eps
 
     t0 = time.time()
 
     for i in range(hard_cap):
+        iteration_start = time.time()
         imp = optimiser.optimise_partition(
             partition,
             n_iterations=1,
             is_membership_fixed=is_membership_fixed,
         )
+        imp = float(imp)
         n_iters_run = i + 1
+
+        if not np.isfinite(imp) or imp < 0:
+            stop_reason = "invalid_improvement"
+            logger.warning(
+                f"--> [fast] Invalid improvement at iter {n_iters_run}: {imp}. Stopping."
+            )
+            break
+
         total_improvement += imp
+        if n_iters_run > 1:
+            # 第 1 轮作为 warm-up 不计入平台期判据
+            post_warmup_improvement += imp
+            improvement_history.append(imp)
+        current_quality = initial_quality + total_improvement
+        elapsed = time.time() - t0
+        iteration_seconds = time.time() - iteration_start
 
-        # 记录首轮 improvement 作为基准
-        if i == 0:
-            first_improvement = imp
-            if first_improvement <= 0:
-                # 首轮无改进，图可能已经最优
-                logger.info(
-                    f"--> [fast] No improvement at iteration 1 (imp={imp:.4f}). Stopping."
-                )
-                break
-            continue
+        recent_relative_gain = None
+        relative_quality_gain = None
+        has_full_window = len(improvement_history) >= window_size
+        if has_full_window:
+            recent_gain = sum(improvement_history[-window_size:])
+            previous_total = total_improvement - recent_gain
+            previous_quality = initial_quality + previous_total
+            recent_relative_gain = recent_gain / max(abs(post_warmup_improvement), eps)
+            relative_quality_gain = recent_gain / max(abs(previous_quality), eps)
 
-        # 收敛判定：相对改善低于阈值 或 精确为零
-        rel_imp = imp / first_improvement
+        can_test_plateau = (
+            imp != 0.0
+            and n_iters_run >= min_iterations
+            and has_full_window
+            and (max_seconds is None or elapsed < max_seconds)
+        )
+        if can_test_plateau:
+            is_plateau = (
+                recent_relative_gain <= early_stop_threshold
+                and relative_quality_gain <= quality_threshold
+            )
+            plateau_count = plateau_count + 1 if is_plateau else 0
+
+        _iter_log(
+            f"--> [fast] iter={n_iters_run}, improvement={imp:.6f}, "
+            f"total_improvement={total_improvement:.6f}, quality={current_quality:.6f}, "
+            f"recent_rel={recent_relative_gain if recent_relative_gain is not None else 'NA'}, "
+            f"quality_rel={relative_quality_gain if relative_quality_gain is not None else 'NA'}, "
+            f"patience={plateau_count}/{patience}, iter_time={iteration_seconds:.1f}s, "
+            f"elapsed={elapsed:.1f}s"
+        )
 
         if imp == 0.0:
-            logger.info(
-                f"--> [fast] Converged at iter {i+1}: imp=0.0 (exact). "
-                f"Total improvement={total_improvement:.4f}"
-            )
+            stop_reason = "exact_zero"
             break
 
-        if rel_imp < early_stop_threshold:
-            logger.info(
-                f"--> [fast] Converged at iter {i+1}: "
-                f"imp={imp:.4f}, rel={rel_imp:.6f} < threshold={early_stop_threshold}. "
-                f"Total improvement={total_improvement:.4f}"
-            )
+        if max_seconds is not None and elapsed >= max_seconds:
+            stop_reason = "time_budget"
             break
-    else:
-        # 跑满了 hard_cap 仍未触发阈值
-        logger.info(
-            f"--> [fast] Reached hard_cap={hard_cap} without early stop. "
-            f"Total improvement={total_improvement:.4f}"
-        )
+
+        if plateau_count >= patience:
+            stop_reason = "plateau"
+            break
 
     elapsed = time.time() - t0
     logger.info(
         f"--> [fast] Leiden done: {n_iters_run} iters, "
-        f"total_improvement={total_improvement:.4f}, time={elapsed:.1f}s"
+        f"total_improvement={total_improvement:.4f}, final_quality="
+        f"{initial_quality + total_improvement:.4f}, time={elapsed:.1f}s, "
+        f"stop_reason={stop_reason}, rng_seed={rng_seed}"
     )
     return total_improvement
+
+
+def _default_fast_hard_cap(vcount: int) -> int:
+    """Return a conservative graph-size-aware fast-mode safety cap."""
+    if vcount < 100_000:
+        return 60
+    if vcount < 250_000:
+        return 55
+    if vcount < 500_000:
+        return 50
+    return 45
 
 
 # ============================================================
@@ -184,39 +238,29 @@ def _build_leiden_graph(
     initial_list: Optional[List[Union[int, None]]],
     resolution: float,
     vcount: int,
+    alpha: float = 1.0,
+    min_degree: int = 0,
 ):
     """
     构建 igraph Graph 和 RBERVertexPartition。
 
-    与原 run_leiden (first_cluster_utils.py:104-145) 逻辑完全一致。
+    建图（KNN → 无向加权边）**与第二轮 ``first_cluster_utils.run_leiden`` 共用**
+    ``build_undirected_weighted_edges``，两条路径口径不会再各自漂移：
+
+      · 全局距离百分位筛边（``partgraph_ratio``，100 = 不筛）；
+      · 距离→相似度 ``exp(-d/bandwidth)``；
+      · 归并成无序对（同端点保留相似度最大的一条），不再按 contig 名任意丢一半；
+      · 单向边权重乘 ``alpha``（``alpha=1`` 即不降权）；
+      · ``min_degree`` 保底边（消除孤立点）。
+
+    相对旧的 `sources > targets` 写法这是**行为变更**（边集与权重都会变），
+    依据与实测见 ``PLAN_GRID_REFORM.md``。
     """
-    # ---- 边列表构建 ----
-    sources = np.repeat(np.arange(vcount), max_edges)
-    targets_indices = ann_neighbor_indices[:, 1:]  # 跳过自身 (index 0)
-    targets = targets_indices.flatten()
-    wei = ann_distances[:, 1:].flatten()
-
-    # 按 partgraph_ratio 分位数过滤边
-    dist_cutoff = np.percentile(wei, partgraph_ratio)
-    save_index = wei <= dist_cutoff
-    sources = sources[save_index]
-    targets = targets[save_index]
-    wei = wei[save_index]
-
-    # 距离 → 相似度权重变换
-    if lmode == 'l1':
-        wei = np.sqrt(wei)
-        wei = np.exp(-wei / bandwidth)
-    elif lmode == 'l2':
-        wei = np.exp(-wei / bandwidth)
-    else:
-        raise ValueError(f"lmode '{lmode}' is invalid. Use 'l1' or 'l2'.")
-
-    # 仅保留上三角（无向图去重）
-    index = sources > targets
-    sources = sources[index]
-    targets = targets[index]
-    wei = wei[index]
+    # 建图统一走共用函数（各步骤说明见其 docstring）
+    sources, targets, wei = build_undirected_weighted_edges(
+        ann_neighbor_indices, ann_distances, vcount, max_edges,
+        partgraph_ratio, bandwidth, lmode,
+        alpha=alpha, min_degree=min_degree)
 
     edgelist = list(zip(sources.tolist(), targets.tolist()))
 
@@ -263,8 +307,17 @@ def run_leiden_adaptive(
     write_file: bool = True,
     # ---- 新增参数 ----
     mode: str = 'accurate',
-    early_stop_threshold: float = 0.0001,
-    hard_cap: int = 35,
+    early_stop_threshold: float = 5e-3,
+    hard_cap: Optional[int] = None,
+    min_iterations: int = 8,
+    patience: int = 4,
+    window_size: int = 4,
+    quality_threshold: float = 3e-6,
+    max_seconds: Optional[float] = 7200.0,
+    rng_seed: int = 2048,
+    # ---- 建图规则（与第二轮 run_leiden 同口径；默认值 = 历史行为）----
+    alpha: float = 1.0,
+    min_degree: int = 0,
 ) -> Dict[str, Set[str]]:
     """
     运行 Leiden 聚类（支持快速/精确两种模式）。
@@ -275,13 +328,31 @@ def run_leiden_adaptive(
         'fast'      — 自适应早停，速度快
         'accurate'  — 完全收敛，精度最高 （默认）
     early_stop_threshold : float
-        fast 模式的相对改善阈值。当 imp / first_imp < threshold 时停止。
-        默认 0.0001（0.01%）。
-    hard_cap : int
-        fast 模式最大迭代轮数，默认 35。
+        fast 模式最近窗口 improvement 占 warm-up 之后累计 improvement 的阈值。
+        默认 5e-3（0.5%）。第 1 轮作为 warm-up 不计入该比例。
+        历史沿革（2026-09）：旧 run 日志实测为 0.01，后被改为 1e-4（改动未留记录），
+        2026-09-29 先后试过 0.01 → 1e-3，最终定为 5e-3。
+        改动此值会改变聚类结果，必须同步更新基线。
+    hard_cap : int, optional
+        fast 模式最大迭代轮数。默认按节点数选择 40--60 轮；
+        250,000--500,000 节点使用 45 轮。
+    min_iterations : int
+        允许平台期早停前至少运行的轮数，默认 8。
+    patience : int
+        连续多少轮满足平台期条件后停止，默认 4。
+    window_size : int
+        计算近期累计 improvement 的滑动窗口大小，默认 4。
+    quality_threshold : float
+        最近窗口 improvement 相对于窗口前 partition quality 的阈值，
+        默认 3e-6。该条件比 early_stop_threshold 更严，实际决定停止时机。
+    max_seconds : float, optional
+        fast 模式单个参数组合的时间上限，默认 7200 秒；None 表示不限时。
     n_iterations : int
         accurate 模式下的迭代数（-1 为跑满直到收敛）。
         fast 模式下此参数被忽略，由 early_stop_threshold + hard_cap 控制。
+    rng_seed : int
+        leidenalg ``Optimiser`` 的随机种子，默认 2048。与训练用的全局 ``seed``
+        是两个独立参数；同一个 rng_seed + 同一份输入 → 同一个分区。
 
     其余参数与原 run_leiden 完全相同。
 
@@ -294,6 +365,9 @@ def run_leiden_adaptive(
         raise ValueError(f"mode must be 'fast' or 'accurate', got '{mode}'")
 
     vcount = len(norm_embeddings)
+    resolved_hard_cap = (
+        _default_fast_hard_cap(vcount) if hard_cap is None else hard_cap
+    )
 
     # ---- 图构建 ----
     _, partition, n_edges = _build_leiden_graph(
@@ -308,6 +382,8 @@ def run_leiden_adaptive(
         initial_list=initial_list,
         resolution=resolution,
         vcount=vcount,
+        alpha=alpha,
+        min_degree=min_degree,
     )
 
     # ---- 日志 ----
@@ -319,9 +395,15 @@ def run_leiden_adaptive(
     if mode == 'accurate':
         mode_info = f"n_iter={n_iterations}"
     else:
-        mode_info = f"hard_cap={hard_cap}, threshold={early_stop_threshold}"
+        mode_info = (
+            f"min_iter={min_iterations}, hard_cap={resolved_hard_cap}, "
+            f"window={window_size}, patience={patience}, "
+            f"gain_threshold={early_stop_threshold}, "
+            f"quality_threshold={quality_threshold}, max_seconds={max_seconds}"
+        )
     logger.info(
-        f"--> Start Leiden ({mode} mode, {mode_info}): {vcount} nodes, {n_edges} edges, "
+        f"--> Start Leiden ({mode} mode, {mode_info}, rng_seed={rng_seed}): "
+        f"{vcount} nodes, {n_edges} edges, "
         f"max_edges={max_edges}, partgraph_ratio={partgraph_ratio}, "
         f"method={method}. {cur_i} / {total_n}"
     )
@@ -332,13 +414,20 @@ def run_leiden_adaptive(
             partition=partition,
             is_membership_fixed=is_membership_fixed,
             n_iterations=n_iterations,
+            rng_seed=rng_seed,
         )
     else:  # mode == 'fast'
         _optimise_partition_fast(
             partition=partition,
             is_membership_fixed=is_membership_fixed,
             early_stop_threshold=early_stop_threshold,
-            hard_cap=hard_cap,
+            hard_cap=resolved_hard_cap,
+            min_iterations=min_iterations,
+            patience=patience,
+            window_size=window_size,
+            quality_threshold=quality_threshold,
+            max_seconds=max_seconds,
+            rng_seed=rng_seed,
         )
 
     # ---- 结果收集（与原 run_leiden 完全一致）----

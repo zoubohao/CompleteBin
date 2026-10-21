@@ -7,6 +7,7 @@ from typing import Dict
 
 from CompleteBin.Cluster.sec_cluster_utils import re_cluster_procedure_for_one_method
 from CompleteBin.IO import readClusterResult, readMarkerSets, readPickle, writePickle
+from CompleteBin.Utils.mp_utils import make_spawn_pool
 from CompleteBin.logger import get_logger
 
 logger = get_logger()
@@ -115,6 +116,7 @@ def second_cluster(
     mag_length_threshold,
     seed_path=None,
     coverage_profile_path=None,
+    leiden_seed: int = 42,
 ):
     logger.info(f"--> Start to re-cluster with {num_workers} num_workers.")
     cluster_files = os.listdir(cluster_folder)
@@ -129,7 +131,7 @@ def second_cluster(
     # space, triggering COW page duplication and potential OOM.
     # (The previous fix attempt was commented out; now enabled.)
     ctx = mp.get_context("spawn")
-    with ctx.Pool(num_workers) as pool_h:
+    with make_spawn_pool(ctx, num_workers, label="sec_cluster") as pool_h:
         for cur_i, c_file in enumerate(cluster_files):
             if "embMat0" in c_file:
                 contigname2emb_norm_array = all_simclr_contigname2emb_norm_array
@@ -167,6 +169,8 @@ def second_cluster(
                         mag_length_threshold,
                         seed_path,
                         coverage_profile_path,
+                        leiden_seed,
+                        num_workers,
                     )
                 )
                 p_list.append(p)

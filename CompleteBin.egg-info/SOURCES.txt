@@ -1,5 +1,8 @@
 LICENSE
+MANIFEST.in
 README.md
+pyproject.toml
+requirements.txt
 setup.py
 CompleteBin/Binning_steps.py
 CompleteBin/IO.py
@@ -7,6 +10,7 @@ CompleteBin/__init__.py
 CompleteBin/cli.py
 CompleteBin/combine_cluster_derep.py
 CompleteBin/logger.py
+CompleteBin/pip_deps.py
 CompleteBin/version.py
 CompleteBin/CallGenes/__init__.py
 CompleteBin/CallGenes/gene_utils.py
@@ -16,6 +20,7 @@ CompleteBin/Cluster/__init__.py
 CompleteBin/Cluster/cluster.py
 CompleteBin/Cluster/first_cluster.py
 CompleteBin/Cluster/first_cluster_utils.py
+CompleteBin/Cluster/improved_clustering.py
 CompleteBin/Cluster/k_means_v2.py
 CompleteBin/Cluster/leiden_adaptive.py
 CompleteBin/Cluster/polish_bin.py
@@ -30,6 +35,7 @@ CompleteBin/Dereplication/__init__.py
 CompleteBin/Dereplication/contig_dedup.py
 CompleteBin/Dereplication/galah_utils.py
 CompleteBin/Dereplication/post_galah_dedup.py
+CompleteBin/Dereplication/tied_representative.py
 CompleteBin/Model/__init__.py
 CompleteBin/Model/layers.py
 CompleteBin/Model/model.py
@@ -41,14 +47,19 @@ CompleteBin/Trainer/__init__.py
 CompleteBin/Trainer/arcface_plugin.py
 CompleteBin/Trainer/dataset.py
 CompleteBin/Trainer/debiased_loss.py
+CompleteBin/Trainer/far_test_selection.py
+CompleteBin/Trainer/head_refit.py
 CompleteBin/Trainer/loss.py
 CompleteBin/Trainer/optimized_debiased_loss.py
 CompleteBin/Trainer/optimizer.py
+CompleteBin/Trainer/pair_head.py
+CompleteBin/Trainer/pretrain_contrastive_loss.py
 CompleteBin/Trainer/sampler.py
 CompleteBin/Trainer/ssmt_v2.py
 CompleteBin/Trainer/trainer.py
 CompleteBin/Trainer/warmup.py
 CompleteBin/Utils/__init__.py
+CompleteBin/Utils/mp_utils.py
 CompleteBin/Utils/pretrain_decision.py
 completebin.egg-info/PKG-INFO
 completebin.egg-info/SOURCES.txt

@@ -4,10 +4,37 @@ from typing import List, Optional
 
 import torch
 from torch import nn
+import torch.nn.functional as F
 
 from CompleteBin.logger import get_logger
 
 logger = get_logger()
+
+def encode_seq2vec(seq_tensor):
+    sft = torch.softmax(torch.mean(seq_tensor, dim=-1, keepdim=True), dim=1)
+    seq_rep = torch.sum(seq_tensor * sft, dim=1)  # [B, C]
+    return seq_rep
+
+
+class PretrainProjectionHead(nn.Module):
+    """Projection used only by the reference-genome contrastive objective.
+
+    输入端会先把主干向量做一次 **独立的** L2 归一化（即只按方向喂给投影头），
+    输出的投影再做一次归一化。这里的归一化不会改调用方手里那份 embedding：
+    `F.normalize` 返回的是新张量，所以分类头仍然吃原始尺度的向量。
+    """
+
+    def __init__(self, hidden_dim: int, projection_dim: int = 256) -> None:
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim, bias=False),
+            nn.SiLU(),
+            nn.Linear(hidden_dim, projection_dim, bias=False),
+        )
+
+    def forward(self, embedding: torch.Tensor) -> torch.Tensor:
+        normalized_input = F.normalize(embedding, dim=-1)
+        return F.normalize(self.layers(normalized_input), dim=-1)
 
 
 def encode_seq2vec(seq_tensor):
@@ -357,7 +384,8 @@ class CompleteBinBaseModel(nn.Module):
                  rotary_apply,
                  hidden_dim: int = 768,
                  layers=4,
-                 output_embedding=False) -> None:
+                 output_embedding=False,
+                 projection_dim: int = 256) -> None:
         super(CompleteBinBaseModel, self).__init__()
         self.classes_num = classes_num
         self.rotary_apply = rotary_apply
@@ -377,8 +405,15 @@ class CompleteBinBaseModel(nn.Module):
         )
         if classes_num == 0 or classes_num is None:
             self.out_linear = None
+            self.pretrain_projector = None
         else:
+            # 裸线性分类头：logits = W·x，x 是主干输出的原始向量（不归一化）。
+            # 不用余弦相似度、没有 logit scale，也没有 LayerNorm：
+            #   · 投影头那条路先做 L2 归一化，只看向量的方向（角度）；
+            #   · 分类头这条路保留原始尺度，长度信息也在 logits 里。
+            # 下游 debiasing / mask 一律走 classify()，保证是同一套 logits。
             self.out_linear = nn.Linear(hidden_dim, classes_num, bias=False)
+            self.pretrain_projector = PretrainProjectionHead(hidden_dim, projection_dim)
 
     def get_token_proj(self, x):
         x = self.token_proj(x)
@@ -397,7 +432,34 @@ class CompleteBinBaseModel(nn.Module):
         return x
 
     def forward(self, seq_tokens_inputs):
-        seq_fea_enc = encode_seq2vec(self.get_feature_of_tokens(self.get_token_proj(seq_tokens_inputs)))
+        seq_fea_enc = self.encode(seq_tokens_inputs)
         if self.output_embedding or self.out_linear is None:
             return seq_fea_enc
+        return self.classify(seq_fea_enc)
+
+    def classify(self, seq_fea_enc):
+        """过分类头：裸线性层（logits = W·x）。
+
+        单独抽出来是因为有几个地方（训练的 mask 构建、分类日志）直接拿分类头
+        算 logits；统一走这里，保证它们和 forward 里的分类是同一条路。
+        """
+        if self.out_linear is None:
+            raise RuntimeError("this model has no classification head")
         return self.out_linear(seq_fea_enc)
+
+    def encode(self, seq_tokens_inputs):
+        backbone_embedding = self.get_feature_of_tokens(
+            self.get_token_proj(seq_tokens_inputs)
+        )
+        backbone_embedding = encode_seq2vec(backbone_embedding)
+        # 返回**原始向量**，不做 L2 归一化：
+        #   · 分类头 out_linear 直接吃它做线性分类（要的就是原始尺度）
+        #   · contrastive 学习需要 L2 时，在各目的 loss / projector 里自己归一化
+        #     （Trainer/loss.py、Trainer/pretrained_contrastive_loss.py、
+        #      Model/model.py 的 projector_simclr 都已经各自归一化了）
+        return backbone_embedding.float()
+
+    def project_pretrain(self, seq_fea_enc):
+        if self.pretrain_projector is None:
+            raise RuntimeError("pretrain projection head is unavailable without classes")
+        return self.pretrain_projector(seq_fea_enc)

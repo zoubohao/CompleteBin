@@ -1,4 +1,5 @@
 import math
+import json
 import os
 import re
 from shutil import copy
@@ -461,7 +462,9 @@ def collect_galah_result_with_SCGs(
     scg_quality_report_path,
     galah_tsv_path: str,
     output_folder: str,
-    mag_length_threshold=150000
+    mag_length_threshold=150000,
+    embeddings=None, coverage=None,
+    prefer_longer=True,
 ):
     collect = {}
     clu_res_info = readGalahClusterTSV(galah_tsv_path)
@@ -476,9 +479,16 @@ def collect_galah_result_with_SCGs(
                 collect[c] = [(n, q_scg, v, getScore(q_scg), q_scg)]
             else:
                 collect[c].append((n, q_scg, v, getScore(q_scg), q_scg))
+    from CompleteBin.Dereplication.tied_representative import select_tied_representative
     res = []
-    for _, q_l in collect.items():
-        res.append(list(sorted(q_l, key=lambda x: x[3], reverse=True))[0])
+    audit_path = os.path.join(output_folder, "representative_selection.jsonl")
+    with open(audit_path, "w") as audit:
+        for group_id, q_l in collect.items():
+            winner, record = select_tied_representative(
+                q_l, embeddings=embeddings, coverage=coverage, prefer_longer=prefer_longer)
+            record["group"] = group_id
+            audit.write(json.dumps(record) + "\n")
+            res.append(winner)
 
     # print(f"The number of clusters is {len(res)}")
     for i, r in enumerate(res):
@@ -512,6 +522,8 @@ def process_galah_with_SCGs(
     arc_contigName2_gene2num: dict,
     reuse_contig=True,
     cpus=64,
+    embeddings=None, coverage_profile_path=None,
+    prefer_longer=True,
 ):
     logger.info("--> Start to Use Galah to Ensemble the Results.")
     ########
@@ -525,11 +537,15 @@ def process_galah_with_SCGs(
     if os.path.exists(outputBinFolder) is False:
         os.makedirs(outputBinFolder)
     logger.info("--> Start to Process Galah Results.")
+    from CompleteBin.Cluster.polish_bin_improved import _load_coverage
+    coverage = _load_coverage(coverage_profile_path=coverage_profile_path)
     collect_galah_result_with_SCGs(
         scg_quality_report_path,
         galah_tsv,
         outputBinFolder,
-        mag_length_threshold=mag_length_threshold
+        mag_length_threshold=mag_length_threshold,
+        embeddings=embeddings, coverage=coverage,
+        prefer_longer=prefer_longer,
     )
     # ---- Contig-level deduplication ----
     logger.info("--> Start contig-level deduplication across final bins.")

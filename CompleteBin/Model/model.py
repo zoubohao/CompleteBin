@@ -29,21 +29,26 @@ class CompleteBinModel(nn.Module):
                  seq_length: int,
                  hidden_dim=512,
                  layers=4,
-                 num_classes=15781,
+                 num_classes=15324,
                  use_pretrained: bool = True) -> None:
+        """kmer_dim       : token 宽度，原始 k-mer 组成（4-mer → 136 类）。
+        whole_kmer_dim : coverage 分箱那一路用的宽度，同样是原始 k-mer 宽度。
+        """
         super().__init__()
         self.device = device
         self.hidden_dim = hidden_dim
         self.n_views = n_views
         self.seq_length = seq_length
+        self.kmer_dim = kmer_dim
         logger.info(f"--> Transformer Model hidden dim: {hidden_dim}, layers: {layers}, {5}, device: {device}. Fix")
+        logger.info(f"--> Token width: {self.kmer_dim} (coverage stream {whole_kmer_dim}).")
         self.cov_mean_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
                                             nn.Linear(512, hidden_dim // 2, bias=False)).to(device)
         self.cov_mean_linear = nn.Linear(num_bam_files, hidden_dim // 2, bias=False)
         
-        self.cov_var_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
+        self.cov_std_model = nn.Sequential(MLP(num_bam_files, 256, 512, p=dropout),
                                            nn.Linear(512, hidden_dim // 2, bias=False)).to(device)
-        self.cov_var_linear = nn.Linear(num_bam_files, hidden_dim // 2, bias=False)
+        self.cov_std_linear = nn.Linear(num_bam_files, hidden_dim // 2, bias=False)
         
         self.cov_tnf_model = nn.Sequential(MLP(num_bam_files * whole_kmer_dim, 2048, 1024, p=dropout),
                                            nn.Linear(1024, hidden_dim, bias=False)).to(device)
@@ -60,10 +65,24 @@ class CompleteBinModel(nn.Module):
             self.pretrain_model = CompleteBinBaseModel(kmer_dim, num_classes, split_parts_list, dropout, False, hidden_dim, layers, True).to(device)
         else:
             self.pretrain_model = None
+        # 冻结编码器和可训练编码器吃的是同一份 token（原始 4-mer 组成）。
         self.train_model = CompleteBinBaseModel(kmer_dim, None, split_parts_list, dropout, False, hidden_dim, layers, True).to(device)
         self.null_taxon_token = nn.Parameter(torch.zeros(1, 1, hidden_dim))
 
         self.projector_simclr = nn.Linear(hidden_dim, feature_dim, bias=False).to(device)
+
+    def train(self, mode: bool = True):
+        """Keep the frozen pretrained encoder in eval mode.
+
+        ``nn.Module.train`` recurses into submodules, so without this the
+        pretrained model's attention dropout stays active during downstream
+        training. That injects noise into the taxon token and into the
+        same-genome mask derived from it.
+        """
+        super().train(mode)
+        if self.pretrain_model is not None:
+            self.pretrain_model.eval()
+        return self
 
     def fix_param_in_pretrain_model(self):
         if self.pretrain_model is not None:
@@ -75,21 +94,54 @@ class CompleteBinModel(nn.Module):
             logger.info(f"--> Number of {i} parameters have been fixed.")
 
     def load_weight_for_model(self, pretrain_model_weight_path: str):
+        """加载预训练权重。
+
+        分类头现在是裸线性层（输入是主干原始向量，不做归一化），新旧 checkpoint
+        会有对不上的键：
+          · 旧 checkpoint 有 ``out_linear.logit_scale``，新模型没有
+          · 更早的 checkpoint 有 ``out_norm.weight/bias``（LayerNorm 时代），
+            新模型已经没有这层
+        形状或名字对不上的键直接跳过（strict=False + 手动筛），
+        transformer 主体照常加载；分类头那几层由后续训练学出来。
+
+        另外 token 宽度可能不同：预训练流 136（原始 4-mer）、可训练流 128（白化），
+        所以 ``token_proj.weight`` 也可能对不上，同样跳过。
+        """
+        loaded = torch.load(pretrain_model_weight_path, map_location=self.device)
+        state_dict = loaded.get("model_state_dict", loaded) if isinstance(loaded, dict) else loaded
+
+        def _compatible(model, sd):
+            own = model.state_dict()
+            kept, dropped = {}, []
+            for k, v in sd.items():
+                if k in own and tuple(own[k].shape) == tuple(v.shape):
+                    kept[k] = v
+                else:
+                    dropped.append(k)
+            return kept, dropped
+
         if self.pretrain_model is not None:
-            self.pretrain_model.load_state_dict(torch.load(pretrain_model_weight_path, map_location=self.device), strict=True)
-        self.train_model.load_state_dict(torch.load(pretrain_model_weight_path, map_location=self.device), strict=False)
+            kept, dropped = _compatible(self.pretrain_model, state_dict)
+            self.pretrain_model.load_state_dict(kept, strict=False)
+            logger.info(f"--> pretrain_model: loaded {len(kept)} tensors, "
+                        f"reinitialised {len(dropped)} (shape/name mismatch): "
+                        f"{dropped[:5]}")
+        kept, dropped = _compatible(self.train_model, state_dict)
+        self.train_model.load_state_dict(kept, strict=False)
+        logger.info(f"--> train_model: loaded {len(kept)} tensors, "
+                    f"reinitialised {len(dropped)}: {dropped[:5]}")
         logger.info(f"--> Loaded the pretrain weight.")
 
-    # cur_seq_eql_tokens: [12, 136]
-    # cur_seq_rad_tokens: [5 136]
+    # seq_rad_tokens_n_views: [b*n_views, 6, 136]  4-mer 组成向量（冻结编码器 + 可训练编码器共用）
     # mean_tokens shape: (5, 2) for 2 bam files
     # std_tokens shape: (5, 2)
     # whole bp_ cov_ tnf_array shape: (2, 136)
-    def forward(self, seq_rad_tokens_n_views, mean_tokens_n_views, var_tokens_n_views, whole_bp_cov_tnf_inputs, n_views):
+    def forward(self, seq_rad_tokens_n_views,
+                mean_tokens_n_views, std_tokens_n_views, whole_bp_cov_tnf_inputs, n_views):
         # get the seq taxon embedding from pretrain model (or learnable null token)
         if self.use_pretrained:
             with torch.no_grad():
-                seq_taxon_enc = self.pretrain_model(seq_rad_tokens_n_views)[:, None, :]  # b, hidden_dim
+                seq_taxon_enc = self.pretrain_model.encode(seq_rad_tokens_n_views)[:, None, :] # b, hidden_dim
         else:
             b_n_view = seq_rad_tokens_n_views.shape[0]
             seq_taxon_enc = self.null_taxon_token.expand(b_n_view, -1, -1)  # b, 1, hidden_dim
@@ -97,20 +149,21 @@ class CompleteBinModel(nn.Module):
         cov_mean_fea_enc = self.cov_mean_model(mean_tokens_n_views)  # b, l, hidden_dim / 2
         cov_mean_linear = self.cov_mean_linear(mean_tokens_n_views)
         
-        cov_var_fea_enc = self.cov_var_model(var_tokens_n_views)  # b, l, hidden_dim / 2
-        cov_var_linear = self.cov_var_linear(var_tokens_n_views)
+        cov_std_fea_enc = self.cov_std_model(std_tokens_n_views)  # b, l, hidden_dim / 2
+        cov_std_linear = self.cov_std_linear(std_tokens_n_views)
 
         global_mean_cov = mean_tokens_n_views[:, 0, :]   # (B, num_bam_files)
-        global_var_cov = var_tokens_n_views[:, 0, :]      # (B, num_bam_files)
-        global_cov = torch.cat([global_mean_cov, global_var_cov], dim=-1)
+        global_std_cov = std_tokens_n_views[:, 0, :]      # (B, num_bam_files)
+        global_cov = torch.cat([global_mean_cov, global_std_cov], dim=-1)
         pure_cov_token = self.pure_cov_encoder(global_cov)[:, None, :] # (B, num_bam_files * 2)
 
-        seq_rad_tokens_n_views = self.train_model.get_token_proj(seq_rad_tokens_n_views)  # b, l, hidden_dim
-        g_kmer = seq_rad_tokens_n_views[:, 0: 1, :]
+        # 可训练编码器和冻结编码器吃同一份 token（原始 k-mer 组成）。
+        train_tokens = self.train_model.get_token_proj(seq_rad_tokens_n_views)  # b, l, hidden_dim
+        g_kmer = train_tokens[:, 0: 1, :]
 
-        seq_tokens_inputs = torch.cat([seq_rad_tokens_n_views, 
+        seq_tokens_inputs = torch.cat([train_tokens,
                                        cov_mean_fea_enc, cov_mean_linear, 
-                                       cov_var_fea_enc, cov_var_linear], dim=-1)  # b, l, hidden_dim * 3
+                                       cov_std_fea_enc, cov_std_linear], dim=-1)  # b, l, hidden_dim * 3
         seq_tokens_inputs = self.token_proj(seq_tokens_inputs)
 
         whole_bp_cov_tnf_inputs = torch.flatten(whole_bp_cov_tnf_inputs, 1)

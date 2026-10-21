@@ -7,8 +7,7 @@ often appear in one batch — these become false negatives that confuse the mode
 
 This module identifies suspected same-genome contig pairs using the pretrained
 model's classification confidence: two contigs are likely from the same genome
-if both have top-1 probability >= tau AND share the same top-1 class AND share
-the same top-3 classes.
+if both have top-1 probability >= tau AND share the same top-1 class.
 
 Usage (in trainer.py):
     from CompleteBin.Trainer.debiased_loss import (
@@ -18,7 +17,7 @@ Usage (in trainer.py):
 
     sg_mask = build_same_genome_mask(
         seq_taxon_enc[:batch_size],
-        model.pretrain_model.out_linear,
+        model.pretrain_model.classify,   # 分类头完整前向，不要传裸 out_linear
         epoch=epoch_counter,
         enable_mask=use_pretrained,
     )
@@ -34,12 +33,12 @@ logger = get_logger()
 @torch.no_grad()
 def build_same_genome_mask(
     taxon_emb: torch.Tensor,              # [B, hidden_dim]
-    out_linear,                           # Linear(hidden_dim, num_classes) or None
+    classify_fn,                          # callable(hidden) -> [B, num_classes]，或 None
     epoch: int = 0,
     n_iter: int = 0,
     total_iters: int = 1,
     warmup_epochs: int = 10,
-    tau: float = 0.98,                    # top-1 probability threshold
+    tau: float = 0.9999,                   # top-1 probability threshold
     enable_mask: bool = True,
 ) -> torch.Tensor:
     """Identify contig pairs likely from the same genome.
@@ -47,7 +46,30 @@ def build_same_genome_mask(
     Uses pretrained classification confidence:
     1. Both contigs must have top-1 probability >= tau (high-confidence prediction)
     2. Their top-1 predicted class must be the same
-    3. Their top-3 predicted classes must be identical (as a set, sorted)
+
+    The former third condition (identical top-3 classes) was dropped: on the
+    held-out test genomes it only removed true same-genome pairs. Condition 2
+    alone already gives precision 1.0, and dropping condition 3 raises the recall
+    of the rule accordingly (see Analysis/test_split_rule_eval/test_rule_eval.json,
+    where 1+2 at tau=0.9 triggers 1,739 pairs with precision 1.000 and
+    recall 0.0435).
+
+    Current defaults: tau=0.98, warmup_epochs=10 (a marine comparison run used
+    tau=0.7 / warmup=5 and scored worse on the AMBER bins, so the conservative
+    settings were restored). Measured on the held-out test genomes
+    (Analysis/test_split_rule_eval/ep23_tau_table.json, 50k same-genome + 50k
+    different-genome fragment pairs matched by length bin):
+
+        tau   precision   recall   false-positive rate
+        0.98    0.9989     0.0112   2e-05
+        0.70    0.9998     0.0969   2e-05
+        0.90    0.9996     0.0482   2e-05
+        0.95    0.9993     0.0280   2e-05
+
+    Lowering tau buys recall and costs almost no precision on labelled reference
+    genomes - but on marine the extra pairs it admits are unverified, and enabling
+    the mask at tau=0.7 measurably reduced the AMBER NC/MQ+ counts, so the
+    conservative 0.98 is the default.
 
     Adaptive scheduling:
     - epoch <= warmup_epochs: mask fully disabled (return zeros)
@@ -55,12 +77,16 @@ def build_same_genome_mask(
 
     Args:
         taxon_emb: [B, hidden_dim] pretrained embeddings (first-view only).
-        out_linear: pretrained classification head Linear(hidden_dim, num_classes).
+        classify_fn: 分类头的**完整前向**（现在是裸线性层 ``out_linear(x)``），
+            形如 ``pretrain_model.classify``。不要传裸的 ``out_linear``：
+            分类头将来若再挂前置层，直接调 out_linear 会漏掉它，算出来的
+            置信度和实际分类不一致。
         epoch: current training epoch (1-indexed).
         n_iter: current iteration within epoch.
         total_iters: total iterations in this epoch.
-        warmup_epochs: epochs during which mask is fully disabled.
-        tau: top-1 probability confidence threshold.
+        warmup_epochs: epochs during which mask is fully disabled (default 10, so
+            the mask starts contributing from epoch 11).
+        tau: top-1 probability confidence threshold (default 0.98).
         enable_mask: if False, returns all-zero mask.
 
     Returns:
@@ -70,14 +96,14 @@ def build_same_genome_mask(
     device = taxon_emb.device
 
     # --- Fast path: mask disabled ---
-    if not enable_mask or out_linear is None:
+    if not enable_mask or classify_fn is None:
         return torch.zeros(B, B, device=device)
 
     if epoch <= warmup_epochs:
         return torch.zeros(B, B, device=device)
 
     # --- Compute classification probabilities ---
-    logits = out_linear(taxon_emb)                         # [B, num_classes]
+    logits = classify_fn(taxon_emb)                        # [B, num_classes]
     probs = F.softmax(logits, dim=-1)                      # [B, num_classes]
 
     # Condition 1: both contigs have confident predictions
@@ -88,13 +114,8 @@ def build_same_genome_mask(
     # Condition 2: same top-1 predicted class
     same_top1 = (top1_idx.unsqueeze(1) == top1_idx.unsqueeze(0))  # [B, B]
 
-    # Condition 3: identical top-3 classes (sorted to ignore order)
-    _, top3_idx = probs.topk(3, dim=-1)                   # [B, 3]
-    top3_sorted, _ = top3_idx.sort(dim=-1)                # [B, 3]
-    same_top3 = (top3_sorted.unsqueeze(1) == top3_sorted.unsqueeze(0)).all(dim=-1)  # [B, B]
-
-    # Combined: high confidence + same top-1 + same top-3
-    sg_mask = high_conf_pair & same_top1 & same_top3       # [B, B]
+    # Combined: high confidence + same top-1
+    sg_mask = high_conf_pair & same_top1                   # [B, B]
 
     # Remove self-pairs
     sg_mask = sg_mask & ~torch.eye(B, dtype=torch.bool, device=device)

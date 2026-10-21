@@ -1,0 +1,21 @@
+include LICENSE
+include README.md
+include requirements.txt
+include pyproject.toml
+include CompleteBin/version.py
+
+recursive-include CompleteBin *.py
+recursive-exclude CompleteBin __pycache__
+recursive-exclude CompleteBin *.pyc *.pyo
+
+# Never ship repository-level development material.
+prune scripts
+prune task_runs
+prune Analysis
+prune archived_scripts
+prune useless
+prune Amber
+prune Explore_Reuse
+prune Explore_Upper_Bound
+prune ablation_tools
+prune dist

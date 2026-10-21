@@ -117,7 +117,7 @@ def _worker_process_chunk(
     results: List[tuple] = []
 
     for contigname, seq in c2s.items():
-        seq_rad_tokens, mean_tokens, std_tokens, whole_bp_cov_tnf_array = (
+        (seq_rad_tokens, mean_tokens, std_tokens, whole_bp_cov_tnf_array) = (
             get_features_of_one_seq(
                 seq,
                 c2b[contigname],
@@ -134,9 +134,9 @@ def _worker_process_chunk(
         results.append(
             (
                 contigname[1:],  # drop leading '>'
-                seq_rad_tokens,  # [6, 136]  float32
-                mean_tokens,     # [6, B]    float32
-                std_tokens,      # [6, B]    float32
+                seq_rad_tokens,          # [6, 136] float32  4-mer 组成向量
+                mean_tokens,             # [6, B]   float32
+                std_tokens,              # [6, B]   float32
                 whole_bp_cov_tnf_array,  # [B, 136]  float32
             )
         )
@@ -294,14 +294,15 @@ def build_training_seq_data_numpy_save_fixed(
         worker_results = loaded["results"]
 
         for item in worker_results:
-            contigname_no_gt, seq_rad_tokens, mean_tokens, std_tokens, whole_bp_cov_tnf_array = item
+            (contigname_no_gt, seq_rad_tokens, mean_tokens, std_tokens,
+             whole_bp_cov_tnf_array) = item
             full_name = ">" + contigname_no_gt
 
-            # Reconstruct the 6-tuple expected by ssmt_v2.py
+            # Reconstruct the tuple expected by ssmt_v2.py / TrainingDataset
             cur_tuple = (
                 contigname2seq[full_name],
                 contigname2bp_array_list[full_name],
-                seq_rad_tokens,
+                seq_rad_tokens,          # 4-mer 组成向量，136 维
                 mean_tokens,
                 std_tokens,
                 whole_bp_cov_tnf_array,

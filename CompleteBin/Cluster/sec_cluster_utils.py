@@ -15,7 +15,15 @@ from CompleteBin.CallGenes.hmm_utils import process_subset
 from CompleteBin.IO import writeFasta, writePickle
 from CompleteBin.logger import get_logger
 from CompleteBin.Seqs.seq_info import calculateN50
-from CompleteBin.Cluster.first_cluster_utils import get_KNN_nodes_hnsw, run_leiden
+from CompleteBin.Cluster.first_cluster_utils import (
+    FAISS_MAX_NODES,
+    HNSW_M,
+    MIN_DEGREE,
+    faiss_available,
+    get_KNN_nodes_faiss,
+    get_KNN_nodes_hnsw,
+    run_leiden,
+)
 
 
 logger = get_logger()
@@ -121,7 +129,12 @@ def cluster_split_no_learning(
         curSet = splitContigSetList[i].union(notExistGeneContig)
         curContig2seq = {}
         summedLength = 0.0
-        for contigName in curSet:
+        # P0-1 可复现性修复：set 的迭代顺序由字符串哈希决定，而字符串哈希种子是
+        # **逐进程随机**的（PYTHONHASHSEED 未在解释器启动前固定时），且 spawn 子进程
+        # 各有独立种子。这里的字典键序会一路传导到 cluster_split 的嵌入矩阵行序，
+        # 进而改变 KNN 邻居表与 Leiden 划分（实测：d0≈931 contig 时同一份数据
+        # 3 次运行有 2 次划分不同）。排序后键序确定，不依赖进程哈希种子。
+        for contigName in sorted(curSet):
             curContig2seq[contigName] = deepcopy(sub_contigName2seq[contigName])
             summedLength += len(sub_contigName2seq[contigName])
         ratio = curNumGenes / totalN + 0.0
@@ -140,6 +153,14 @@ def cluster_split(
     tname2markerset,
     bac_contigName2_gene2num,
     arc_contigName2_gene2num,
+    leiden_seed: int = 42,
+    num_workers: int = 32,
+    # ── 建图规则（第二轮）───────────────────────────────────────────────
+    # 2026-10 的实测结论（PLAN_GRID_REFORM.md 5.6.6）：第二轮**保持历史取值**。
+    # 把第一轮选中的 k=10 传进来会让唯一真基因组的回收率从 0.500 掉到 0.388，
+    # 所以这里不跟随第一轮；只把两个新参数显式传下去，避免签名漂移。
+    alpha: float = 1.0,
+    min_degree: int = MIN_DEGREE,
 ) -> List[Dict[str, str]]:
     num_contigs = len(sub_contigName2seq)
     # cluster part #
@@ -148,7 +169,12 @@ def cluster_split(
     length_weights = []
     contig_name_list = []
     simclr_embMat = []
-    for j, (contig_name, seq) in enumerate(sub_contigName2seq.items()):
+    # P0-1 可复现性修复：必须按**确定的顺序**构造嵌入矩阵。
+    # 矩阵行序 = 字典键序，而字典键序在真实管线里可能来自 set 迭代（哈希随机）；
+    # 行序又决定节点编号 → faiss KNN 邻居表（按索引，距离并列以索引决胜）→ Leiden 图。
+    # 排序是唯一让"给定同一 contig 集合 → 同一划分"成立的做法，且覆盖所有调用方。
+    for contig_name in sorted(sub_contigName2seq):
+        seq = sub_contigName2seq[contig_name]
         length_weights.append(len(seq))
         contig_name_list.append(contig_name)
         simclr_embMat.append(contigName2RepNormV[contig_name])
@@ -177,7 +203,16 @@ def cluster_split(
     max_edges = 100
     if num_contigs <= max_edges:
         max_edges = num_contigs - 1
-    ann_neighbor_indices, ann_distances = get_KNN_nodes_hnsw(simclr_embMat, max_edges, space=space, num_workers=32, print_log=False)
+    # 与第一轮用同一套后端分流规则：小规模走 faiss 精确检索（多线程下结果确定），
+    # 大规模才回退 HNSW（建图依赖线程交织顺序，只能靠加大 M 压低差异）。
+    n_nodes = len(simclr_embMat)
+    if n_nodes < FAISS_MAX_NODES and faiss_available():
+        ann_neighbor_indices, ann_distances = get_KNN_nodes_faiss(
+            simclr_embMat, max_edges, num_workers, print_log=False)
+    else:
+        ann_neighbor_indices, ann_distances = get_KNN_nodes_hnsw(
+            simclr_embMat, max_edges, space=space, num_workers=num_workers,
+            print_log=False, M=HNSW_M)
     partgraph_ratio = 100
     bandwidth = 0.1
 
@@ -206,6 +241,9 @@ def cluster_split(
             is_membership_fixed,
             -1,
             False,
+            rng_seed=leiden_seed,
+            alpha=alpha,
+            min_degree=min_degree,
         )
         all_clu2contigs.append(cur_clu2contigs)
 
@@ -400,6 +438,8 @@ def re_cluster_procedure_for_one_method(
     mag_length_threshold: int,
     seed_path,
     coverage_profile_path=None,
+    leiden_seed: int = 42,
+    num_workers: int = 32,
 ):
     # start
     quality_record = {}
@@ -428,6 +468,8 @@ def re_cluster_procedure_for_one_method(
                 tname2markerset,
                 bac_contigName2_gene2num,
                 arc_contigName2_gene2num,
+                leiden_seed=leiden_seed,
+                num_workers=num_workers,
             )
             secd_cluster_bins_qualites = eval_qualities_for_cluster_split(
                 secd_cluster_contigname2seq_list,

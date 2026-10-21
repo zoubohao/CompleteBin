@@ -24,6 +24,7 @@ def combine_two_cluster_steps(
     clustering_stages:int,
     leiden_iter_mode: str,
     coverage_profile_path=None,
+    leiden_seed: int = 42,
 ):
     if os.path.exists(clustering_all_folder) is False:
         os.mkdir(clustering_all_folder)
@@ -50,7 +51,8 @@ def combine_two_cluster_steps(
         cpu_num,
         seed_path,
         clustering_stages,
-        leiden_iter_mode
+        leiden_iter_mode,
+        leiden_seed,
     )
     # ### re-cluster
     temp_bin_output = os.path.join(clustering_all_folder, f"temp_binning_results_{gmm_flspp}")
@@ -72,5 +74,6 @@ def combine_two_cluster_steps(
         mag_length_threshold=mag_length_threshold,
         seed_path = seed_path,
         coverage_profile_path=coverage_profile_path,
+        leiden_seed=leiden_seed,
     )
     return ensemble_list

@@ -4,6 +4,7 @@ import os
 import random
 
 import numpy as np
+import torch
 import torch.multiprocessing as tmp
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
@@ -46,7 +47,7 @@ class SelfSupervisedMethodsTrainer(object):
         pretrain_model_weight_path: str,
         log_every_n_steps: int = 10,
         dataloader_workers: int = 32,
-        num_classes=15434,
+        num_classes=None,
         layers=4,
         seed: int = 2048,
         use_pretrained: bool = True,
@@ -57,10 +58,38 @@ class SelfSupervisedMethodsTrainer(object):
         self.batch_size = batch_size
         self.count_kmer = count_kmer
         self.count_kmer_dict_rev, self.count_nr_feature_rev = generate_feature_mapping_reverse(count_kmer)
+        # token = 原始 4-mer 组成向量（4-mer 类数 = 136），冻结编码器和可训练编码器共用。
+        # whole_kmer_dim 也保持 4-mer 宽度：那是 coverage 分箱用的。
+        self.pretrain_token_dim = self.count_nr_feature_rev   # 136
         seq_length = 1  # change from 6 to 3
         hidden_dim = 768
+        if use_pretrained:
+            checkpoint_obj = torch.load(pretrain_model_weight_path, map_location="cpu")
+            checkpoint_state = (checkpoint_obj.get("model_state_dict", checkpoint_obj)
+                                if isinstance(checkpoint_obj, dict) else checkpoint_obj)
+            classifier_weight = checkpoint_state.get("out_linear.weight")
+            if  classifier_weight is not None:
+                checkpoint_num_classes = int(classifier_weight.shape[0])
+                if checkpoint_num_classes != num_classes:
+                    logger.info(
+                        f"--> Override num_classes from {num_classes} to "
+                        f"checkpoint value {checkpoint_num_classes}."
+                    )
+                    num_classes = checkpoint_num_classes
+            checkpoint_layer_indices = {
+                int(key.split(".")[1])
+                for key in checkpoint_state
+                if key.startswith("transformer_model.") and key.split(".")[1].isdigit()
+            }
+            if checkpoint_layer_indices:
+                checkpoint_layers = max(checkpoint_layer_indices) + 1
+                if checkpoint_layers != layers:
+                    logger.info(
+                        f"--> Override layers from {layers} to checkpoint value {checkpoint_layers}."
+                    )
+                    layers = checkpoint_layers
         model = CompleteBinModel(
-            kmer_dim=self.count_nr_feature_rev,
+            kmer_dim=self.pretrain_token_dim,
             whole_kmer_dim=self.count_nr_feature_rev,
             feature_dim=feature_dim,
             num_bam_files=num_bam_files,

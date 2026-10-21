@@ -28,6 +28,17 @@ def positive_integer(value: str) -> int:
     return number
 
 
+def non_negative_integer(value: str) -> int:
+    """Return a non-negative integer (0 allowed) or raise a clear error.
+
+    种子取 0 是合法值，所以这里不能复用 positive_integer。
+    """
+    number = int(value)
+    if number < 0:
+        raise argparse.ArgumentTypeError("must be a non-negative integer")
+    return number
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build the public CLI parser without importing the full pipeline."""
     parser = argparse.ArgumentParser(
@@ -109,9 +120,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     execution.add_argument(
         "-l_mode", "--leiden_iter_mode", "--leiden-mode", dest="leiden_iter_mode",
-        choices=("accurate", "fast"), default="accurate", metavar="MODE",
+        choices=("accurate", "fast"), default="fast", metavar="MODE",
         help="Leiden optimisation: 'accurate' converges fully; 'fast' uses adaptive "
-             "early stopping. (default: accurate)",
+             "early stopping. (default: fast)",
+    )
+    execution.add_argument(
+        "--leiden_seed", "--leiden-seed", dest="leiden_seed", type=non_negative_integer,
+        default=42, metavar="SEED",
+        help="Random seed for the leidenalg Optimiser. This is a separate parameter "
+             "from the global training seed (which stays 2048); changing it does not "
+             "retrain the model. (default: 42)",
     )
     execution.add_argument(
         "--cpu_workers", "--cpu-workers", dest="cpu_workers", type=positive_integer,
@@ -129,6 +147,36 @@ def build_parser() -> argparse.ArgumentParser:
         type=parse_bool, default=True, metavar="BOOL",
         help="Automatically skip pretrained weights when input statistics indicate "
              "they are unsuitable. Accepts true/false. (default: true)",
+    )
+    execution.add_argument(
+        "--ensemble_clustering", "--ensemble-clustering", dest="ensemble_clustering",
+        type=parse_bool, default=True, metavar="BOOL",
+        help="Which clustering scheme to use. Accepts true/false.\n"
+             "  true (DEFAULT): the original scheme -- round-1 grid -> round-2 SCG "
+             "re-clustering -> Galah consensus -> contig deduplication -> round-3 "
+             "k-means.\n"
+             "  false: the improved H1 scheme -- after the round-1 Leiden "
+             "grid, pick ONE partition by SCG + embedding-compactness scoring, then "
+             "coarse-filter (length>=20kb or n_contigs>=3) + fine-filter "
+             "(emb_spread<=0.15 or length>=200kb or single-contig), then re-cluster the "
+             "discarded contigs with k-means. Output is further trimmed by an "
+             "embedding-compactness rule so that 3000+ MAGs drop to ~1500 while NC and "
+             "MQ are unchanged. Skips round-2 SCG re-clustering, Galah and contig "
+             "deduplication.\n"
+             "See scripts/grid_reform_run_20261001/IMPROVEMENT.md. (default: true)",
+    )
+    execution.add_argument(
+        "--pretrain-model-weight", dest="pretrain_model_weight_path", default=None,
+        metavar="PTH",
+        help="Path to the pretrained checkpoint to use. Defaults to "
+             "<db>/CheckPoint/pretrain_weight_ep127.pth.",
+    )
+    execution.add_argument(
+        "--low-gap-extra-batches", dest="low_gap_extra_batches", type=int, default=3,
+        metavar="N",
+        help="How many extra mini-batches of short contigs to pull in when lowering "
+             "the training length threshold (default: 3). Larger = lower threshold, "
+             "more (shorter) contigs enter training.",
     )
     execution.add_argument(
         "--dry-run", action="store_true",
@@ -188,6 +236,88 @@ def print_dry_run(args: argparse.Namespace) -> None:
     print(f"  database: {args.db_files_path}")
     print(f"  device: {args.device}")
     print(f"  step: {args.step_num if args.step_num is not None else 'all'}")
+    print(f"  leiden_iter_mode: {args.leiden_iter_mode}")
+    print(f"  leiden_seed: {args.leiden_seed}")
+    print(f"  ensemble_clustering: {args.ensemble_clustering}"
+          f"{'' if args.ensemble_clustering else '  (improved H1 scheme, see IMPROVEMENT.md)'}")
+
+
+# Runtime packages that CompleteBin imports but does not declare on PyPI.
+# They are scientific or binary packages whose conda builds are coupled to the
+# linear-algebra, CUDA and compiler stack of the environment; letting pip pull
+# PyPI wheels for them would duplicate or upgrade what conda already manages and
+# break the environment. They are therefore installed with conda, and this list
+# turns the resulting ModuleNotFoundError into actionable instructions.
+_RUNTIME_IMPORTS = [
+    # (import name, conda package name, which side installs it)
+    ("numpy", "numpy", "conda"),
+    ("scipy", "scipy", "conda"),
+    ("sklearn", "scikit-learn", "conda"),
+    ("pysam", "pysam", "conda"),
+    ("hnswlib", "hnswlib", "conda"),
+    ("tqdm", "tqdm", "conda"),
+    ("torch", "torch", "pip"),
+    ("igraph", "python-igraph", "pip"),
+    ("leidenalg", "leidenalg", "pip"),
+    ("psutil", "psutil", "pip"),
+]
+
+
+def check_runtime_dependencies() -> None:
+    """Exit with instructions when a runtime package is missing.
+
+    CompleteBin's validated environment is hybrid: conda supplies the
+    interpreter, NumPy/SciPy/scikit-learn, pysam, hnswlib, tqdm and the
+    bioinformatics programs, while PyTorch and the graph libraries come from pip
+    because conda has no Python 3.9 build for those versions. The message below
+    only suggests each package on the side that can actually provide it.
+    """
+    import importlib.util
+
+    missing = [
+        (module, conda_name, side)
+        for module, conda_name, side in _RUNTIME_IMPORTS
+        if importlib.util.find_spec(module) is None
+    ]
+    if not missing:
+        return
+
+    modules = ", ".join(module for module, _, _ in missing)
+    conda_missing = [name for _, name, side in missing if side == "conda"]
+    pip_missing = [name for _, name, side in missing if side == "pip"]
+
+    lines = [
+        f"CompleteBin is missing required runtime packages: {modules}",
+        "",
+        "The validated environment is hybrid: conda provides the interpreter,",
+        "NumPy/SciPy/scikit-learn, pysam, hnswlib, tqdm and the bioinformatics",
+        "programs; PyTorch and the graph libraries come from pip, because conda",
+        "has no Python 3.9 build for those exact versions.",
+        "",
+    ]
+    if conda_missing:
+        lines += [
+            "Install the missing conda packages:",
+            "",
+            "    conda install -c conda-forge -c bioconda "
+            + " ".join(conda_missing),
+            "",
+        ]
+    if pip_missing:
+        lines += [
+            "Install the missing pip packages (pinned to the validated versions):",
+            "",
+            "    completebin-pip-deps",
+            "",
+        ]
+    lines += [
+        "Or build the whole environment from the reference file:",
+        "",
+        "    conda env create -f completebin-conda-env.yml",
+        "",
+        "See the 'Dependencies' section of README.md.",
+    ]
+    raise SystemExit("\n".join(lines))
 
 
 def main() -> None:
@@ -198,6 +328,8 @@ def main() -> None:
     if args.dry_run:
         print_dry_run(args)
         return
+
+    check_runtime_dependencies()
 
     # Delay importing the full pipeline so --help, --version and --dry-run can
     # run without loading heavy runtime dependencies such as PyTorch.
@@ -212,6 +344,7 @@ def main() -> None:
         db_folder_path=args.db_files_path,
         min_contig_length=args.min_contig_length,
         leiden_iter_mode=args.leiden_iter_mode,
+        leiden_seed=args.leiden_seed,
         drop_p=args.dropout_prob,
         batch_size=args.batch_size,
         base_epoch=args.base_epoch,
@@ -219,6 +352,11 @@ def main() -> None:
         cpu_workers=args.cpu_workers,
         step_num=args.step_num,
         auto_disable_pretrain=args.auto_disable_pretrain,
+        pretrain_model_weight_path=args.pretrain_model_weight_path,
+        low_gap_extra_batches=args.low_gap_extra_batches,
+        # CLI 默认 True = 走原始 ensemble 方案（round-1 → round-2 → Galah → 去重 → round-3）。
+        # `binning_with_all_steps` 的函数默认值也是 True，两边一致。
+        ensemble_clustering=args.ensemble_clustering,
     )
 
 

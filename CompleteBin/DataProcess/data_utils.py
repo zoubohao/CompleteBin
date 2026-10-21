@@ -58,6 +58,9 @@ def get_normlized_count_vec_of_seq_fast(
 
     Same signature, same return value.  Eliminates the per-position Python
     for-loop — uses numpy integer encoding, packed indexing, and bincount.
+
+    返回的组成向量永远是**原始 136 维**（不做白化）。白化在
+    get_features_of_one_seq 里单独产出一条流，因为预训练那一路要用原始的。
     """
     seq = seq.upper()
     N = len(seq)
@@ -234,13 +237,29 @@ def get_features_of_one_seq(seq: str,
                             subparts_list,
                             min_len,
                             ):
+    """算一条 contig 的全部特征。
+
+    返回值：(token, mean_tokens, std_tokens, bp_cov_tnf_array)
+
+      · token = 6 个 4-mer 组成向量，每行 136 维（整条 contig + 5 个重叠子片段）。
+        冻结的预训练编码器和可训练编码器都用它。
+
+    （白化那条支路已删除：实测白化对 binning 没有收益，见
+    marine 消融实验 whiten0 vs whiten1 的 AMBER 指标。）
+    """
     seq = seq.upper().replace("N", "A")
     cal_tnf_bp = False
     if bp_nparray_list is not None:
         cal_tnf_bp = True
-    whole_composition_v, whole_bp_cov_tnf_array = get_normlized_count_vec_of_seq_fast(seq, count_kmer_dict, count_nr_features, count_kmer,
-                                                                                      bp_nparray_list, cal_tnf_bp)
-    seq_rad_tokens = [whole_composition_v]
+    # ── 先收集 6 个 4-mer 组成向量（原始，136 维）：整条 contig + 5 个子片段 ──
+    whole_composition_v, _ = get_normlized_count_vec_of_seq_fast(seq, count_kmer_dict, count_nr_features, count_kmer,
+                                                                 None, False)
+    # coverage 分箱那一路保持原样：只取 bp_cov_tnf_array，组成向量被丢弃。
+    whole_bp_cov_tnf_array = None
+    if cal_tnf_bp:
+        _, whole_bp_cov_tnf_array = get_normlized_count_vec_of_seq_fast(seq, count_kmer_dict, count_nr_features, count_kmer,
+                                                                        bp_nparray_list, True)
+    raw_tokens = [whole_composition_v]
     mean_tokens = None
     std_tokens = None
     if bp_nparray_list is not None:
@@ -250,15 +269,16 @@ def get_features_of_one_seq(seq: str,
     for sub_seq, start, end in sub_seqs_list:
         sub_composition_v, _ = get_normlized_count_vec_of_seq_fast(sub_seq, count_kmer_dict, count_nr_features, count_kmer,
                                                                    bp_nparray_list, False)
-        seq_rad_tokens.append(sub_composition_v)
+        raw_tokens.append(sub_composition_v)
         if bp_nparray_list is not None:
             mean_tokens.append(np.mean(bp_nparray_list[:, start + 75: end - 75], axis=1, keepdims=False))
             std_tokens.append(np.std(bp_nparray_list[:, start + 75: end - 75], axis=1, keepdims=False))
-    seq_rad_tokens = np.stack(seq_rad_tokens, axis=0)
+    seq_rad_tokens = np.stack(raw_tokens, axis=0)          # [6, 136]
+
     if bp_nparray_list is not None:
         mean_tokens = np.stack(mean_tokens, axis=0)
         std_tokens = np.stack(std_tokens, axis=0)
-    return seq_rad_tokens, mean_tokens, std_tokens, whole_bp_cov_tnf_array
+    return (seq_rad_tokens, mean_tokens, std_tokens, whole_bp_cov_tnf_array)
 
 
 def process_data_one_thread_return_list(
@@ -273,7 +293,8 @@ def process_data_one_thread_return_list(
     count_kmer_dict, count_nr_features = generate_feature_mapping_reverse(count_kmer)
     for contigname, seq in contigname2seq.items():
         # progressBar(j, n)
-        seq_rad_tokens, mean_tokens, std_tokens, whole_bp_cov_tnf_array = get_features_of_one_seq(
+        (seq_rad_tokens, mean_tokens, std_tokens,
+         whole_bp_cov_tnf_array) = get_features_of_one_seq(
             seq,
             contigname2bp_nparray_list[contigname],
             count_kmer,

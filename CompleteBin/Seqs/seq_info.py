@@ -14,6 +14,26 @@ from CompleteBin.Seqs.generate_seed import gen_seed
 
 logger = get_logger()
 
+# 覆盖度统计文件：存的是「最大平均覆盖度」和「最大覆盖度标准差」。
+# 历史上这个文件叫 mean_var.pkl，名字有误导 —— 第二个数其实是 std，不是 var。
+COVERAGE_STATS_FILENAME = "coverage_stats.pkl"
+LEGACY_COVERAGE_STATS_FILENAME = "mean_var.pkl"
+
+
+def resolve_coverage_stats_path(temp_file_folder_path: str) -> str:
+    """返回覆盖度统计文件的读写路径。
+
+    新目录写 ``coverage_stats.pkl``；为了不废掉改名之前已经生成的 temp 目录
+    （里面只有旧的 ``mean_var.pkl``），读的时候找不到新名字就回退到旧名字。
+    """
+    new_path = os.path.join(temp_file_folder_path, COVERAGE_STATS_FILENAME)
+    if os.path.exists(new_path):
+        return new_path
+    legacy_path = os.path.join(temp_file_folder_path, LEGACY_COVERAGE_STATS_FILENAME)
+    if os.path.exists(legacy_path):
+        return legacy_path
+    return new_path
+
 
 def calculateN50(seqLens):
     if isinstance(seqLens, dict):
@@ -84,7 +104,7 @@ def prepare_sequences_coverage(
         
         name2bpcover_nparray_list = {}
         cov_val_list = [[] for _ in range(pro_num)]
-        var_val_list = [[] for _ in range(pro_num)]
+        std_val_list = [[] for _ in range(pro_num)]
         logger.info(f"--> Start to collect the coverage information from {pro_num} bam files.")
         for name, cur_dna_seq in contigname2seq.items():
             cur_bp_array_list = []
@@ -92,12 +112,12 @@ def prepare_sequences_coverage(
                 if name not in cur_name2bp_array:
                     cur_bp_array_list.append(np.zeros(shape=[len(cur_dna_seq)], dtype=np.int64))
                     cov_val_list[k].append(0.)
-                    var_val_list[k].append(0.)
+                    std_val_list[k].append(0.)
                 else:
                     cur_bp_array_list.append(cur_name2bp_array[name])
                     ## cal max for different bam files
                     cov_val_list[k].append(sum(cur_name2bp_array[name][75:-75]) / (len(cur_name2bp_array[name]) - 150))
-                    var_val_list[k].append(np.std(cur_name2bp_array[name][75:-75], dtype=np.float32))
+                    std_val_list[k].append(np.std(cur_name2bp_array[name][75:-75], dtype=np.float32))
             name2bpcover_nparray_list[name] = np.array(cur_bp_array_list, dtype=np.float32)
         logger.info(f"--> Start to write coverage information")
         for name, bp_list in name2bpcover_nparray_list.items():
@@ -105,16 +125,16 @@ def prepare_sequences_coverage(
             assert n == pro_num, ValueError(f"There are number of {pro_num} bam files, but contig {name} only have {n} coverage info.")
         writePickle(os.path.join(temp_file_folder_path, "contigname2bpcover_nparray_list.pkl"), name2bpcover_nparray_list)
         mean_val = np.max(np.array(cov_val_list, dtype=np.float32), axis=1, keepdims=False)
-        var_val = np.max(np.array(var_val_list, dtype=np.float32), axis=1, keepdims=False)
+        std_val = np.max(np.array(std_val_list, dtype=np.float32), axis=1, keepdims=False)
         ##################
         ## Changed Here ##
         ##################
         # mean_val = np.log(mean_val + 1.)
-        # var_val = np.log(var_val + 1.)
+        # std_val = np.log(std_val + 1.)
         logger.info(f"--> The max of coverage mean value is {mean_val}.")
-        logger.info(f"--> The max coverage std value is {var_val}.")
-        writePickle(os.path.join(temp_file_folder_path, "mean_var.pkl"), (mean_val, var_val))
-        # writePickle(os.path.join(temp_file_folder_path, "std.pkl"), var_val)
+        logger.info(f"--> The max coverage std value is {std_val}.")
+        writePickle(os.path.join(temp_file_folder_path, COVERAGE_STATS_FILENAME), (mean_val, std_val))
+        # writePickle(os.path.join(temp_file_folder_path, "std.pkl"), std_val)
 
     # gen_seed 调用已移至 binning_with_all_steps() 中，在 coverage outlier 处理之后
     # 确保种子 contig 不会落在已移除的 outlier 上
@@ -129,7 +149,7 @@ def prepare_sequences_coverage(
 def clip_coverage_outliers(
     contigname2seq_path: str,
     contigname2bp_nparray_list_path: str,
-    mean_var_path: str,
+    coverage_stats_path: str,
     gap_threshold_mean: float = 1.15,
     gap_threshold_std: float = 1.265,
     min_length: int = 2500,
@@ -144,12 +164,12 @@ def clip_coverage_outliers(
     have their per-base coverage values clipped to the breakpoint value.
 
     After processing, rewrites the three pkl files and recomputes
-    max_cov_mean / max_cov_var.
+    max_cov_mean / max_cov_std.
 
     Args:
         contigname2seq_path: path to contigname2seq_str.pkl (rewritten in-place).
         contigname2bp_nparray_list_path: path to per-base coverage pkl (rewritten in-place).
-        mean_var_path: path to mean_var.pkl (rewritten in-place).
+        coverage_stats_path: path to coverage_stats.pkl (rewritten in-place).
         gap_threshold_mean: minimum ratio c_i/c_{i+1} to declare a break in mean coverage.
         gap_threshold_std:  minimum ratio c_i/c_{i+1} to declare a break in std coverage.
         min_length: contigs shorter than this are candidates for removal.
@@ -158,7 +178,7 @@ def clip_coverage_outliers(
     Returns:
         dict with keys:
             n_removed, n_clipped, n_std_only_protected,
-            old_mean_val, new_mean_val, old_var_val, new_var_val,
+            old_mean_val, new_mean_val, old_std_val, new_std_val,
             mean_clip_thresholds, std_clip_thresholds
     """
     contigname2seq = readPickle(contigname2seq_path)
@@ -293,22 +313,22 @@ def clip_coverage_outliers(
                 bp_array[j] = np.clip(bp_array[j], 0, mean_clip_thresholds[j])
         contigname2bp[name] = bp_array
 
-    # ── 7. Recompute max_cov_mean / max_cov_var ──
+    # ── 7. Recompute max_cov_mean / max_cov_std ──
     cov_vals = [[] for _ in range(num_bam)]
-    var_vals = [[] for _ in range(num_bam)]
+    std_vals = [[] for _ in range(num_bam)]
     for name, bp_array in contigname2bp.items():
         seq_len = bp_array.shape[1]
         for j in range(num_bam):
             trimmed = bp_array[j, 75:-75].astype(np.float32) if seq_len > 150 else bp_array[j].astype(np.float32)
             cov_vals[j].append(float(np.mean(trimmed)))
-            var_vals[j].append(float(np.std(trimmed)))
+            std_vals[j].append(float(np.std(trimmed)))
 
     new_mean_val = np.max(np.array(cov_vals, dtype=np.float32), axis=1, keepdims=False)
-    new_var_val = np.max(np.array(var_vals, dtype=np.float32), axis=1, keepdims=False)
+    new_std_val = np.max(np.array(std_vals, dtype=np.float32), axis=1, keepdims=False)
 
-    old_mean_val, old_var_val = readPickle(mean_var_path)
+    old_mean_val, old_std_val = readPickle(coverage_stats_path)
     logger.info(f"--> [clip] Old max_cov_mean: {old_mean_val}  ->  New: {new_mean_val}")
-    logger.info(f"--> [clip] Old max_cov_std:  {old_var_val}  ->  New: {new_var_val}")
+    logger.info(f"--> [clip] Old max_cov_std:  {old_std_val}  ->  New: {new_std_val}")
     if mean_clip_thresholds:
         logger.info(f"--> [clip] Mean clip thresholds per BAM: {mean_clip_thresholds}")
     if std_clip_thresholds:
@@ -317,13 +337,13 @@ def clip_coverage_outliers(
     # ── 8. Rewrite pkl files ──
     writePickle(contigname2seq_path, contigname2seq)
     writePickle(contigname2bp_nparray_list_path, contigname2bp)
-    writePickle(mean_var_path, (new_mean_val, new_var_val))
+    writePickle(coverage_stats_path, (new_mean_val, new_std_val))
 
     logger.info(f"--> [clip] Done. Removed={n_removed}, Clipped={n_clipped}")
     return dict(
         n_removed=n_removed, n_clipped=n_clipped, n_std_only_protected=0,
         old_mean_val=old_mean_val, new_mean_val=new_mean_val,
-        old_var_val=old_var_val, new_var_val=new_var_val,
+        old_std_val=old_std_val, new_std_val=new_std_val,
         mean_clip_thresholds=mean_clip_thresholds,
         std_clip_thresholds=std_clip_thresholds,
     )

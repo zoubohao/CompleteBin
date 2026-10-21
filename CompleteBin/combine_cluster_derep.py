@@ -33,8 +33,10 @@ def clustering_and_dereplication(
     bin_output_folder_path: str,
     leiden_iter_mode,  # ="accurate" or "fast"
     clustering_stages=1,
-    reuse_contig=False,
+    reuse_contig=True,
     coverage_profile_path=None,
+    leiden_seed: int = 42,
+    prefer_longer=True,
 ):
     von_flspp_mix = "leiden"
     clustering_all_folder = os.path.join(temp_file_folder_path, clustering_folder_name)
@@ -59,6 +61,7 @@ def clustering_and_dereplication(
             clustering_stages=clustering_stages,
             leiden_iter_mode=leiden_iter_mode,
             coverage_profile_path=coverage_profile_path,
+            leiden_seed=leiden_seed,
         )
     # ensemble the grouped results by galah.
     ensemble_list = readPickle(os.path.join(clustering_all_folder, f"ensemble_methods_list_{von_flspp_mix}.pkl"))
@@ -78,6 +81,9 @@ def clustering_and_dereplication(
         arc_contigName2_gene2num=arc_contigName2_gene2num,
         reuse_contig=reuse_contig,
         cpus=cpu_workers,
+        embeddings=simclr_contigname2emb_norm_array,
+        coverage_profile_path=coverage_profile_path,
+        prefer_longer=prefer_longer,
     )
 
 
