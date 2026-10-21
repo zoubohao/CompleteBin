@@ -1,0 +1,50 @@
+# Reference environment for CompleteBin 1.2.3.6.
+#
+# Every entry is pinned with "==", not "=" or ">=". The scientific stack here is
+# a coupled set: a ranged requirement lets the solver pick a newer numpy / scipy
+# / scikit-learn that conflicts with the compiled extensions built against the
+# older ABI, or that silently changes numerics. The versions below are exactly
+# the ones this release was validated against.
+#
+# Split mirrors how the environment was actually built: conda supplies the
+# interpreter, the NumPy/SciPy/sklearn trio, and the five bioinformatics
+# programs; PyTorch, pysam and the graph libraries were installed with pip.
+#
+#     conda env create -f completebin-conda-env.yml
+#     conda activate completebin
+#     pip install completebin          # or: pip install .
+channels:
+  - anaconda
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  # interpreter and numerics
+  - python ==3.9.25
+  - numpy ==1.23.5
+  - pandas ==1.4.0
+  - scipy ==1.8.0
+  - scikit-learn ==0.23.2
+  - tqdm ==4.67.1
+
+  # external programs called as subprocesses
+  - prodigal ==2.6.3
+  - hmmer ==3.1b2
+  - galah ==0.4.1
+  - gsl ==2.7.0
+  - libopenblas ==0.3.25
+  - perl ==5.34.0
+  - fraggenescan ==1.32
+  - skani ==0.3.2
+
+  # installed with pip in the reference environment
+  - pip
+  - pip:
+      - torch==2.8.0
+      - pysam==0.22.1
+      - hnswlib==0.8.0
+      - igraph==1.0.0
+      - leidenalg==0.12.0
+      - psutil==7.2.2
+      - faiss-cpu==1.8.0
